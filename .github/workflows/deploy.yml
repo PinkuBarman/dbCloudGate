@@ -18,7 +18,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./   # root folder since your HTML file is here
+          path: ./   # root folder since your HTML file is here 
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
