@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudGate — GCP Onboarding Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy-900:#0A1F3D;--navy-800:#12305A;--navy-700:#1B4079;
+--blue-600:#1A5FB4;--blue-500:#2D7DD2;--blue-100:#DBEAFE;--blue-50:#EFF6FF;
+--slate-900:#0F172A;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748B;
+--slate-400:#94A3B8;--slate-300:#CBD5E1;--slate-200:#E2E8F0;--slate-100:#F1F5F9;--slate-50:#F8FAFC;
+--red-700:#B91C1C;--red-100:#FEE2E2;--red-50:#FEF2F2;
+--amber-700:#B45309;--amber-100:#FEF3C7;--amber-50:#FFFBEB;
+--green-700:#15803D;--green-100:#DCFCE7;--green-50:#F0FDF4;
+--sky-700:#0369A1;--sky-100:#E0F2FE;--purple-700:#6D28D9;--purple-100:#EDE9FE;
+--fs:'IBM Plex Sans',system-ui,sans-serif;--fm:'IBM Plex Mono',monospace;
+--sh:0 1px 2px rgba(15,23,42,.06);--sh-md:0 4px 12px rgba(15,23,42,.1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--fs);background:var(--slate-100);color:var(--slate-900);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+svg{display:block}
+.appbar{background:var(--navy-900);color:#fff;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.ab-l{display:flex;align-items:center;gap:16px}.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,var(--blue-500),var(--blue-600));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border-radius:4px}
+.logo-text{font-weight:600;font-size:16.5px;letter-spacing:-.02em}
+.logo-sub{font-size:12.5px;color:var(--slate-400);border-left:1px solid var(--navy-700);padding-left:16px}
+.ab-r{display:flex;align-items:center;gap:18px;font-size:12.5px}
+.env{font-family:var(--fm);font-size:10px;padding:3px 8px;background:var(--navy-700);border-radius:3px;letter-spacing:.06em;font-weight:600;color:var(--slate-300)}
+.user{display:flex;align-items:center;gap:9px;color:var(--slate-300);padding:5px 8px}
+.user-av{width:28px;height:28px;background:var(--blue-600);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff}
+.stepper-wrap{background:#fff;border-bottom:1px solid var(--slate-200);position:sticky;top:56px;z-index:199;overflow-x:auto;box-shadow:var(--sh)}
+.bands{display:flex;border-bottom:1px solid var(--slate-200);min-width:660px}
+.ph{flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--slate-200);background:var(--slate-50);min-width:0;transition:.15s}
+.ph:last-child{border-right:none}
+.ph.clk{cursor:pointer}
+.ph.clk:hover{filter:brightness(.97)}
+.ph-ic{width:17px;height:17px;border-radius:50%;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9px;font-weight:700;background:var(--slate-200);color:var(--slate-400)}
+.ph-n{font-family:var(--fm);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--slate-400);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph-s{font-size:9px;color:var(--slate-300);margin-top:3px;font-family:var(--fm)}
+.ph.done{background:var(--green-50)}
+.ph.done .ph-ic{background:var(--green-700);color:#fff}
+.ph.done .ph-n{color:var(--green-700)}
+.ph.done .ph-s{color:#86EFAC}
+.ph.cur{background:var(--blue-50);box-shadow:inset 0 -2.5px 0 var(--blue-600)}
+.ph.cur .ph-ic{background:var(--blue-600);color:#fff;box-shadow:0 0 0 3px var(--blue-100)}
+.ph.cur .ph-n{color:var(--navy-900);font-weight:700}
+.ph.cur .ph-s{color:var(--blue-600);font-weight:600}
+.ph.blk{background:var(--red-50);box-shadow:inset 0 -2.5px 0 var(--red-700)}
+.ph.blk .ph-ic{background:var(--red-700);color:#fff;box-shadow:0 0 0 3px var(--red-100)}
+.ph.blk .ph-n{color:var(--red-700);font-weight:700}
+.ph.blk .ph-s{color:var(--red-700);font-weight:600}
+.ph.oos{background:#FAFBFC}
+.ph.oos .ph-n{color:var(--slate-300)}
+.ph.oos .ph-ic{background:var(--slate-100);color:var(--slate-300)}
+.ph.oos .ph-s{color:var(--slate-200)}
+.stepper{display:flex;padding:0 6px;background:#fff}
+.st{padding:11px 20px;display:flex;align-items:center;gap:9px;border-right:1px solid var(--slate-100);white-space:nowrap;transition:.15s}
+.st:last-child{border-right:none}
+.st.clk{cursor:pointer}
+.st.clk:hover{background:var(--slate-50)}
+.st-ic{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9.5px;font-weight:700;background:var(--slate-200);color:var(--slate-500);flex-shrink:0}
+.st-l{font-size:12.5px;color:var(--slate-400);font-weight:500}
+.st.done .st-ic{background:var(--green-700);color:#fff}
+.st.done .st-l{color:var(--slate-600)}
+.st.cur .st-ic{background:var(--blue-600);color:#fff;box-shadow:0 0 0 3px var(--blue-100)}
+.st.cur .st-l{color:var(--navy-900);font-weight:600}
+.st.blk .st-ic{background:var(--red-700);color:#fff;box-shadow:0 0 0 3px var(--red-100)}
+.st.blk .st-l{color:var(--red-700);font-weight:600}
+.layout{display:grid;grid-template-columns:1fr 304px;max-width:1440px;margin:0 auto;align-items:start}
+.main{padding:26px 32px 90px;min-width:0}
+.rail{padding:24px 22px;border-left:1px solid var(--slate-200);background:#fff;min-height:calc(100vh - 100px);position:sticky;top:100px;display:flex;flex-direction:column}
+.ph{margin-bottom:22px}.crumb{font-family:var(--fm);font-size:11px;color:var(--slate-500);margin-bottom:7px;letter-spacing:.04em}
+.pt{font-size:25px;font-weight:600;color:var(--navy-900);letter-spacing:-.025em;margin-bottom:6px}
+.pd{color:var(--slate-600);font-size:14px;max-width:690px}
+.card{background:#fff;border:1px solid var(--slate-200);border-radius:6px;margin-bottom:16px;box-shadow:var(--sh);overflow:hidden}
+.ch{padding:13px 20px;border-bottom:1px solid var(--slate-200);display:flex;justify-content:space-between;align-items:center;background:var(--slate-50);gap:12px}
+.ct{font-size:13.5px;font-weight:600;color:var(--navy-900);display:flex;align-items:center;gap:8px}
+.cm{font-family:var(--fm);font-size:11px;color:var(--slate-500);white-space:nowrap}
+.cb{padding:20px}.cb.flush{padding:0}
+.mini-tabs{display:inline-flex;border:1px solid var(--slate-300);border-radius:5px;overflow:hidden;margin-bottom:14px}
+.mini-tab{padding:7px 14px;font-size:12.5px;font-weight:500;color:var(--slate-600);cursor:pointer;background:#fff;border:none;font-family:var(--fs);display:flex;align-items:center;gap:6px;border-right:1px solid var(--slate-300);transition:.15s}
+.mini-tab:last-child{border-right:none}
+.mini-tab.on{background:var(--navy-900);color:#fff}
+.mini-tab:not(.on):hover{background:var(--slate-50)}
+.sec-h{font-family:var(--fm);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate-500);font-weight:600;margin:26px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--slate-200)}
+.sec-h:first-of-type{margin-top:4px}
+.qblk .dz{padding:26px 22px}
+.tabs{display:flex;border-bottom:1px solid var(--slate-200);background:var(--slate-50);padding:0 20px;gap:2px}
+.tab{padding:11px 18px;font-size:13.5px;font-weight:500;color:var(--slate-500);cursor:pointer;border-bottom:2.5px solid transparent;transition:.15s;display:flex;align-items:center;gap:7px}
+.tab:hover{color:var(--slate-700)}.tab.on{color:var(--blue-600);border-bottom-color:var(--blue-600);font-weight:600;background:#fff}
+.qblk{padding:20px;border-bottom:1px solid var(--slate-100);opacity:.4;pointer-events:none;transition:.3s}
+.qblk.act{opacity:1;pointer-events:auto}.qblk.ans{opacity:1;pointer-events:auto;background:var(--slate-50)}
+.qblk:last-child{border-bottom:none}
+.qnum{display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--slate-200);color:var(--slate-600);font-family:var(--fm);font-size:10.5px;font-weight:700;align-items:center;justify-content:center;margin-right:10px}
+.qblk.act .qnum{background:var(--blue-600);color:#fff}.qblk.ans .qnum{background:var(--green-700);color:#fff}
+.qt{font-size:14.5px;font-weight:600;color:var(--navy-900);margin-bottom:5px;display:flex;align-items:center}
+.qd{font-size:12.5px;color:var(--slate-500);margin-bottom:14px;margin-left:32px}
+.qbody{margin-left:32px}
+.lookup{display:grid;grid-template-columns:220px auto 1fr;gap:9px;align-items:center}
+.inp{padding:10px 13px;border:1px solid var(--slate-300);border-radius:5px;font-family:var(--fs);font-size:13.5px;outline:none;transition:.15s;width:100%}
+.inp:focus{border-color:var(--blue-600);box-shadow:0 0 0 3px var(--blue-100)}
+.inp.mono{font-family:var(--fm)}
+.hintrow{margin-top:9px;font-size:12px;color:var(--slate-500);display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.chip{padding:3px 9px;background:var(--slate-100);border:1px solid var(--slate-200);border-radius:12px;font-family:var(--fm);font-size:11px;color:var(--slate-600);cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--blue-600);color:var(--blue-600);background:var(--blue-50)}
+.resolved{margin-top:13px;padding:13px 16px;background:var(--green-50);border:1px solid #86EFAC;border-radius:5px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;animation:sl .25s ease}
+.rtick{width:26px;height:26px;border-radius:50%;background:var(--green-700);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.rname{font-size:15px;font-weight:600;color:var(--navy-900)}
+.rmeta{font-size:12.5px;color:var(--slate-600);margin-top:2px}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.opt{border:1.5px solid var(--slate-200);border-radius:6px;padding:14px;cursor:pointer;transition:.15s;background:#fff}
+.opt:hover{border-color:var(--slate-400);box-shadow:var(--sh)}
+.opt.on{border-color:var(--blue-600);background:var(--blue-50);box-shadow:0 0 0 3px var(--blue-100)}
+.optn{font-size:14px;font-weight:600;color:var(--navy-900);margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.optr{width:15px;height:15px;border:1.5px solid var(--slate-300);border-radius:50%;flex-shrink:0}
+.opt.on .optr{border-color:var(--blue-600);border-width:5px}
+.optd{font-size:12px;color:var(--slate-500);line-height:1.45}
+.opt-badge{font-family:var(--fm);font-size:9px;padding:2px 6px;border-radius:3px;background:var(--green-100);color:var(--green-700);font-weight:600;margin-left:auto}
+.sel{padding:10px 13px;border:1px solid var(--slate-300);border-radius:5px;font-family:var(--fs);font-size:13.5px;background:#fff;outline:none;cursor:pointer;width:100%;max-width:420px}
+.sel:focus{border-color:var(--blue-600)}
+.leadcard{margin-top:13px;padding:13px 16px;background:var(--blue-50);border:1px solid #93C5FD;border-radius:5px;display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:center;animation:sl .25s ease}
+.lav{width:38px;height:38px;border-radius:5px;background:var(--navy-800);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.ln{font-size:14px;font-weight:600;color:var(--navy-900)}
+.lm{font-size:12px;color:var(--slate-600);font-family:var(--fm)}
+@keyframes sl{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.dz{border:2px dashed var(--slate-300);border-radius:6px;padding:32px 26px;text-align:center;background:var(--slate-50);transition:.18s}
+.dz.hover{border-color:var(--blue-600);background:var(--blue-50)}
+.dz-ic{margin:0 auto 12px;width:44px;height:44px;border-radius:50%;background:var(--blue-100);display:flex;align-items:center;justify-content:center;color:var(--blue-600)}
+.dz-t{font-size:15px;font-weight:600;color:var(--navy-900);margin-bottom:4px}
+.dz-d{font-size:13px;color:var(--slate-500);margin-bottom:16px}
+.dz-or{font-size:12px;color:var(--slate-400);margin-top:12px}
+.fmt-row{display:flex;gap:6px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.fmt{font-family:var(--fm);font-size:10px;padding:4px 9px;background:#fff;border:1px solid var(--slate-200);color:var(--slate-500);border-radius:3px;font-weight:500}
+.flist{margin-top:16px}
+.flist-h{font-family:var(--fm);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--slate-500);margin-bottom:9px;font-weight:600;display:flex;justify-content:space-between}
+.frow{display:grid;grid-template-columns:34px 1fr auto auto;gap:12px;align-items:center;padding:11px 14px;border:1px solid var(--slate-200);border-radius:5px;margin-bottom:7px;background:#fff;animation:sl .25s ease}
+.frow:hover{border-color:var(--slate-300);box-shadow:var(--sh)}
+.fic{width:34px;height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9px;font-weight:700;color:#fff}
+.fic.pdf{background:#DC2626}.fic.doc{background:#2563EB}.fic.ppt{background:#EA580C}.fic.url{background:#0891B2}
+.fname{font-size:13.5px;font-weight:500;color:var(--navy-900);word-break:break-all}
+.fmeta{font-family:var(--fm);font-size:11px;color:var(--slate-400)}
+.fsize{font-family:var(--fm);font-size:11.5px;color:var(--slate-500)}
+.fdel{width:26px;height:26px;border:none;background:transparent;color:var(--slate-400);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.fdel:hover{background:var(--red-50);color:var(--red-700)}
+.url-row{display:grid;grid-template-columns:1fr auto;gap:9px}
+table.dt{width:100%;border-collapse:collapse;font-size:13px}
+table.dt th{text-align:left;padding:9px 18px;background:var(--slate-50);border-bottom:1px solid var(--slate-200);font-family:var(--fm);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--slate-500);font-weight:600}
+table.dt td{padding:11px 18px;border-bottom:1px solid var(--slate-100);vertical-align:top}
+table.dt tr:last-child td{border-bottom:none}
+table.dt tbody tr:hover td{background:var(--slate-50)}
+.mono{font-family:var(--fm);font-size:12px}.t-num{text-align:right;font-family:var(--fm)}
+.sname{font-weight:600;color:var(--navy-900)}.stech{color:var(--slate-500);font-size:12px}
+.adr{font-family:var(--fm);font-size:11px;color:var(--purple-700);background:var(--purple-100);padding:2px 7px;border-radius:3px;white-space:nowrap;font-weight:500}
+.dl{display:grid;grid-template-columns:190px 1fr}
+.dl dt{padding:10px 0;font-family:var(--fm);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--slate-500);border-bottom:1px solid var(--slate-100)}
+.dl dd{padding:10px 0;border-bottom:1px solid var(--slate-100);color:var(--slate-900)}
+.dl dt:last-of-type,.dl dd:last-of-type{border-bottom:none}
+.pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--fm);font-size:10px;font-weight:600;padding:3.5px 8px;border-radius:3px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.p-red{background:var(--red-100);color:var(--red-700)}.p-amber{background:var(--amber-100);color:var(--amber-700)}
+.p-green{background:var(--green-100);color:var(--green-700)}.p-blue{background:var(--sky-100);color:var(--sky-700)}
+.p-grey{background:var(--slate-200);color:var(--slate-600)}
+.btn{font-family:var(--fs);font-size:13.5px;font-weight:600;padding:10px 18px;border:none;border-radius:5px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn-p{background:var(--blue-600);color:#fff;box-shadow:var(--sh)}
+.btn-p:hover:not(:disabled){background:var(--navy-700);box-shadow:var(--sh-md)}
+.btn-p:disabled{background:var(--slate-200);color:var(--slate-400);cursor:not-allowed;box-shadow:none}
+.btn-g{background:#fff;color:var(--slate-700);border:1px solid var(--slate-300)}
+.btn-g:hover:not(:disabled){border-color:var(--slate-400);background:var(--slate-50)}
+.btn-sm{font-size:12px;padding:7px 13px;gap:6px}.btn-lg{font-size:14.5px;padding:12px 24px}
+.btn-row{display:flex;gap:11px;align-items:center;margin-top:20px;flex-wrap:wrap}
+.hint{font-size:12.5px;color:var(--slate-500)}
+.hint.err{color:var(--red-700);font-weight:500;display:flex;align-items:center;gap:6px}
+.bn{padding:14px 18px;border-radius:6px;margin-bottom:16px;display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:start;font-size:13.5px;border:1px solid}
+.bn-ic{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:12px;font-weight:700;font-family:var(--fm)}
+.bn-t{font-weight:600;margin-bottom:3px}.bn-b{line-height:1.55}
+.b-red{background:var(--red-50);border-color:#FCA5A5}.b-red .bn-ic{background:var(--red-700)}.b-red .bn-t{color:var(--red-700)}.b-red .bn-b{color:#7F1D1D}
+.b-amber{background:var(--amber-50);border-color:#FCD34D}.b-amber .bn-ic{background:var(--amber-700)}.b-amber .bn-t{color:var(--amber-700)}.b-amber .bn-b{color:#78350F}
+.b-green{background:var(--green-50);border-color:#86EFAC}.b-green .bn-ic{background:var(--green-700)}.b-green .bn-t{color:var(--green-700)}.b-green .bn-b{color:#14532D}
+.b-blue{background:var(--blue-50);border-color:#93C5FD}.b-blue .bn-ic{background:var(--blue-600)}.b-blue .bn-t{color:var(--navy-700)}.b-blue .bn-b{color:var(--slate-700)}
+.sb{display:grid;grid-template-columns:auto 1fr;gap:34px;align-items:center;padding:24px}
+.ring{position:relative;width:124px;height:124px}
+.rv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.rn{font-size:36px;font-weight:700;color:var(--navy-900);line-height:1}
+.rd{font-family:var(--fm);font-size:10.5px;color:var(--slate-500);margin-top:2px}
+.srow{display:flex;align-items:center;gap:10px;margin-bottom:9px;flex-wrap:wrap}
+.sdesc{color:var(--slate-600);font-size:13.5px;max-width:460px}
+.delta{font-family:var(--fm);font-size:11.5px;color:var(--green-700);font-weight:600}
+.dim{display:grid;grid-template-columns:215px 1fr 54px;gap:14px;align-items:center;padding:9px 20px;font-size:13px;border-bottom:1px solid var(--slate-100)}
+.dim:last-child{border-bottom:none}.dim:hover{background:var(--slate-50)}
+.dn{color:var(--slate-700)}.dw{font-family:var(--fm);font-size:10px;color:var(--slate-400);margin-left:6px}
+.dtr{height:7px;background:var(--slate-200);border-radius:4px;overflow:hidden}
+.dfl{height:7px;border-radius:4px;transition:width .8s cubic-bezier(.34,1.2,.64,1)}
+.ds{font-family:var(--fm);font-size:12px;text-align:right;color:var(--slate-700);font-weight:600}
+.gfilter{display:flex;gap:6px;padding:12px 20px;border-bottom:1px solid var(--slate-200);flex-wrap:wrap}
+.gf{padding:5px 12px;font-size:12px;border-radius:20px;border:1px solid var(--slate-200);background:#fff;color:var(--slate-600);cursor:pointer;font-weight:500;transition:.15s;font-family:var(--fs)}
+.gf:hover{border-color:var(--slate-400)}.gf.on{background:var(--navy-900);color:#fff;border-color:var(--navy-900)}
+.gap{border-bottom:1px solid var(--slate-100);padding:15px 20px}
+.gap:last-child{border-bottom:none}.gap:hover{background:var(--slate-50)}
+.gap.res{background:var(--green-50)}
+.gt{display:grid;grid-template-columns:88px 1fr auto;gap:14px;align-items:start}
+.gtx{font-size:13.5px;color:var(--navy-900);font-weight:500;margin-bottom:3px}
+.gap.res .gtx{color:var(--slate-500);text-decoration:line-through}
+.grm{font-size:12.5px;color:var(--slate-600);line-height:1.5}
+.gres{margin-top:9px;padding:9px 12px;background:#fff;border-left:2.5px solid var(--green-700);font-size:12.5px;color:var(--slate-700)}
+.gres strong{color:var(--green-700)}
+.rform{margin-top:13px;padding:15px;background:#fff;border:1px solid var(--slate-200);border-radius:5px;display:none;box-shadow:var(--sh)}
+.rform.open{display:block;animation:sl .2s ease}
+.rlab{font-family:var(--fm);font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--slate-500);margin-bottom:6px;display:block;font-weight:600}
+.rin{width:100%;padding:9px 12px;border:1px solid var(--slate-300);border-radius:5px;font-family:var(--fs);font-size:13px;resize:vertical;min-height:66px;outline:none}
+.rin:focus{border-color:var(--blue-600);box-shadow:0 0 0 3px var(--blue-100)}
+.rsel{width:100%;padding:9px 12px;border:1px solid var(--slate-300);border-radius:5px;font-size:13px;margin-bottom:12px;background:#fff;font-family:var(--fs)}
+.cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:stretch;padding:20px}
+.cmpc{border:1px solid var(--slate-200);border-radius:6px;padding:18px;text-align:center}
+.cmpc.cur{background:var(--slate-50)}.cmpc.tgt{background:var(--green-50);border-color:#86EFAC}
+.cmpl{font-family:var(--fm);font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--slate-500);margin-bottom:8px;font-weight:600}
+.cmpv{font-size:26px;font-weight:700;color:var(--navy-900);letter-spacing:-.02em}
+.cmpc.tgt .cmpv{color:var(--green-700)}
+.cmps{font-size:12px;color:var(--slate-500);margin-top:4px}
+.cmparr{display:flex;align-items:center;justify-content:center;color:var(--slate-400)}
+.savebar{padding:16px 20px;background:var(--green-50);border-top:1px solid #86EFAC;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sv{text-align:center}
+.svl{font-family:var(--fm);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--green-700);margin-bottom:4px;font-weight:600}
+.svv{font-size:19px;font-weight:700;color:var(--green-700)}
+.ctr td{background:var(--navy-900)!important;color:#fff!important;font-weight:600;font-size:14px}
+.ctr2 td{background:var(--slate-100)!important;font-weight:600;font-size:14px;color:var(--navy-900)!important}
+.notes{padding:15px 20px;background:var(--slate-50);border-top:1px solid var(--slate-200);font-size:12.5px;color:var(--slate-600)}
+.notes ul{margin-left:17px}.notes li{margin:4px 0}
+.bp{border:1px solid var(--slate-200);border-radius:6px;margin-bottom:14px;background:#fff;box-shadow:var(--sh);overflow:hidden}
+.bp.rec{border-color:var(--blue-600);border-width:2px}
+.bph{padding:17px 20px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--slate-200);gap:20px}
+.bpid{font-family:var(--fm);font-size:12px;color:var(--slate-500);margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bpn{font-size:15.5px;font-weight:600;color:var(--navy-900)}
+.bpf{font-size:28px;font-weight:700;color:var(--blue-600);line-height:1;text-align:right}.bpf.d{color:var(--slate-400)}
+.bpfl{font-family:var(--fm);font-size:9px;text-transform:uppercase;color:var(--slate-400);letter-spacing:.09em;text-align:right}
+.bpe{padding:11px 20px;background:var(--slate-50);font-family:var(--fm);font-size:11.5px;color:var(--slate-600);border-bottom:1px solid var(--slate-200)}
+.bpr{padding:14px 20px}
+.bpi{display:grid;grid-template-columns:18px 1fr;gap:10px;padding:5px 0;font-size:13px;color:var(--slate-700);align-items:baseline}
+.bpi .m{font-family:var(--fm);font-weight:700;font-size:12px}.bpi .m.y{color:var(--green-700)}.bpi .m.n{color:var(--red-700)}
+.chat{padding:18px 20px;min-height:250px;max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:13px;scroll-behavior:smooth}
+.msg{display:grid;grid-template-columns:30px 1fr;gap:10px;max-width:88%;animation:sl .22s ease}
+.msg.u{justify-self:end;grid-template-columns:1fr 30px}
+.av{width:30px;height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:#fff}
+.av.b{background:var(--blue-600)}.av.us{background:var(--slate-600);grid-column:2}
+.bub{padding:11px 14px;border-radius:6px;font-size:13.5px;line-height:1.55;background:var(--slate-100)}
+.msg.u .bub{background:var(--navy-800);color:#fff;grid-column:1}
+.bf{margin-top:10px;padding:10px 12px;border-radius:5px;font-size:12.5px;display:grid;grid-template-columns:auto 1fr;gap:9px}
+.bf.blk{background:var(--red-50);border:1px solid #FCA5A5;color:var(--red-700)}
+.bf.ok{background:var(--green-50);border:1px solid #86EFAC;color:var(--green-700)}
+.dot{display:inline-block;width:5px;height:5px;background:var(--slate-400);border-radius:50%;margin:0 1.5px;animation:bpn 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes bpn{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-3px);opacity:1}}
+.cir{display:grid;grid-template-columns:1fr auto;gap:9px;padding:14px 20px;border-top:1px solid var(--slate-200);background:var(--slate-50)}
+.quick{display:flex;gap:7px;flex-wrap:wrap;padding:0 20px 14px;background:var(--slate-50)}
+.qr{padding:6px 12px;background:#fff;border:1px solid var(--slate-300);border-radius:14px;font-size:12px;color:var(--slate-600);cursor:pointer;transition:.15s;font-family:var(--fs)}
+.qr:hover{border-color:var(--blue-600);color:var(--blue-600);background:var(--blue-50)}
+.pf{display:grid;grid-template-columns:196px 1fr auto;gap:14px;padding:10px 20px;font-size:13px;border-bottom:1px solid var(--slate-100);align-items:center}
+.pf:last-child{border-bottom:none}.pf:hover{background:var(--slate-50)}
+.pfk{font-family:var(--fm);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--slate-500)}
+.pfv{color:var(--navy-900)}
+.jira{padding:22px;text-align:center}
+.jid{font-family:var(--fm);font-size:24px;font-weight:600;color:var(--blue-600);margin:10px 0 6px}
+.apr{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:19px 20px;align-items:center}
+.apav{width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,var(--navy-700),var(--navy-800));color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+.apn{font-size:15.5px;font-weight:600;color:var(--navy-900)}
+.apm{font-size:12.5px;color:var(--slate-500);font-family:var(--fm)}
+.efield{padding:12px 20px;border-bottom:1px solid var(--slate-100);display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:center}
+.ek{font-family:var(--fm);font-size:10.5px;text-transform:uppercase;color:var(--slate-400)}
+.ev{font-size:13px;color:var(--slate-700)}
+.ebody{width:100%;padding:14px 18px;border:none;border-top:1px solid var(--slate-100);font-family:var(--fm);font-size:12.5px;line-height:1.75;resize:vertical;min-height:250px;outline:none;color:var(--slate-700);background:#fff}
+.ebody:focus{background:#FFFEF9;box-shadow:inset 0 0 0 2px var(--blue-100)}
+.esub{width:100%;padding:8px 11px;border:1px solid var(--slate-200);border-radius:4px;font-family:var(--fs);font-size:13px;outline:none}
+.esub:focus{border-color:var(--blue-600)}
+.ebar{padding:10px 20px;background:var(--amber-50);border-top:1px solid #FCD34D;font-size:12px;color:var(--amber-700);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ps{padding:17px 20px}
+.pstep{display:grid;grid-template-columns:20px 1fr auto;gap:12px;padding:8px 0;font-size:13px;color:var(--slate-400);align-items:center;transition:.2s}
+.pstep.a{color:var(--navy-900);font-weight:500}.pstep.d{color:var(--green-700)}
+.cnt{font-family:var(--fm);font-size:12px;color:var(--blue-600);font-weight:600}
+.spin{width:14px;height:14px;border:2px solid var(--slate-300);border-top-color:var(--blue-600);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.prog{padding:13px 20px;border-bottom:1px solid var(--slate-200)}
+.ptrack{height:6px;background:var(--slate-200);border-radius:3px;overflow:hidden;margin-top:7px}
+.pfill{height:6px;background:var(--green-700);border-radius:3px;transition:width .4s ease}
+.ptxt{display:flex;justify-content:space-between;font-size:12px;color:var(--slate-600)}
+.ckc{padding:10px 20px;background:var(--slate-50);font-family:var(--fm);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--slate-500);font-weight:600;border-bottom:1px solid var(--slate-200);border-top:1px solid var(--slate-200)}
+.ck{display:grid;grid-template-columns:20px 1fr auto;gap:12px;padding:12px 20px;font-size:13.5px;border-bottom:1px solid var(--slate-100);cursor:pointer;align-items:start}
+.ck:last-child{border-bottom:none}.ck:hover{background:var(--slate-50)}
+.ckb{width:16px;height:16px;border:1.5px solid var(--slate-400);border-radius:3px;position:relative;margin-top:1px;transition:.15s}
+.ck:hover .ckb{border-color:var(--blue-600)}
+.ck.done .ckb{background:var(--green-700);border-color:var(--green-700)}
+.ck.done .ckb::after{content:'✓';position:absolute;color:#fff;font-size:11px;left:2px;top:-2px;font-weight:700}
+.ck.done .ckt{color:var(--slate-400);text-decoration:line-through}
+.cko{font-family:var(--fm);font-size:10.5px;color:var(--slate-400)}
+.rs{margin-bottom:22px}
+.rh{font-family:var(--fm);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--slate-400);margin-bottom:11px;font-weight:600}
+.rr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--slate-100);gap:10px;font-size:12.5px}
+.rr:last-child{border-bottom:none}
+.rk{color:var(--slate-500);flex-shrink:0}
+.rv2{color:var(--navy-900);font-weight:500;text-align:right;word-break:break-word}
+.rv2.mono{font-family:var(--fm);font-size:11.5px}.rv2.dim{color:var(--slate-300);font-weight:400}
+.gate{display:grid;grid-template-columns:16px 1fr auto;gap:9px;padding:8px 0;font-size:12.5px;align-items:center;border-bottom:1px solid var(--slate-100)}
+.gate:last-child{border-bottom:none}
+.gi{font-family:var(--fm);font-size:11px;font-weight:700}
+.gate.open .gi{color:var(--green-700)}.gate.blocked .gi{color:var(--red-700)}.gate.pending .gi{color:var(--slate-300)}
+.gate.active .gi{color:var(--blue-600)}
+.gn{color:var(--slate-700)}.gate.pending .gn{color:var(--slate-400)}
+.gate.active .gn{color:var(--navy-900);font-weight:600}
+.sctl{margin-top:auto;padding-top:20px;border-top:1px solid var(--slate-200)}
+.rst{width:100%;padding:9px;background:#fff;border:1px solid var(--slate-300);border-radius:5px;font-size:12px;color:var(--slate-600);cursor:pointer;font-family:var(--fs);display:flex;align-items:center;justify-content:center;gap:7px}
+.rst:hover{border-color:var(--slate-400);background:var(--slate-50)}
+.lw{text-align:center;padding:64px 20px}
+.bspin{width:40px;height:40px;border:3px solid var(--slate-200);border-top-color:var(--blue-600);border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 18px}
+.lt{font-size:16.5px;font-weight:600;color:var(--navy-900);margin-bottom:6px}
+.ld{font-family:var(--fm);font-size:12.5px;color:var(--slate-500);min-height:19px}
+.lfiles{margin-top:22px;max-width:430px;margin-left:auto;margin-right:auto;text-align:left}
+.lfile{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:7px 0;font-size:12.5px;color:var(--slate-500);align-items:center}
+.lfile.done{color:var(--green-700)}
+.toasts{position:fixed;bottom:92px;right:24px;z-index:500;display:flex;flex-direction:column;gap:9px}
+.toast{background:var(--navy-900);color:#fff;padding:12px 17px;border-radius:6px;font-size:13px;box-shadow:0 8px 24px rgba(15,23,42,.24);display:flex;align-items:center;gap:10px;animation:tin .25s ease;max-width:340px}
+@keyframes tin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.toast.ok{background:var(--green-700)}.toast.err{background:var(--red-700)}
+/* ASSISTANT */
+.fab{position:fixed;bottom:24px;right:24px;width:54px;height:54px;border-radius:50%;background:var(--blue-600);color:#fff;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(26,95,180,.4);display:flex;align-items:center;justify-content:center;z-index:600;transition:.2s}
+.fab:hover{background:var(--navy-700);transform:scale(1.05)}
+.fab.open{background:var(--navy-900)}
+.fab-dot{position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:var(--red-700);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-family:var(--fm)}
+.hp{position:fixed;bottom:90px;right:24px;width:392px;max-width:calc(100vw - 40px);max-height:calc(100vh - 140px);background:#fff;border:1px solid var(--slate-200);border-radius:10px;box-shadow:0 16px 48px rgba(15,23,42,.22);z-index:599;display:none;flex-direction:column;overflow:hidden}
+.hp.on{display:flex;animation:hpin .22s ease}
+@keyframes hpin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.hph{padding:14px 16px;background:var(--navy-900);color:#fff;display:flex;align-items:center;gap:11px}
+.hph-av{width:32px;height:32px;border-radius:7px;background:var(--blue-600);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.hph-t{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.hph-s{font-size:11px;color:var(--slate-400);font-family:var(--fm)}
+.hph-x{margin-left:auto;background:transparent;border:none;color:var(--slate-400);cursor:pointer;padding:5px;border-radius:4px;display:flex}
+.hph-x:hover{background:var(--navy-700);color:#fff}
+.hpm{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:200px;background:var(--slate-50)}
+.hmsg{display:flex;gap:9px;max-width:94%;animation:sl .2s ease}
+.hmsg.u{align-self:flex-end;flex-direction:row-reverse}
+.hav{width:26px;height:26px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.hav.b{background:var(--blue-600)}.hav.u{background:var(--slate-600)}
+.hbub{padding:10px 13px;border-radius:8px;font-size:13px;line-height:1.6;background:#fff;border:1px solid var(--slate-200);color:var(--slate-700)}
+.hmsg.u .hbub{background:var(--navy-800);color:#fff;border-color:var(--navy-800)}
+.hbub strong{color:var(--navy-900);font-weight:600}
+.hmsg.u .hbub strong{color:#fff}
+.hbub ul{margin:7px 0 2px 16px;padding:0}
+.hbub li{margin:4px 0}
+.hbub .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin-top:8px;font-size:12.5px}
+.hbub .kv b{color:var(--slate-500);font-weight:500;font-family:var(--fm);font-size:11px}
+.hbub code{font-family:var(--fm);font-size:11.5px;background:var(--slate-100);padding:1px 5px;border-radius:3px;color:var(--purple-700)}
+.hbub .warn{display:block;margin-top:8px;padding:8px 10px;background:var(--red-50);border-left:2.5px solid var(--red-700);border-radius:0 4px 4px 0;font-size:12.5px;color:#7F1D1D}
+.hbub .tip{display:block;margin-top:8px;padding:8px 10px;background:var(--green-50);border-left:2.5px solid var(--green-700);border-radius:0 4px 4px 0;font-size:12.5px;color:#14532D}
+.hsug{padding:10px 16px;background:#fff;border-top:1px solid var(--slate-200);display:flex;gap:6px;flex-wrap:wrap}
+.hchip{padding:6px 11px;background:var(--slate-50);border:1px solid var(--slate-200);border-radius:14px;font-size:11.5px;color:var(--slate-600);cursor:pointer;font-family:var(--fs);transition:.15s;text-align:left}
+.hchip:hover{border-color:var(--blue-600);color:var(--blue-600);background:var(--blue-50)}
+.hin{padding:12px 14px;border-top:1px solid var(--slate-200);display:grid;grid-template-columns:1fr auto;gap:8px;background:#fff}
+.hin input{padding:9px 12px;border:1px solid var(--slate-300);border-radius:18px;font-family:var(--fs);font-size:13px;outline:none}
+.hin input:focus{border-color:var(--blue-600);box-shadow:0 0 0 3px var(--blue-100)}
+.hin button{width:36px;height:36px;border-radius:50%;background:var(--blue-600);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hin button:hover{background:var(--navy-700)}
+@media(max-width:520px){.hp{right:12px;left:12px;width:auto;bottom:84px}}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.rail{border-left:none;border-top:1px solid var(--slate-200);position:static;min-height:auto}.opts{grid-template-columns:1fr}.cmp{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="appbar">
+<div class="ab-l"><div class="logo"><div class="logo-mark">CG</div><div class="logo-text">CloudGate</div></div>
+<div class="logo-sub">GCP Onboarding Platform</div></div>
+<div class="ab-r"><span class="env">POC</span>
+<div class="user"><span>Pinku Barman</span><div class="user-av">PB</div></div></div>
+</div>
+<div class="stepper-wrap"><div class="bands" id="bands"></div><div class="stepper" id="stepper"></div></div>
+<div class="layout"><main class="main" id="main"></main><aside class="rail" id="rail"></aside></div>
+<div class="toasts" id="toasts"></div>
+<div class="hp" id="hp">
+<div class="hph"><div class="hph-av">CG</div>
+<div><div class="hph-t">CloudGate Assistant</div><div class="hph-s" id="hpctx">Onboarding help</div></div>
+<button class="hph-x" onclick="toggleHelp()" title="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+<div class="hpm" id="hpm"></div>
+<div class="hsug" id="hsug"></div>
+<div class="hin"><input id="hq" placeholder="Ask about the process, a blocker, or who to contact..." onkeydown="if(event.key==='Enter')askBot()">
+<button onclick="askBot()" title="Send"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button></div>
+</div>
+<button class="fab" id="fab" onclick="toggleHelp()" title="Onboarding help">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8v.5z"/></svg>
+<span class="fab-dot" id="fabdot" style="display:none">!</span></button>
+<script>
+const I={up:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>',
+file:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>',
+link:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7l1.5-1.5"/></svg>',
+x:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+plus:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+arr:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>',
+rst:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 109-9 9 9 0 00-6.4 2.6L3 8"/><path d="M3 3v5h5"/></svg>',
+warn:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 9v4m0 4h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>',
+srch:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+mail:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>'};
+
+const DOMAINS={
+'Data & Analytics':{lead:'Marijn Vermeer',email:'marijn.vermeer@example.com',backup:'Aisha Rahman',sla:'5 business days'},
+'Regulatory Reporting':{lead:'Idris Okonkwo',email:'idris.okonkwo@example.com',backup:'Elena Vasquez',sla:'3 business days'},
+'Finance':{lead:'Claudia Restrepo',email:'claudia.restrepo@example.com',backup:'Jonas Weber',sla:'5 business days'},
+'Risk Management':{lead:'Tobias Lindqvist',email:'tobias.lindqvist@example.com',backup:'Priya Menon',sla:'4 business days'},
+'Treasury':{lead:'Amara Nwosu',email:'amara.nwosu@example.com',backup:'Stefan Novak',sla:'5 business days'},
+'Corporate Banking':{lead:'Henrik Sorensen',email:'henrik.sorensen@example.com',backup:'Lucia Ferrari',sla:'5 business days'},
+'Private Banking':{lead:'Beatriz Almeida',email:'beatriz.almeida@example.com',backup:'Omar Haddad',sla:'5 business days'},
+'Technology Infrastructure':{lead:'Ravi Chandrasekaran',email:'ravi.chandra@example.com',backup:'Nina Kowalski',sla:'3 business days'},
+'Compliance':{lead:'Sofia Kowalczyk',email:'sofia.kowalczyk@example.com',backup:'Marcus Bell',sla:'4 business days'},
+'Human Resources':{lead:'Daniel Achebe',email:'daniel.achebe@example.com',backup:'Ingrid Larsen',sla:'5 business days'}};
+const OTHER_LEAD={lead:'Central Onboarding Desk',email:'cloud.onboarding@example.com',backup:'-',sla:'assigned within 2 days'};
+const MIG=[{k:'ReHost',d:'Lift and shift with no code change. Fastest, but carries existing licensing and technical debt.'},
+{k:'RePlatform',d:'Move to managed cloud services with targeted changes. Balanced effort and benefit.'},
+{k:'ReArchitect',d:'Redesign for cloud-native patterns. Highest benefit, longest delivery timeline.'}];
+const NAR={'118135-1':{key:'a'},'118135-2':{key:'b'}};
+
+const ARCH={systemType:'On-premises Enterprise Data Warehouse',
+database:'Microsoft SQL Server 2019 - Enterprise Edition',
+etl:'SSIS (60+ packages) - Python 3.9 / Pandas - SQL Server Agent - dbt Core 1.5',
+bi:'Tableau Server 2023.1',volume:'1 TB compressed (~3.8 TB uncompressed)',
+jobs:'3 scheduled runs per day - ~1 hour each - 02:00, 10:00, 18:00 CET',
+upstream:[{n:'System A',t:'Oracle 19c',m:'Nightly batch extract',v:'SSIS'},
+{n:'System B',t:'Cloud API (REST)',m:'Hourly polling',v:'Python / Pandas'},
+{n:'System C',t:'SharePoint Online',m:'Daily file drop',v:'SSIS + Python'},
+{n:'System D',t:'ServiceNow API (REST)',m:'Every 4 hours',v:'Python / Pandas'}],
+downstream:[{n:'Tableau Server',t:'Direct SQL + extracts',m:'Live connection',v:'Native driver'},
+{n:'System X',t:'Oracle',m:'Nightly push',v:'SSIS'},
+{n:'System Y',t:'GCP (BigQuery)',m:'Daily export',v:'Python'},
+{n:'System Z',t:'SharePoint Online',m:'Weekly report drop',v:'SSIS'}],
+mapping:[
+{f:'MS SQL Server (DW)',t:'BigQuery',adr:'ADR-DWH-001',n:'Columnar warehouse; T-SQL schema conversion required'},
+{f:'SSIS packages',t:'Cloud Data Fusion / Dataflow',adr:'ADR-DWH-004',n:'60+ packages - largest single conversion effort'},
+{f:'SQL Server Agent',t:'Cloud Composer (Airflow)',adr:'ADR-DWH-005',n:'Job schedules become Airflow DAGs'},
+{f:'Python / Pandas',t:'Dataflow / Composer tasks',adr:'ADR-DWH-006',n:'Runs largely unchanged'},
+{f:'dbt Core',t:'dbt on Composer',adr:'ADR-DWH-007',n:'No rewrite - target profile change only'},
+{f:'Tableau Server',t:'Looker',adr:'ADR-BI-002',n:'Native BigQuery integration, no regional restriction. Strategic BI platform.',rec:1},
+{f:'Tableau Server',t:'Tableau',adr:'ADR-BI-002-EX',n:'Tableau is not permitted to connect to BigQuery in the EU region. Requires an approved architecture exception before use.',exc:1},
+{f:'System A (Oracle)',t:'Datastream CDC',adr:'ADR-INT-003',n:'Replaces nightly batch with change data capture'},
+{f:'Systems B / D (REST)',t:'Cloud Functions to Pub/Sub',adr:'ADR-INT-004',n:'API polling becomes event-driven ingest'},
+{f:'Systems C / Z (SPO)',t:'Cloud Storage + Functions',adr:'ADR-INT-005',n:'Microsoft Graph API connector required'}]};
+
+const APPS={
+a:{key:'a',app:'EDW-Core',nar:'118135-1',
+appDesc:'Group finance data warehouse - management reporting and regulatory extracts',
+recMig:'RePlatform',dataClass:'Internal - no PII in scope',regulated:0,arch:ARCH,
+sampleFiles:[{n:'EDW-Core_Architecture_v3.2.pdf',s:'2.4 MB',t:'pdf'},{n:'EDW_DataFlow_Diagram.pptx',s:'1.1 MB',t:'ppt'},{n:'EDW_Operations_Runbook.docx',s:'684 KB',t:'doc'}],
+baseDims:[{n:'Architecture clarity',w:3,s:9},{n:'Data readiness',w:2,s:7},{n:'Dependency mapping',w:2,s:8},{n:'Security / IAM posture',w:2,s:6},{n:'Operational readiness',w:1,s:8}],
+migFit:{ReHost:{s:5,gap:{id:'m1',sev:'MEDIUM',text:'ReHost retains MS SQL Server licensing on Compute Engine',rem:'Licensing cost of approximately $5,500 per month continues. Consider RePlatform to BigQuery to retire it.',lift:0}},
+RePlatform:{s:8,gap:null},
+ReArchitect:{s:4,gap:{id:'m1',sev:'HIGH',text:'ReArchitect scope is not justified by the current architecture',rem:'The existing batch warehouse maps cleanly to BigQuery. A full redesign adds 4-6 months without proportionate benefit.',lift:0}}},
+baseGaps:[{id:'a1',sev:'HIGH',text:'SSIS package inventory incomplete - 47 of ~60 packages documented',rem:'Complete the inventory during Discovery. Undocumented packages cannot be scoped for conversion.',lift:0},
+{id:'a2',sev:'MEDIUM',text:'dbt model lineage not exported for migration validation',rem:'Run dbt docs generate and attach the manifest to the Discovery pack.',lift:0},
+{id:'a3',sev:'MEDIUM',text:'SQL Server Agent job dependencies not mapped to DAG structure',rem:'Map the 3 daily job chains to Composer DAGs before Design.',lift:0},
+{id:'a4',sev:'LOW',text:'Tableau extract refresh schedules not documented',rem:'List refresh windows so Looker dashboard equivalents can be scoped.',lift:0}],
+current:{rows:[{c:'MS SQL Server Enterprise',s:'Licence + Software Assurance',v:5500},
+{c:'Server hardware',s:'Amortised - 3 nodes',v:1180},{c:'SAN storage',s:'1 TB usable + snapshots',v:790},
+{c:'Tableau Server',s:'Licence + maintenance',v:1400},{c:'Data centre',s:'Rack, power, cooling',v:610},
+{c:'Backup and DR',s:'Tape + offsite replication',v:720},{c:'Support and maintenance',s:'0.4 FTE allocation',v:2800}],total:13000},
+target:{rows:[{c:'BigQuery',s:'Storage + on-demand query',l:450,h:840},
+{c:'Cloud Composer 2',s:'Airflow - replaces SQL Server Agent',l:370,h:520},
+{c:'Dataflow',s:'Batch transforms - replaces SSIS',l:230,h:420},
+{c:'Datastream',s:'Oracle CDC (System A)',l:160,h:280},
+{c:'Looker',s:'BI platform - replaces Tableau',l:900,h:1400},
+{c:'Cloud Storage',s:'Landing + archive (Nearline)',l:35,h:65},
+{c:'Cloud Functions',s:'REST ingest (Systems B, D)',l:22,h:50},
+{c:'Networking',s:'Egress + Interconnect share',l:100,h:195},
+{c:'Operations',s:'Monitoring + Logging',l:55,h:160}],total:{l:2322,h:3930}},
+costNotes:['1-year Committed Use Discount applied to Composer and Dataflow - approximately 28% saving',
+'MS SQL Server licence retirement is the single largest saving at $5,500 per month',
+'Looker replaces Tableau licensing; allocated share of the enterprise agreement shown',
+'Non-Production environment adds approximately 35%','Confidence: MEDIUM - refine after SSIS inventory is complete'],
+bpTop:{id:'GCP-BP-023',name:'On-Premises Data Warehouse to BigQuery (RePlatform)',eri:'ERI-BQ-DWH-04 - BigQuery + Composer + Dataflow + Datastream + Looker',fit:89,
+reasons:[{y:1,t:'MS SQL Server to BigQuery schema conversion path documented, including T-SQL dialect mapping'},
+{y:1,t:'SQL Server Agent to Composer DAG translation covered in ERI section 3'},
+{y:1,t:'dbt Core runs natively on Composer - target profile change only, no model rewrite'},
+{y:1,t:'1 TB volume sits comfortably in BigQuery standard tier'},
+{y:1,t:'Looker replaces Tableau with native BigQuery integration and no regional restriction (ADR-BI-002)'},
+{y:0,t:'60+ SSIS packages require conversion; ERI provides the pattern but effort is significant'}]},
+bpAlt:{id:'GCP-BP-031',name:'Lift and Shift DW to Cloud SQL for SQL Server',eri:'ERI-CLOUDSQL-MSSQL-01 - Cloud SQL + Compute Engine (SSIS runtime)',fit:61,
+reasons:[{y:1,t:'Fastest path - minimal code change, SSIS packages run as-is'},
+{y:0,t:'Retains SQL Server licensing at approximately $5,500 per month'},
+{y:0,t:'Does not unlock BigQuery analytics performance'},
+{y:0,t:'Requires a Windows VM to host the SSIS runtime - ongoing patch burden'}]},
+discovery:[{cat:'Application Discovery Questionnaire',items:[
+{t:'4 upstream integrations captured from architecture documents',o:'Auto'},
+{t:'4 downstream consumers captured from architecture documents',o:'Auto'},
+{t:'Job schedule captured - 3 daily windows, ~1 hour each',o:'Auto'},
+{t:'Data volume confirmed at 1 TB compressed',o:'Auto'},
+{t:'Complete and submit the Application Discovery Questionnaire',o:'ITAO'}]},
+{cat:'Data residency - DEx Tool (Data Exchange Registry)',items:[
+{t:'Submit the data residency request through the DEx Tool',o:'ITAO'},
+{t:'BAO reviews and approves the data residency request',o:'BAO'},
+{t:'Confirm target region against the approved residency position',o:'ITAO'}]},
+{cat:'DEV Landing Zone',items:[
+{t:'Raise LZ provisioning request against the agreed LZ date',o:'ITAO'},
+{t:'DEV Landing Zone provisioned',o:'SRE'},
+{t:'Verify connectivity from the DEV LZ to on-premises sources',o:'Network'}]},
+{cat:'Outstanding technical actions',items:[
+{t:'Complete SSIS package inventory (13 packages still undocumented)',o:'App team'},
+{t:'Export dbt lineage manifest for migration validation',o:'App team'},
+{t:'Map SQL Server Agent job chains to Composer DAG structure',o:'App team'},
+{t:'Scope Looker dashboard equivalents for existing Tableau workbooks (ADR-BI-002)',o:'BI team'},
+{t:'Confirm SQL Server licence retirement date with Vendor Management',o:'ITAO'}]}],
+design:[{cat:'Core - all migration types',items:[
+{t:'Target GCP project and VPC confirmed',o:'SRE'},{t:'IAM roles and service accounts defined per ERI-BQ-DWH-04',o:'Security'},
+{t:'BigQuery dataset structure and partitioning strategy agreed',o:'Data Eng'},{t:'Interconnect / VPN connectivity plan approved',o:'Network'}]},
+{cat:'RePlatform-specific',items:[
+{t:'SSIS to Dataflow conversion approach agreed (ADR-DWH-004)',o:'Data Eng'},
+{t:'Composer environment sized and DAG structure drafted (ADR-DWH-005)',o:'Data Eng'},
+{t:'Datastream CDC configuration for System A validated (ADR-INT-003)',o:'Data Eng'},
+{t:'dbt target profile switched to BigQuery in a test branch (ADR-DWH-007)',o:'Analytics Eng'},
+{t:'Looker semantic model drafted for finance reporting (ADR-BI-002)',o:'BI team'},
+{t:'Architecture Decision Record drafted, referencing GCP-BP-023',o:'Architect'},
+{t:'FinOps cost estimate reviewed and signed off by Domain Lead',o:'Domain Lead'}]}]},
+b:{key:'b',app:'EDW-Regulatory',nar:'118135-2',
+appDesc:'Regulatory reporting mart - MiFID II transaction reporting and client disclosures',
+recMig:'RePlatform',dataClass:'PII - Regulated (GDPR, MiFID II)',regulated:1,
+arch:Object.assign({},ARCH,{volume:'1 TB compressed - includes 340 GB of client PII',
+jobs:'3 scheduled runs per day - ~1 hour each - near-real-time streaming under consideration'}),
+sampleFiles:[{n:'EDW-Regulatory_Architecture_v1.8.pdf',s:'3.1 MB',t:'pdf'},{n:'MiFID_DataFlow_Specification.docx',s:'920 KB',t:'doc'},{n:'Regulatory_Reporting_Overview.pptx',s:'1.6 MB',t:'ppt'}],
+baseDims:[{n:'Architecture clarity',w:3,s:7},{n:'Data readiness',w:2,s:4},{n:'Dependency mapping',w:2,s:6},{n:'Security / IAM posture',w:2,s:3},{n:'Operational readiness',w:1,s:7}],
+migFit:{ReHost:{s:6,gap:{id:'m1',sev:'MEDIUM',text:'ReHost retains MS SQL Server licensing and does not improve regulatory controls',rem:'Consider RePlatform to gain BigQuery column-level security and native DLP integration.',lift:0}},
+RePlatform:{s:7,gap:null},
+ReArchitect:{s:3,gap:{id:'m1',sev:'BLOCKER',text:'ReArchitect scope cannot be delivered within a typical regulatory reporting timeline',rem:'A ReArchitect of a 1 TB regulated warehouse with 8 integrations typically takes 6-9 months. Either extend the timeline or reduce scope to RePlatform.',lift:11}}},
+baseGaps:[{id:'b3',sev:'BLOCKER',text:'Regulated / PII data with no completed data classification assessment',rem:'A DPIA and data classification assessment are mandatory before a landing zone is provisioned for regulated data.',lift:8},
+{id:'b4',sev:'HIGH',text:'IAM role model and data access controls undefined for regulated data',rem:'Define row- and column-level access policies before Design. Reference ERI-BQ-REG-02.',lift:0},
+{id:'b5',sev:'HIGH',text:'3 of 4 upstream integration contracts undocumented (Systems B, C, D)',rem:'Only System A has a documented interface contract. Capture the remaining three during Discovery.',lift:0},
+{id:'b6',sev:'MEDIUM',text:'SSIS to Dataflow conversion effort not estimated for 60+ packages',rem:'Run a package complexity assessment to size the conversion.',lift:0},
+{id:'b7',sev:'LOW',text:'Tableau extract refresh dependencies not mapped',rem:'Document refresh windows for the regulatory dashboards before Looker migration.',lift:0}],
+current:{rows:[{c:'MS SQL Server Enterprise',s:'Licence + SA, AlwaysOn HA pair',v:8200},
+{c:'Server hardware',s:'Amortised - 4 nodes + DR',v:1900},{c:'SAN storage',s:'Encrypted, 7-year retention',v:1300},
+{c:'Tableau Server',s:'Licence + maintenance',v:1400},{c:'Data centre',s:'Rack, power, cooling',v:850},
+{c:'Backup and DR',s:'Regulatory retention + offsite',v:1600},{c:'Compliance tooling',s:'Audit, encryption, monitoring',v:1100},
+{c:'Support and maintenance',s:'0.5 FTE allocation',v:3600}],total:19950},
+target:{rows:[{c:'BigQuery',s:'Storage + slot reservation (regulated)',l:560,h:1015},
+{c:'Cloud Composer 2',s:'Airflow - high availability',l:520,h:745},
+{c:'Dataflow',s:'Batch + selective streaming',l:670,h:1240},
+{c:'Datastream',s:'Oracle CDC (System A)',l:195,h:345},
+{c:'Pub/Sub',s:'Event ingest (Systems B, D)',l:97,h:195},
+{c:'Looker',s:'BI platform - replaces Tableau',l:900,h:1400},
+{c:'Cloud Storage',s:'Landing + regulated archive',l:65,h:130},
+{c:'Cloud KMS + DLP',s:'PII encryption and discovery',l:151,h:302},
+{c:'Networking + Cloud Armor',s:'Egress, WAF, private connectivity',l:195,h:367},
+{c:'Operations',s:'Monitoring, Logging, audit retention',l:86,h:195}],total:{l:3439,h:5934}},
+costNotes:['No Committed Use Discount applied until migration type and timeline are confirmed',
+'Regulated data adds Cloud KMS, DLP and extended audit log retention',
+'MS SQL Server HA licence retirement is the largest saving at $8,200 per month',
+'Looker is mandatory here - Tableau cannot connect to BigQuery in the EU region (ADR-BI-002)',
+'Disaster recovery adds a further 40% if required from day one','Confidence: LOW - refine once integration scope is confirmed'],
+bpTop:{id:'GCP-BP-023',name:'On-Premises Data Warehouse to BigQuery (RePlatform)',eri:'ERI-BQ-DWH-04 - BigQuery + Composer + Dataflow + Datastream + Looker',fit:84,
+note:'Your architecture documents reference a near-real-time streaming ambition. Based on the current profile, the RePlatform blueprint scores higher and is deliverable in a materially shorter timeline.',
+reasons:[{y:1,t:'MS SQL Server to BigQuery conversion path is documented and proven'},
+{y:1,t:'Existing batch schedule (3 x 1 hour) maps cleanly to Composer DAGs'},
+{y:1,t:'dbt Core moves without rewrite - significant effort saving'},
+{y:1,t:'Looker provides column-level security natively for regulated datasets (ADR-BI-002)'},
+{y:0,t:'Does not deliver the near-real-time streaming ambition stated in your documents'}]},
+bpAlt:{id:'GCP-BP-047',name:'Regulated Warehouse - Streaming ReArchitect',eri:'ERI-BQ-STREAM-02 - BigQuery + Dataflow Streaming + Pub/Sub + DLP + Looker',fit:71,
+reasons:[{y:1,t:'Delivers the near-real-time ingest ambition stated in your architecture document'},
+{y:1,t:'DLP and KMS patterns for regulated data are covered end to end'},
+{y:0,t:'Typical delivery is 6-9 months'},
+{y:0,t:'SSIS to streaming Dataflow is a full rewrite, not a conversion'},
+{y:0,t:'Higher run cost - approximately 60% above the RePlatform option'}]},
+discovery:[{cat:'Application Discovery Questionnaire',items:[
+{t:'4 upstream integrations captured from architecture documents',o:'Auto'},
+{t:'4 downstream consumers captured from architecture documents',o:'Auto'},
+{t:'PII scope identified - 340 GB across client transaction tables',o:'Auto'},
+{t:'Complete and submit the Application Discovery Questionnaire',o:'ITAO'}]},
+{cat:'Data residency - DEx Tool (Data Exchange Registry)',items:[
+{t:'Submit the data residency request through the DEx Tool',o:'ITAO'},
+{t:'BAO reviews and approves the data residency request',o:'BAO'},
+{t:'Confirm EU-only data residency with Compliance before LZ request',o:'Compliance'}]},
+{cat:'Regulatory prerequisites',items:[
+{t:'Complete Data Protection Impact Assessment (DPIA)',o:'Privacy'},
+{t:'Data classification assessment signed off by Data Governance',o:'Governance'},
+{t:'Define row- and column-level access policy for regulated tables',o:'Security'}]},
+{cat:'DEV Landing Zone',items:[
+{t:'Raise LZ provisioning request - EU region only',o:'ITAO'},
+{t:'DEV Landing Zone provisioned with VPC Service Controls',o:'SRE'},
+{t:'Verify connectivity and perimeter configuration',o:'Network'}]},
+{cat:'Outstanding technical actions',items:[
+{t:'Document interface contracts for Systems B, C and D',o:'App team'},
+{t:'SSIS package complexity assessment (60+ packages)',o:'Data Eng'},
+{t:'Scope Looker migration for regulatory dashboards (ADR-BI-002)',o:'BI team'}]}],
+design:[{cat:'Core - all migration types',items:[
+{t:'Target GCP project and VPC confirmed - EU region only',o:'SRE'},{t:'IAM roles and service accounts defined',o:'Security'},
+{t:'BigQuery dataset structure with column-level security',o:'Data Eng'},{t:'Private connectivity plan approved',o:'Network'}]},
+{cat:'Regulated-data specific',items:[
+{t:'Cloud KMS key hierarchy defined (CMEK for regulated datasets)',o:'Security'},
+{t:'Cloud DLP scan profiles configured for PII discovery',o:'Security'},
+{t:'Looker row-level security model defined for regulated data (ADR-BI-002)',o:'BI team'},
+{t:'Audit log retention configured to regulatory minimum',o:'SRE'},
+{t:'Architecture Decision Record covering migration type decision',o:'Architect'},
+{t:'FinOps estimate reviewed and signed off by Domain Lead',o:'Domain Lead'}]}]}};
+
+const STAGES=[{k:'application',n:'Application',p:0},{k:'review',n:'Architecture',p:0},
+{k:'assessment',n:'Readiness',p:0},{k:'recommend',n:'Recommendation',p:0},
+{k:'intake',n:'Raise CR',p:1},{k:'approval',n:'Approval',p:1},{k:'control',n:'Change Control',p:1},
+{k:'discovery',n:'Discovery',p:2},{k:'design',n:'Design',p:4}];
+const BANDS=[{n:'Readiness Evaluation',ph:1},{n:'Demand Management',ph:2},{n:'Discovery',ph:3},
+{n:'Cloud Onboarding',ph:4,oos:1},{n:'Design',ph:5}];
+const PHASES=['Readiness Evaluation','Demand Management','Discovery','Cloud Onboarding','Design',
+'Build','Testing and Final Design','Deployment / Release Management','On-Prem Decommissioning'];
+
+let S={};
+function initState(){S={stage:'application',done:new Set(),narInput:'',appKey:null,migType:null,domain:null,domainOther:'',
+files:[],urls:[],upTab:'files',gapFilter:'all',resolutions:{},
+intakeStep:0,intakeAnswers:{},intakeComplete:false,crId:null,epicId:'GCPDM-1801',
+tollgate:false,ccApproved:false,stories:null,headsUpSent:false,
+emailSubj:null,emailBody:null,emailEdited:false,emailFrom:'pinkuraj.l@gmail.com',emailTo:null,
+dmTo:'demand.management@example.com',approval:'idle',dmNotified:false,checked:new Set()}}
+function A(){return S.appKey?APPS[S.appKey]:null}
+function lead(){if(!S.domain)return null;return S.domain==='__other'?OTHER_LEAD:DOMAINS[S.domain]}
+function domainName(){return S.domain==='__other'?(S.domainOther||'Other'):S.domain}
+function gaps(){const a=A();if(!a)return[];
+let g=[...a.baseGaps];
+const mf=S.migType?a.migFit[S.migType]:null;
+if(mf&&mf.gap)g=[mf.gap,...g];
+const b=(S.intakeAnswers.budget||'').toLowerCase();
+if(b&&b.indexOf('approv')===-1)g=[{id:'g-budget',sev:'BLOCKER',text:'Budget approval is outstanding',
+rem:'The Demand gate cannot close without approved funding. Obtain sign-off, or record an approved exception from the Domain Lead.',lift:9},...g];
+return g.map(x=>({...x,status:S.resolutions[x.id]?'resolved':'open',resolution:S.resolutions[x.id]||''}))}
+function ob(){return gaps().filter(g=>g.sev==='BLOCKER'&&g.status==='open')}
+function dims(){const a=A();if(!a)return[];
+const mf=S.migType?a.migFit[S.migType].s:5;
+const bd=S.intakeAnswers.budget?((S.intakeAnswers.budget||'').toLowerCase().indexOf('approv')>-1?9:2):5;
+return[a.baseDims[0],{n:'Migration type fit',w:3,s:mf},...a.baseDims.slice(1),{n:'Budget alignment',w:1,s:bd}]}
+function rawScore(){const d=dims();if(!d.length)return 0;let n=0,dn=0;d.forEach(x=>{n+=x.s*x.w;dn+=x.w*10});return Math.round(n/dn*100)}
+function score(){let b=rawScore();gaps().forEach(g=>{if(g.status==='resolved')b+=g.lift});return Math.min(b,100)}
+function sst(v){return v>=80?{t:'READY',c:'p-green',d:'No blockers. This request can proceed to Discovery.'}
+:v>=60?{t:'CONDITIONALLY READY',c:'p-amber',d:'Proceed with conditions. High-severity gaps must close before the Design gate.'}
+:{t:'NOT READY',c:'p-red',d:'Blockers must be resolved before this request can progress.'}}
+function si(k){return STAGES.findIndex(s=>s.k===k)}
+function usd(n){return '$'+n.toLocaleString()}
+function toast(m,t){const e=document.createElement('div');e.className='toast '+(t||'');
+e.innerHTML='<span style="font-family:var(--fm);font-weight:700">'+(t==='ok'?'&#10003;':t==='err'?'!':'i')+'</span><span>'+m+'</span>';
+document.getElementById('toasts').appendChild(e);
+setTimeout(()=>{e.style.opacity='0';e.style.transition='.25s';setTimeout(()=>e.remove(),260)},3000)}
+
+const BLOCKABLE=['assessment','intake','approval','control'];
+function phaseSteps(i){return STAGES.filter(s=>s.p===i)}
+function goPhase(i){const st=phaseSteps(i);if(!st.length)return;
+let t=st[0].k;st.forEach(s=>{if(S.done.has(s.k))t=s.k});go(t)}
+function renderStepper(){
+const o=ob().length;
+const ci=si(S.stage);
+const curKey=S.stage==='analysing'?'review':S.stage;
+const cp=ci>=0?STAGES[ci].p:0;
+
+document.getElementById('bands').innerHTML=BANDS.map((b,i)=>{
+ const st=phaseSteps(i);
+ const allDone=st.length>0&&st.every(s=>S.done.has(s.k));
+ const isCur=i===cp;
+ const blocked=isCur&&o>0&&BLOCKABLE.indexOf(curKey)>-1;
+ let cls='ph',ic=String(b.ph),sub='';
+ if(b.oos){cls+=' oos';sub='not in scope'}
+ else if(blocked){cls+=' blk';ic='!';sub=o+' blocker'+(o>1?'s':'')}
+ else if(isCur){cls+=' cur';
+  const k=st.findIndex(s=>s.k===curKey);
+  sub=((k>=0?k+1:st.filter(s=>S.done.has(s.k)).length+1))+' of '+st.length}
+ else if(allDone){cls+=' done';ic='&#10003;';sub='complete'}
+ else{sub=st.length+' step'+(st.length>1?'s':'')}
+ const clk=!b.oos&&allDone&&!isCur;
+ return '<div class="'+cls+(clk?' clk':'')+'"'+(clk?' onclick="goPhase('+i+')"':'')+'>'+
+  '<div class="ph-ic">'+ic+'</div><div class="ph-n">'+b.n+'</div><div class="ph-s">'+sub+'</div></div>'}).join('');
+
+document.getElementById('stepper').innerHTML=phaseSteps(cp).map((s,i)=>{
+ const isCur=s.k===curKey,isDone=S.done.has(s.k);
+ const blocked=isCur&&o>0&&BLOCKABLE.indexOf(s.k)>-1;
+ let cls='st',ic=String(i+1);
+ if(blocked){cls+=' blk';ic='!'}
+ else if(isCur){cls+=' cur'}
+ else if(isDone){cls+=' done';ic='&#10003;'}
+ const clk=isDone&&!isCur;
+ return '<div class="'+cls+(clk?' clk':'')+'"'+(clk?' onclick="go(\''+s.k+'\')"':'')+'>'+
+  '<div class="st-ic">'+ic+'</div><div class="st-l">'+s.n+'</div></div>'}).join('')}
+
+function renderRail(){const a=A(),o=ob(),sc=score(),st=sst(sc),L=lead();
+const ph1=S.done.has('recommend')?'open':(['application','analysing','review','assessment','recommend'].indexOf(S.stage)>-1)?(o.length?'blocked':'active'):'pending';
+const ph2=S.ccApproved?'open':(o.length&&S.crId?'blocked':(S.crId?'active':'pending'));
+const ph3=S.done.has('discovery')?'open':(S.stage==='discovery'?'active':'pending');
+const ph5=S.done.has('design')||S.stage==='design'?'active':'pending';
+const gs=[ph1,ph2,ph3,'pending',ph5,'pending','pending','pending','pending'];
+document.getElementById('rail').innerHTML=
+'<div class="rs"><div class="rh">Request</div>'+
+'<div class="rr"><span class="rk">NAR ID</span><span class="rv2 mono '+(a?'':'dim')+'">'+(a?a.nar:'&mdash;')+'</span></div>'+
+'<div class="rr"><span class="rk">Application</span><span class="rv2 '+(a?'':'dim')+'">'+(a?a.app:'Not identified')+'</span></div>'+
+'<div class="rr"><span class="rk">R-Type</span><span class="rv2 '+(S.migType?'':'dim')+'">'+(S.migType||'Not selected')+'</span></div>'+
+'<div class="rr"><span class="rk">Domain</span><span class="rv2 '+(S.domain?'':'dim')+'">'+(S.domain?domainName():'Not selected')+'</span></div>'+
+'<div class="rr"><span class="rk">Domain Lead</span><span class="rv2 '+(L?'':'dim')+'">'+(L?L.lead:'&mdash;')+'</span></div>'+
+(S.intakeAnswers.cost_center?'<div class="rr"><span class="rk">Cost Center</span><span class="rv2 mono">'+S.intakeAnswers.cost_center+'</span></div>':'')+
+'<div class="rr"><span class="rk">ITAO</span><span class="rv2">Pinku Barman</span></div>'+
+(S.crId?'<div class="rr"><span class="rk">CR</span><span class="rv2 mono">'+S.crId+'</span></div>':'')+'</div>'+
+(S.done.has('review')?'<div class="rs"><div class="rh">Readiness</div>'+
+'<div class="rr"><span class="rk">Score</span><span class="rv2">'+sc+' / 100</span></div>'+
+'<div class="rr"><span class="rk">Status</span><span class="rv2"><span class="pill '+st.c+'">'+st.t+'</span></span></div>'+
+'<div class="rr"><span class="rk">Open blockers</span><span class="rv2" style="color:'+(o.length?'var(--red-700)':'var(--green-700)')+'">'+o.length+'</span></div></div>':'')+
+'<div class="rs"><div class="rh">Lifecycle phases</div>'+
+PHASES.map((n,i)=>{const s=gs[i];
+return '<div class="gate '+(s==='open'?'open':s==='blocked'?'blocked':s==='active'?'active':'pending')+'">'+
+'<span class="gi">'+(s==='open'?'&#10003;':s==='blocked'?'&#10005;':s==='active'?'&#9679;':'&#9675;')+'</span>'+
+'<span class="gn">'+(i+1)+'. '+n+'</span>'+
+'<span class="pill '+(s==='open'?'p-green':s==='blocked'?'p-red':s==='active'?'p-blue':'p-grey')+'">'+
+(s==='open'?'Complete':s==='blocked'?'Blocked':s==='active'?'Active':'Pending')+'</span></div>'}).join('')+'</div>'+
+'<div class="sctl"><button class="rst" onclick="resetAll()">'+I.rst+' New request</button></div>'}
+
+function go(k){const ti=si(k);
+for(let i=0;i<ti;i++)S.done.add(STAGES[i].k);
+S.stage=k;render();window.scrollTo({top:0})}
+function resetAll(){initState();render();toast('New request started')}
+function render(){renderStepper();renderRail();
+const fn={application:vApplication,analysing:vAnalysing,review:vReview,assessment:vAssess,
+recommend:vRecommend,intake:vIntake,approval:vApproval,control:vControl,discovery:vDisc,design:vDesign}[S.stage];
+document.getElementById('main').innerHTML=fn();
+if(typeof updateFabDot==='function'){updateFabDot();if(helpOpen)updateSugg()}
+if(S.stage==='assessment')setTimeout(()=>document.querySelectorAll('.dfl').forEach((b,i)=>setTimeout(()=>b.style.width=b.dataset.w+'%',i*70)),60);
+if(S.stage==='intake'){S.intakeComplete?restoreChat():setTimeout(askNext,500)}}
+function head(c,t,d){return '<div class="ph"><div class="crumb">'+c+'</div><div class="pt">'+t+'</div><div class="pd">'+d+'</div></div>'}
+
+function vApplication(){const a=A(),L=lead(),n=S.files.length+S.urls.length;
+const q1=!!a,q2=!!S.migType,q3=!!S.domain&&(S.domain!=='__other'||S.domainOther.trim()),q4=n>0;
+return head('Step 01 of 09 &middot; Phase 1 Readiness Evaluation','Identify the application',
+'Four things to open an onboarding request. Start with the NAR ID and most of the rest follows automatically.')+
+'<div class="card">'+
+'<div class="qblk '+(q1?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q1?'&#10003;':'1')+'</span>What is the application NAR ID?</div>'+
+'<div class="qd">The application name and profile are retrieved automatically from the NAR register.</div><div class="qbody">'+
+'<div class="lookup"><input class="inp mono" id="narIn" placeholder="118135-1" value="'+S.narInput+'" onkeydown="if(event.key===\'Enter\')lookupNar()">'+
+'<button class="btn btn-p" onclick="lookupNar()">'+I.srch+' Look up</button><span></span></div>'+
+(a?'<div class="resolved"><div class="rtick">&#10003;</div><div><div class="rname">'+a.app+'</div>'+
+'<div class="rmeta">'+a.appDesc+'</div><div class="rmeta" style="margin-top:5px"><span class="pill p-blue">Data Warehouse</span> <span class="pill '+(a.regulated?'p-red':'p-grey')+'">'+a.dataClass+'</span></div></div></div>'
+:'<div class="hintrow"><span>Try:</span><span class="chip" onclick="setNar(\'118135-1\')">118135-1</span><span class="chip" onclick="setNar(\'118135-2\')">118135-2</span></div>')+
+'</div></div>'+
+'<div class="qblk '+(!q1?'':q2?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q2?'&#10003;':'2')+'</span>Which migration type applies?</div>'+
+'<div class="qd">This drives the readiness assessment, cost model and blueprint recommendation.</div><div class="qbody"><div class="opts">'+
+MIG.map(m=>'<div class="opt '+(S.migType===m.k?'on':'')+'" onclick="setMig(\''+m.k+'\')"><div class="optn"><span class="optr"></span>'+m.k+
+(a&&a.recMig===m.k?'<span class="opt-badge">Suggested</span>':'')+'</div><div class="optd">'+m.d+'</div></div>').join('')+
+'</div></div></div>'+
+'<div class="qblk '+(!q2?'':q3?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q3?'&#10003;':'3')+'</span>Which domain owns this application?</div>'+
+'<div class="qd">The Domain Lead who must approve this request is assigned automatically. You do not need to look them up.</div><div class="qbody">'+
+'<select class="sel" onchange="setDomain(this.value)"><option value="">Select a domain...</option>'+
+Object.keys(DOMAINS).map(d=>'<option value="'+d+'" '+(S.domain===d?'selected':'')+'>'+d+'</option>').join('')+
+'<option value="__other" '+(S.domain==='__other'?'selected':'')+'>Other - not listed</option></select>'+
+(S.domain==='__other'?'<div style="margin-top:10px;max-width:420px"><input class="inp" placeholder="Enter your domain or business unit" value="'+S.domainOther+'" oninput="S.domainOther=this.value;renderRail()"></div>':'')+
+(L?'<div class="leadcard"><div class="lav">'+L.lead.split(' ').map(x=>x[0]).join('').slice(0,2)+'</div><div>'+
+'<div class="ln">'+L.lead+'</div><div class="lm">Domain Lead &middot; '+domainName()+'</div>'+
+'<div class="lm">'+L.email+' &middot; Backup: '+L.backup+' &middot; SLA '+L.sla+'</div></div></div>':'')+
+'</div></div>'+
+'<div class="qblk '+(!q3?'':q4?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q4?'&#10003;':'4')+'</span>Provide your architecture documentation</div>'+
+'<div class="qd">CloudGate reads these to extract the technical profile, score readiness, estimate cost and recommend a blueprint.</div><div class="qbody">'+
+'<div class="mini-tabs">'+
+'<button class="mini-tab '+(S.upTab==='files'?'on':'')+'" onclick="S.upTab=\'files\';render()">'+I.file+' Documents</button>'+
+'<button class="mini-tab '+(S.upTab==='url'?'on':'')+'" onclick="S.upTab=\'url\';render()">'+I.link+' Link</button></div>'+
+(S.upTab==='files'?
+'<div class="dz" id="dz" ondragover="event.preventDefault();this.classList.add(\'hover\')" ondragleave="this.classList.remove(\'hover\')" ondrop="onDrop(event)">'+
+'<div class="dz-ic">'+I.up+'</div><div class="dz-t">Drag and drop your files here</div>'+
+'<div class="dz-d">Architecture documents, data flow diagrams, design specifications</div>'+
+'<button class="btn btn-p" onclick="document.getElementById(\'fi\').click()">'+I.file+' Choose files</button>'+
+'<input type="file" id="fi" multiple accept=".pdf,.docx,.pptx" style="display:none" onchange="onPick(event)">'+
+'<div class="dz-or">or <a href="#" onclick="loadSamples();return false" style="color:var(--blue-600);font-weight:500">load sample documents</a></div>'+
+'<div class="fmt-row"><span class="fmt">PDF</span><span class="fmt">DOCX</span><span class="fmt">PPTX</span></div></div>'
+:'<div style="margin-bottom:12px;font-size:13px;color:var(--slate-600)">Link to a Confluence page, SharePoint document or any accessible URL describing your architecture.</div>'+
+'<div class="url-row"><input class="inp" id="urlIn" placeholder="https://confluence.example.com/display/EDW/Architecture" onkeydown="if(event.key===\'Enter\')addUrl()">'+
+'<button class="btn btn-g" onclick="addUrl()">'+I.plus+' Add link</button></div>'+
+'<div style="margin-top:10px"><a href="#" onclick="addSampleUrl();return false" style="color:var(--blue-600);font-size:12.5px;font-weight:500">Use a sample link</a></div>')+
+(n?'<div class="flist"><div class="flist-h"><span>Added - '+n+' item'+(n>1?'s':'')+'</span>'+
+'<a href="#" onclick="S.files=[];S.urls=[];render();return false" style="color:var(--slate-500);text-transform:none;letter-spacing:0;font-family:var(--fs);font-size:12px">Clear all</a></div>'+
+S.files.map((f,i)=>'<div class="frow"><div class="fic '+f.t+'">'+f.t.toUpperCase()+'</div>'+
+'<div><div class="fname">'+f.n+'</div><div class="fmeta">Document</div></div><div class="fsize">'+f.s+'</div>'+
+'<button class="fdel" onclick="S.files.splice('+i+',1);render()">'+I.x+'</button></div>').join('')+
+S.urls.map((u,i)=>'<div class="frow"><div class="fic url">URL</div>'+
+'<div><div class="fname">'+u+'</div><div class="fmeta">Web link</div></div><div class="fsize">&mdash;</div>'+
+'<button class="fdel" onclick="S.urls.splice('+i+',1);render()">'+I.x+'</button></div>').join('')+'</div>':'')+
+'</div></div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="doUpload()" '+(q1&&q2&&q3&&q4?'':'disabled')+'>'+I.up+' Upload and analyse</button>'+
+(q1&&q2&&q3&&q4?'<span class="hint">'+n+' item'+(n>1?'s':'')+' ready</span>'
+:'<span class="hint">'+(!q1?'Look up your NAR ID to begin':!q2?'Select a migration type':!q3?'Select your domain':'Add at least one document or link')+'</span>')+'</div>'}
+function setNar(v){document.getElementById('narIn').value=v;lookupNar()}
+function lookupNar(){const v=document.getElementById('narIn').value.trim();S.narInput=v;
+if(!v){toast('Enter a NAR ID','err');return}
+const m=NAR[v];
+if(!m){S.appKey=null;render();toast('NAR ID not found in the register','err');return}
+S.appKey=m.key;S.migType=null;S.domain=null;S.files=[];S.urls=[];render();toast('Application resolved: '+APPS[m.key].app,'ok')}
+function setMig(k){S.migType=k;render()}
+function setDomain(v){S.domain=v||null;render();if(v&&v!=='__other')toast('Domain Lead assigned: '+DOMAINS[v].lead,'ok')}
+
+function fileType(n){const e=n.split('.').pop().toLowerCase();return e==='pdf'?'pdf':(e==='docx'||e==='doc')?'doc':'ppt'}
+function fmtSize(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(0)+' KB':(b/1048576).toFixed(1)+' MB'}
+function onPick(e){for(const f of e.target.files)S.files.push({n:f.name,s:fmtSize(f.size),t:fileType(f.name)});
+if(e.target.files.length)toast(e.target.files.length+' file(s) added','ok');render()}
+function onDrop(e){e.preventDefault();for(const f of e.dataTransfer.files)S.files.push({n:f.name,s:fmtSize(f.size),t:fileType(f.name)});
+toast(e.dataTransfer.files.length+' file(s) added','ok');render()}
+function loadSamples(){S.files=A().sampleFiles.slice();render();toast('Sample documents loaded','ok')}
+function addUrl(){const i=document.getElementById('urlIn'),v=i.value.trim();
+if(!v){toast('Enter a URL first','err');return}S.urls.push(v);render();toast('Link added','ok')}
+function addSampleUrl(){S.urls.push('https://confluence.example.com/display/EDW/Architecture-Overview');render();toast('Sample link added','ok')}
+function doUpload(){const items=S.files.map(f=>f.n).concat(S.urls);S.stage='analysing';renderStepper();
+document.getElementById('main').innerHTML=vAnalysing(items);
+const msgs=['Reading architecture document...','Parsing data flow diagram...','Identifying source systems...',
+'Extracting ETL component inventory...','Mapping downstream consumers...','Resolving ADR references...','Assembling application profile...'];
+let i=0;const d=document.getElementById('loadD');
+const t=setInterval(()=>{i=(i+1)%msgs.length;if(d)d.textContent=msgs[i]},760);
+items.forEach((_,x)=>setTimeout(()=>{const e=document.getElementById('lf'+x);
+if(e){e.classList.add('done');e.querySelector('.lfs').textContent='Parsed'}},900+x*900));
+setTimeout(()=>{clearInterval(t);go('review');toast('Architecture profile extracted','ok')},Math.max(4600,items.length*900+1500))}
+function vAnalysing(items){items=items||[];
+return '<div class="card"><div class="lw"><div class="bspin"></div>'+
+'<div class="lt">Analysing architecture documentation</div>'+
+'<div class="ld" id="loadD">Reading architecture document...</div>'+
+(items.length?'<div class="lfiles">'+items.map((n,i)=>'<div class="lfile" id="lf'+i+'">'+
+'<span>'+I.file+'</span><span style="word-break:break-all">'+n+'</span>'+
+'<span class="lfs" style="font-family:var(--fm);font-size:11px">Queued</span></div>').join('')+'</div>':'')+'</div></div>'}
+
+function vReview(){const a=A(),ar=a.arch;
+const rows=ar.mapping.map(m=>{
+const badge=m.rec?'<span class="pill p-green" style="margin-left:8px">Option 1 &middot; Recommended</span>'
+:m.exc?'<span class="pill p-amber" style="margin-left:8px">Option 2 &middot; Exception required</span>':'';
+return '<tr'+(m.exc?' style="background:var(--amber-50)"':'')+'><td class="sname">'+m.f+'</td>'+
+'<td style="color:var(--slate-300)">'+I.arr+'</td>'+
+'<td><span style="color:'+(m.exc?'var(--amber-700)':'var(--blue-600)')+';font-weight:600">'+m.t+'</span>'+badge+'</td>'+
+'<td><span class="adr">'+m.adr+'</span></td><td class="stech">'+m.n+'</td></tr>'}).join('');
+return head('Step 02 of 09 &middot; Phase 1 Readiness Evaluation','Confirm the extracted architecture',
+'The readiness score, cost estimate and blueprint recommendation are all derived from this profile. Every target component references an approved Architecture Decision Record.')+
+'<div class="card"><div class="ch"><div class="ct">'+a.app+' - extracted profile</div>'+
+'<div class="cm">'+(S.files.length+S.urls.length)+' source(s)</div></div><div class="cb"><dl class="dl">'+
+'<dt>System type</dt><dd>'+ar.systemType+'</dd><dt>Database</dt><dd>'+ar.database+'</dd>'+
+'<dt>ETL and orchestration</dt><dd>'+ar.etl+'</dd><dt>BI layer</dt><dd>'+ar.bi+'</dd>'+
+'<dt>Data volume</dt><dd>'+ar.volume+'</dd><dt>Job profile</dt><dd>'+ar.jobs+'</dd>'+
+'<dt>Data classification</dt><dd>'+a.dataClass+'</dd>'+
+'<dt>Migration type</dt><dd><strong>'+S.migType+'</strong> <span class="pill p-blue">Selected by requester</span></dd></dl></div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Upstream systems</div><div class="cm">'+ar.upstream.length+' identified</div></div>'+
+'<div class="cb flush"><table class="dt"><thead><tr><th>System</th><th>Technology</th><th>Ingest pattern</th><th>Current method</th></tr></thead><tbody>'+
+ar.upstream.map(u=>'<tr><td class="sname">'+u.n+'</td><td class="stech">'+u.t+'</td><td>'+u.m+'</td><td class="mono">'+u.v+'</td></tr>').join('')+
+'</tbody></table></div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Downstream consumers</div><div class="cm">'+ar.downstream.length+' identified</div></div>'+
+'<div class="cb flush"><table class="dt"><thead><tr><th>Consumer</th><th>Interface</th><th>Pattern</th><th>Current method</th></tr></thead><tbody>'+
+ar.downstream.map(u=>'<tr><td class="sname">'+u.n+'</td><td class="stech">'+u.t+'</td><td>'+u.m+'</td><td class="mono">'+u.v+'</td></tr>').join('')+
+'</tbody></table></div></div>'+
+'<div class="card"><div class="ch"><div class="ct">GCP component mapping</div><div class="cm">Per approved ADRs</div></div>'+
+'<div class="cb flush"><table class="dt"><thead><tr><th style="width:20%">Current</th><th style="width:3%"></th>'+
+'<th style="width:30%">GCP target</th><th style="width:14%">ADR reference</th><th>Note</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+'<div class="notes"><strong style="color:var(--amber-700)">BI platform decision (ADR-BI-002):</strong> Looker is the recommended target. Tableau is not permitted to connect to BigQuery in the EU region - selecting Tableau requires an approved architecture exception (ADR-BI-002-EX) before Design can proceed.</div></div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'assessment\')">Confirm and assess readiness '+I.arr+'</button>'+
+'<button class="btn btn-g" onclick="toast(\'Inline editing is available in the full platform\')">Request correction</button></div>'}
+
+function vAssess(){const sc=score(),st=sst(sc),o=ob(),G=gaps();
+const C=2*Math.PI*53,off=C-(sc/100)*C;
+const col=sc>=80?'var(--green-700)':sc>=60?'var(--amber-700)':'var(--red-700)';
+const lifted=G.some(g=>g.status==='resolved');
+const f=S.gapFilter;
+const shown=G.filter(g=>f==='all'?1:f==='blocker'?g.sev==='BLOCKER':f==='open'?g.status==='open':g.status==='resolved');
+const cnt={all:G.length,blocker:G.filter(g=>g.sev==='BLOCKER').length,open:G.filter(g=>g.status==='open').length,resolved:G.filter(g=>g.status==='resolved').length};
+return head('Step 03 of 09 &middot; Phase 1 Readiness Evaluation','Readiness assessment',
+'Scored across seven weighted dimensions using your confirmed architecture profile and selected migration type.')+
+(o.length?'<div class="bn b-red"><div class="bn-ic">&#10005;</div><div><div class="bn-t">Demand gate is blocked - '+o.length+' blocker'+(o.length>1?'s':'')+' outstanding</div>'+
+'<div class="bn-b">This request cannot progress until every blocker below is resolved or has a recorded exception.</div></div></div>'
+:'<div class="bn b-green"><div class="bn-ic">&#10003;</div><div><div class="bn-t">No blockers outstanding</div>'+
+'<div class="bn-b">This request can progress. High and medium severity gaps must close before the Design gate.</div></div></div>')+
+'<div class="card"><div class="sb"><div class="ring"><svg width="124" height="124">'+
+'<circle cx="62" cy="62" r="53" fill="none" stroke="var(--slate-200)" stroke-width="9"/>'+
+'<circle cx="62" cy="62" r="53" fill="none" stroke="'+col+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'" transform="rotate(-90 62 62)" style="transition:stroke-dashoffset .9s ease"/></svg>'+
+'<div class="rv"><div class="rn">'+sc+'</div><div class="rd">/ 100</div></div></div>'+
+'<div><div class="srow"><span class="pill '+st.c+'">'+st.t+'</span>'+(lifted?'<span class="delta">&#9650; '+(sc-rawScore())+' from resolutions</span>':'')+'</div>'+
+'<div class="sdesc">'+st.d+'</div></div></div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Score by dimension</div><div class="cm">Weighted</div></div>'+
+'<div class="cb flush" style="padding:9px 0">'+dims().map(d=>{
+const c=d.s>=8?'var(--green-700)':d.s>=5?'var(--amber-700)':'var(--red-700)';
+return '<div class="dim"><div class="dn">'+d.n+'<span class="dw">x'+d.w+'</span></div>'+
+'<div class="dtr"><div class="dfl" data-w="'+(d.s*10)+'" style="width:0%;background:'+c+'"></div></div>'+
+'<div class="ds">'+d.s+'/10</div></div>'}).join('')+'</div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Gap register</div><div class="cm">'+cnt.open+' open &middot; '+cnt.resolved+' resolved</div></div>'+
+'<div class="gfilter">'+
+'<button class="gf '+(f==='all'?'on':'')+'" onclick="S.gapFilter=\'all\';render()">All ('+cnt.all+')</button>'+
+'<button class="gf '+(f==='blocker'?'on':'')+'" onclick="S.gapFilter=\'blocker\';render()">Blockers ('+cnt.blocker+')</button>'+
+'<button class="gf '+(f==='open'?'on':'')+'" onclick="S.gapFilter=\'open\';render()">Open ('+cnt.open+')</button>'+
+'<button class="gf '+(f==='resolved'?'on':'')+'" onclick="S.gapFilter=\'resolved\';render()">Resolved ('+cnt.resolved+')</button></div>'+
+'<div class="cb flush">'+(shown.length?shown.map(gapRow).join(''):'<div style="padding:34px;text-align:center;color:var(--slate-400);font-size:13px">No items match this filter</div>')+'</div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'recommend\')" '+(o.length?'disabled':'')+'>Continue to cost analysis '+I.arr+'</button>'+
+(o.length?'<span class="hint err">'+I.warn+' Resolve '+o.length+' blocker'+(o.length>1?'s':'')+' to continue</span>':'')+'</div>'}
+function gapRow(g){const sc={BLOCKER:'p-red',HIGH:'p-amber',MEDIUM:'p-amber',LOW:'p-blue'}[g.sev],r=g.status==='resolved';
+return '<div class="gap '+(r?'res':'')+'"><div class="gt"><div><span class="pill '+(r?'p-green':sc)+'">'+(r?'Resolved':g.sev)+'</span></div>'+
+'<div><div class="gtx">'+g.text+'</div><div class="grm">'+g.rem+'</div>'+
+(r?'<div class="gres"><strong>Resolution:</strong> '+g.resolution+'</div>':'')+'</div>'+
+'<div>'+(!r&&g.sev==='BLOCKER'?'<button class="btn btn-g btn-sm" onclick="tglR(\''+g.id+'\')">Resolve</button>':'')+'</div></div>'+
+(!r&&g.sev==='BLOCKER'?'<div class="rform" id="rf-'+g.id+'">'+
+'<label class="rlab">Resolution type</label>'+
+'<select class="rsel" id="rt-'+g.id+'"><option>Blocker resolved - evidence attached</option>'+
+'<option>Scope reduced to remove the blocker</option><option>Timeline extended</option>'+
+'<option>Exception approved by Domain Lead</option></select>'+
+'<label class="rlab">Resolution detail</label>'+
+'<textarea class="rin" id="rd-'+g.id+'" placeholder="Describe how this blocker has been resolved. Recorded on the request audit trail."></textarea>'+
+'<div style="display:flex;gap:8px;margin-top:11px"><button class="btn btn-p btn-sm" onclick="resolveG(\''+g.id+'\')">Record resolution</button>'+
+'<button class="btn btn-g btn-sm" onclick="tglR(\''+g.id+'\')">Cancel</button></div></div>':'')+'</div>'}
+function tglR(id){const e=document.getElementById('rf-'+id);if(e)e.classList.toggle('open')}
+function resolveG(id){const t=document.getElementById('rt-'+id).value,d=document.getElementById('rd-'+id).value.trim();
+if(!d){toast('Enter a resolution detail - this is recorded on the audit trail','err');return}
+S.resolutions[id]=t+' - '+d;render();toast('Blocker resolved, score recalculated','ok')}
+
+function vRecommend(){const a=A(),L=lead(),cur=a.current,tgt=a.target;
+const mid=Math.round((tgt.total.l+tgt.total.h)/2);
+const save=cur.total-mid,pct=Math.round(save/cur.total*100),annual=save*12;
+const init=L.lead.split(' ').map(x=>x[0]).join('').slice(0,2);
+const card=(b,rec)=>'<div class="bp '+(rec?'rec':'')+'"><div class="bph">'+
+'<div><div class="bpid">'+b.id+'<span class="pill '+(rec?'p-blue':'p-grey')+'">'+(rec?'Recommended':'Alternative')+'</span></div>'+
+'<div class="bpn">'+b.name+'</div></div><div><div class="bpf '+(rec?'':'d')+'">'+b.fit+'%</div><div class="bpfl">Fit</div></div></div>'+
+'<div class="bpe">'+b.eri+'</div><div class="bpr">'+
+b.reasons.map(r=>'<div class="bpi"><span class="m '+(r.y?'y':'n')+'">'+(r.y?'&#10003;':'&#10005;')+'</span><span>'+r.t+'</span></div>').join('')+'</div></div>';
+return head('Step 04 of 09 &middot; Phase 1 Readiness Evaluation','Cost and blueprint recommendation',
+'What a '+S.migType+' migration will cost against the current on-premises run rate, and which approved blueprint fits your profile. This is the final step of Readiness Evaluation.')+
+'<div class="sec-h">Cost analysis</div>'+
+'<div class="card"><div class="ch"><div class="ct">Current state versus GCP target</div><div class="cm">USD &middot; monthly</div></div>'+
+'<div class="cmp"><div class="cmpc cur"><div class="cmpl">Current - on-premises</div>'+
+'<div class="cmpv">'+usd(cur.total)+'</div><div class="cmps">per month</div></div>'+
+'<div class="cmparr">'+I.arr+'</div>'+
+'<div class="cmpc tgt"><div class="cmpl">Target - GCP</div>'+
+'<div class="cmpv">'+usd(tgt.total.l)+' - '+usd(tgt.total.h)+'</div><div class="cmps">per month &middot; midpoint '+usd(mid)+'</div></div></div>'+
+'<div class="savebar"><div class="sv"><div class="svl">Monthly saving</div><div class="svv">'+usd(save)+'</div></div>'+
+'<div class="sv"><div class="svl">Annual saving</div><div class="svv">'+usd(annual)+'</div></div>'+
+'<div class="sv"><div class="svl">Cost reduction</div><div class="svv">'+pct+'%</div></div></div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Current state - on-premises breakdown</div><div class="cm">USD &middot; monthly</div></div>'+
+'<div class="cb flush"><table class="dt"><thead><tr><th>Component</th><th>Detail</th><th class="t-num">Cost</th></tr></thead><tbody>'+
+cur.rows.map(r=>'<tr><td class="sname">'+r.c+'</td><td class="stech">'+r.s+'</td><td class="t-num">'+usd(r.v)+'</td></tr>').join('')+
+'<tr class="ctr2"><td>Current total</td><td></td><td class="t-num">'+usd(cur.total)+'</td></tr></tbody></table></div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Target state - GCP breakdown</div><div class="cm">USD &middot; monthly</div></div>'+
+'<div class="cb flush"><table class="dt"><thead><tr><th>Service</th><th>Replaces / purpose</th><th class="t-num">Low</th><th class="t-num">High</th></tr></thead><tbody>'+
+tgt.rows.map(r=>'<tr><td class="sname">'+r.c+'</td><td class="stech">'+r.s+'</td><td class="t-num">'+usd(r.l)+'</td><td class="t-num">'+usd(r.h)+'</td></tr>').join('')+
+'<tr class="ctr"><td>Target total</td><td></td><td class="t-num">'+usd(tgt.total.l)+'</td><td class="t-num">'+usd(tgt.total.h)+'</td></tr></tbody></table>'+
+'<div class="notes"><ul>'+a.costNotes.map(n=>'<li>'+n+'</li>').join('')+'</ul></div></div></div>'+
+'<div class="sec-h">Blueprint match</div>'+
+(a.bpTop.note?'<div class="bn b-amber"><div class="bn-ic">!</div><div><div class="bn-t">Worth reviewing with your Domain Lead</div>'+
+'<div class="bn-b">'+a.bpTop.note+'</div></div></div>':'')+
+card(a.bpTop,1)+card(a.bpAlt,0)+
+'<div class="sec-h">Before you raise the CR</div>'+
+'<div class="card"><div class="ch"><div class="ct">Informal heads-up with your Domain Lead</div>'+
+'<div class="cm">Recommended, not mandatory</div></div>'+
+'<div class="cb"><p style="font-size:13.5px;color:var(--slate-600);margin-bottom:14px">'+
+'Readiness Evaluation includes an informal pre-discussion so your Domain Lead is not seeing the CR cold. '+
+'Formal approval comes later, once the CR is raised.</p>'+
+'<div class="apr" style="padding:0 0 14px"><div class="apav">'+init+'</div><div>'+
+'<div class="apn">'+L.lead+'</div><div class="apm">Domain Lead &middot; '+domainName()+'</div>'+
+'<div class="apm">'+L.email+'</div></div></div>'+
+'<div class="btn-row" style="margin-top:0"><button class="btn btn-g" onclick="sendHeadsUp()">'+I.mail+' Send heads-up email</button>'+
+(S.headsUpSent?'<span class="hint" style="color:var(--green-700)">&#10003; Heads-up sent</span>':'<span class="hint">Optional &mdash; opens Gmail with a short summary</span>')+
+'</div></div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'intake\')">Continue to Demand Management '+I.arr+'</button></div>'}
+function sendHeadsUp(){const a=A(),L=lead(),mid=Math.round((a.target.total.l+a.target.total.h)/2);
+const sub='Heads-up - planning GCP onboarding for '+a.app+' ('+a.nar+')';
+const body='Hi '+L.lead.split(' ')[0]+',\n\n'+
+'A quick heads-up before I raise the formal CR. I have completed the Readiness Evaluation for '+a.app+' and wanted to give you early sight of it.\n\n'+
+'NAR ID:          '+a.nar+'\n'+
+'Application:     '+a.app+'\n'+
+'Domain:          '+domainName()+'\n'+
+'R-Type:          '+S.migType+'\n'+
+'Readiness:       '+score()+'/100 ('+sst(score()).t+')\n'+
+'Est. GCP cost:   '+usd(a.target.total.l)+' - '+usd(a.target.total.h)+' per month\n'+
+'Current on-prem: '+usd(a.current.total)+' per month\n'+
+'Blueprint:       '+a.bpTop.id+' ('+a.bpTop.fit+'% fit)\n\n'+
+'Happy to walk through any of this before the CR comes to you formally.\n\n'+
+'Thanks,\nPinku Barman (ITAO)';
+window.open(gmailUrl(L.email,sub,body),'_blank');
+S.headsUpSent=true;render();toast('Heads-up email opened in Gmail','ok')}
+
+const IQ=[{q:'What is the Cost Center for this application?',f:'cost_center',ex:'FIN-4820'},
+{q:'What is the planned project start date?',f:'start_date',ex:'2026-03-02'},
+{q:'What is the target Landing Zone (LZ) date? This is when the DEV LZ should be provisioned.',f:'lz_date',ex:'2026-05-18'},
+{q:'And the target go-live date?',f:'go_live',ex:'2026-09-30'},
+{q:'Is the budget approved for this migration? Answer approved, pending, or not started.',f:'budget',ex:'Approved'},
+{q:'Finally, what is the business criticality tier of this application?',f:'criticality',ex:'Tier 2 - Business Important'}];
+function vIntake(){const a=A(),L=lead();
+const pf=[{k:'NAR ID',v:a.nar},{k:'App Name',v:a.app},{k:'Domain Name',v:domainName()},
+{k:'R-Type',v:S.migType},{k:'Domain Lead',v:L.lead},{k:'ITAO',v:'Pinku Barman'},
+{k:'Data classification',v:a.dataClass},
+{k:'Recommended blueprint',v:a.bpTop.id+' ('+a.bpTop.fit+'% fit)'},
+{k:'Estimated GCP cost',v:usd(a.target.total.l)+' - '+usd(a.target.total.h)+' / month'}];
+return head('Step 05 of 09 &middot; Phase 2 Demand Management','Raise the Change Request',
+'The CR is created from the standard template. Everything captured during Readiness Evaluation is carried forward &mdash; six template fields remain.')+
+'<div class="card"><div class="ch"><div class="ct">Carried forward from Readiness Evaluation</div><div class="cm">'+pf.length+' fields</div></div>'+
+'<div class="cb flush" style="padding:5px 0">'+pf.map(f=>'<div class="pf"><div class="pfk">'+f.k+'</div>'+
+'<div class="pfv">'+f.v+'</div><div><span class="pill p-green">&#10003;</span></div></div>').join('')+'</div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Remaining CR template fields</div>'+
+'<div class="cm" id="prog">Field '+Math.min(S.intakeStep+1,IQ.length)+' of '+IQ.length+'</div></div>'+
+'<div class="chat" id="chat"></div>'+
+'<div class="cir"><input class="inp" id="cin" placeholder="Type your answer..." onkeydown="if(event.key===\'Enter\')sendChat()" '+(S.intakeComplete?'disabled':'')+'>'+
+'<button class="btn btn-p" onclick="sendChat()" id="cbtn" '+(S.intakeComplete?'disabled':'')+'>Send</button></div>'+
+'<div class="quick" id="quick"></div></div>'+
+'<div id="ifoot">'+(S.intakeComplete?ifoot():'')+'</div>'}
+function crFields(){const a=A(),L=lead(),I=S.intakeAnswers;
+return [['NAR ID',a.nar],['App Name',a.app],['Domain Name',domainName()],
+['Cost Center',I.cost_center||'&mdash;'],['R-Type',S.migType],
+['Start date',I.start_date||'&mdash;'],['LZ date',I.lz_date||'&mdash;'],['Go-Live date',I.go_live||'&mdash;'],
+['Budget status',I.budget||'&mdash;'],['Criticality',I.criticality||'&mdash;'],
+['Domain Lead',L.lead],['ITAO', 'Pinku Barman'],
+['Domain Lead Approval',S.approval==='approved'?'<span class="pill p-green">Attached</span>':'<span class="pill p-amber">Pending</span>']]}
+function ifoot(){const o=ob(),L=lead(),a=A();
+if(o.length)return '<div class="bn b-red"><div class="bn-ic">&#10005;</div><div>'+
+'<div class="bn-t">Cannot raise the CR &mdash; '+o.length+' blocker'+(o.length>1?'s':'')+' outstanding</div>'+
+'<div class="bn-b">'+o.map(b=>'&bull; '+b.text).join('<br>')+'<br><br>Resolve each blocker in the gap register before raising the Change Request.</div></div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" disabled>Raise CR</button>'+
+'<button class="btn btn-g" onclick="go(\'assessment\')">Go to gap register</button>'+
+'<span class="hint err">'+I.warn+' Blocked by '+o.length+' item'+(o.length>1?'s':'')+'</span></div>';
+if(S.crId){const f=crFields();
+return '<div class="card"><div class="ch"><div class="ct">Change Request raised</div>'+
+'<div class="cm">Epic '+S.epicId+'</div></div>'+
+'<div class="jira" style="padding-bottom:8px"><span class="pill p-green">Created</span>'+
+'<div class="jid">'+S.crId+'</div>'+
+'<div class="mono" style="font-size:12px;color:var(--slate-500)">Raised a CR '+a.nar+' '+a.app+'</div></div>'+
+'<div class="cb flush" style="padding:5px 0;border-top:1px solid var(--slate-100)">'+
+f.map(x=>'<div class="pf"><div class="pfk">'+x[0]+'</div><div class="pfv">'+x[1]+'</div><div></div></div>').join('')+
+'</div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'approval\')">Request Domain Lead approval '+I.arr+'</button></div>';}
+return '<div class="bn b-green"><div class="bn-ic">&#10003;</div><div><div class="bn-t">CR template complete</div>'+
+'<div class="bn-b">All fields captured and no blockers outstanding. Raising the CR creates the Change Request under epic '+S.epicId+' and routes it to '+L.lead+' for formal approval.</div></div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="submitCR()">Raise CR '+I.arr+'</button></div>'}
+function submitCR(){S.crId='GCPDM-'+(1840+Math.floor(Math.random()*59));render();toast('CR '+S.crId+' created under epic '+S.epicId,'ok')}
+function pm(h,c){const x=document.getElementById('chat'),d=document.createElement('div');
+d.className='msg '+(c||'');d.innerHTML=h;x.appendChild(d);x.scrollTop=9e9;return d}
+function askNext(){const q=IQ[S.intakeStep];if(!q)return;
+const t=pm('<div class="av b">CG</div><div class="bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>');
+setTimeout(()=>{t.remove();const m=pm('<div class="av b">CG</div><div class="bub"></div>'),b=m.querySelector('.bub');let i=0;
+const iv=setInterval(()=>{i++;b.textContent=q.q.slice(0,i);document.getElementById('chat').scrollTop=9e9;
+if(i>=q.q.length){clearInterval(iv);
+document.getElementById('quick').innerHTML='<button class="qr" onclick="qr(\''+q.ex+'\')">'+q.ex+'</button>'+
+(q.f==='budget'?'<button class="qr" onclick="qr(\'Pending\')">Pending</button>':'');
+const ci=document.getElementById('cin');if(ci)ci.focus()}},12)},560)}
+function qr(v){document.getElementById('cin').value=v;sendChat()}
+function sendChat(){const inp=document.getElementById('cin');if(!inp||inp.disabled)return;
+const v=inp.value.trim();if(!v)return;const q=IQ[S.intakeStep];
+pm('<div class="bub">'+v+'</div><div class="av us">PB</div>','u');
+inp.value='';document.getElementById('quick').innerHTML='';
+S.intakeAnswers[q.f]=v;
+let delay=1000;
+if(q.f==='budget'){const ok=v.toLowerCase().indexOf('approv')>-1;delay=2200;
+setTimeout(()=>{pm(ok?'<div class="av b">CG</div><div class="bub">Noted.<div class="bf ok"><strong>&#10003;</strong><span>Budget approved. No blocker raised against the Demand gate.</span></div></div>'
+:'<div class="av b">CG</div><div class="bub">Recorded, but I have to flag this against the Demand gate.<div class="bf blk"><strong>BLOCKER</strong><span>Budget approval is required before the Demand gate can close.</span></div></div>');
+toast(ok?'Budget confirmed':'Blocker raised against this request',ok?'ok':'err');renderRail();renderStepper()},800)}
+S.intakeStep++;
+const pr=document.getElementById('prog');if(pr)pr.textContent='Field '+Math.min(S.intakeStep+1,IQ.length)+' of '+IQ.length;
+setTimeout(()=>{if(S.intakeStep<IQ.length){askNext();return}
+const o=ob(),L=lead();
+const close=o.length?'All fields captured. However, '+o.length+' blocker'+(o.length>1?'s remain':' remains')+' open, so I cannot raise the CR yet.'
+:'All CR template fields captured and no blockers outstanding. I can now raise the Change Request under epic '+S.epicId+' and route it to '+L.lead+' for formal approval.';
+setTimeout(()=>{const t=pm('<div class="av b">CG</div><div class="bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>');
+setTimeout(()=>{t.remove();const m=pm('<div class="av b">CG</div><div class="bub"></div>'),b=m.querySelector('.bub');let i=0;
+const iv=setInterval(()=>{i++;b.textContent=close.slice(0,i);document.getElementById('chat').scrollTop=9e9;
+if(i>=close.length){clearInterval(iv);S.intakeComplete=1;
+document.getElementById('cin').disabled=1;document.getElementById('cbtn').disabled=1;
+document.getElementById('cin').placeholder='Demand record complete';
+document.getElementById('ifoot').innerHTML=ifoot();renderRail();renderStepper()}},12)},560)},600)},delay)}
+function restoreChat(){IQ.forEach((q,i)=>{if(i>=S.intakeStep)return;
+pm('<div class="av b">CG</div><div class="bub">'+q.q+'</div>');
+pm('<div class="bub">'+(S.intakeAnswers[q.f]||'')+'</div><div class="av us">PB</div>','u')})}
+
+function defSubj(){const a=A();return 'Approval required - GCP onboarding CR '+S.crId+' - '+a.app}
+function defBody(){const a=A(),L=lead(),sc=score(),st=sst(sc),mid=Math.round((a.target.total.l+a.target.total.h)/2),Iv=S.intakeAnswers;
+return 'Dear '+L.lead+',\n\n'+
+'A GCP onboarding Change Request has been raised for your domain and requires your formal approval.\n'+
+'Your approval will be attached to the CR before it proceeds to Demand Management change control.\n\n'+
+'CHANGE REQUEST\n'+
+'CR:                 '+S.crId+'\n'+
+'Epic:               '+S.epicId+'\n'+
+'Summary:            Raised a CR '+a.nar+' '+a.app+'\n'+
+'NAR ID:             '+a.nar+'\n'+
+'App Name:           '+a.app+'\n'+
+'Domain Name:        '+domainName()+'\n'+
+'Cost Center:        '+(Iv.cost_center||'-')+'\n'+
+'R-Type:             '+S.migType+'\n'+
+'Start date:         '+(Iv.start_date||'-')+'\n'+
+'LZ date:            '+(Iv.lz_date||'-')+'\n'+
+'Go-Live date:       '+(Iv.go_live||'-')+'\n'+
+'Budget status:      '+(Iv.budget||'-')+'\n'+
+'Criticality:        '+(Iv.criticality||'-')+'\n'+
+'ITAO:               Pinku Barman\n\n'+
+'READINESS EVALUATION\n'+
+'Score:              '+sc+'/100 ('+st.t+')\n'+
+'Open blockers:      '+ob().length+'\n'+
+'Data class:         '+a.dataClass+'\n\n'+
+'COST ANALYSIS (USD per month)\n'+
+'Current on-prem:    '+usd(a.current.total)+'\n'+
+'Target GCP:         '+usd(a.target.total.l)+' - '+usd(a.target.total.h)+'\n'+
+'Expected saving:    '+usd(a.current.total-mid)+' per month ('+Math.round((a.current.total-mid)/a.current.total*100)+'%)\n\n'+
+'RECOMMENDED BLUEPRINT\n'+
+a.bpTop.id+' - '+a.bpTop.name+'\n'+
+'Fit score:          '+a.bpTop.fit+'%\n'+
+'Reference:          '+a.bpTop.eri+'\n\n'+
+'Please review and approve, or request changes, using the links below.\n\n'+
+'[ APPROVE ]     [ REQUEST CHANGES ]\n\n'+
+'Sent by CloudGate on behalf of Pinku Barman (ITAO).'}
+function gmailUrl(to,subj,body){return 'https://mail.google.com/mail/?view=cm&fs=1&to='+
+encodeURIComponent(to)+'&su='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body)}
+function vApproval(){const L=lead(),init=L.lead.split(' ').map(x=>x[0]).join('').slice(0,2);
+if(S.emailSubj===null)S.emailSubj=defSubj();
+if(S.emailBody===null)S.emailBody=defBody();
+if(S.emailTo===null)S.emailTo=L.email;
+return head('Step 06 of 09 &middot; Phase 2 Demand Management','Send the approval request',
+'The Domain Lead was assigned automatically from your domain selection. Sender, recipient, subject and body are all editable before sending.')+
+'<div class="card"><div class="ch"><div class="ct">Approver - assigned automatically</div><div class="cm">No lookup required</div></div>'+
+'<div class="apr"><div class="apav">'+init+'</div><div><div class="apn">'+L.lead+'</div>'+
+'<div class="apm">Domain Lead &middot; '+domainName()+'</div><div class="apm">'+L.email+'</div>'+
+'<div class="apm">Backup: '+L.backup+' &middot; SLA '+L.sla+'</div></div></div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Approval email</div>'+
+'<div class="cm"><a href="#" onclick="resetEmail();return false" style="color:var(--blue-600)">Restore default</a></div></div>'+
+'<div class="efield"><span class="ek">From</span><input class="esub" id="efrom" value="'+S.emailFrom+'" oninput="S.emailFrom=this.value"></div>'+
+'<div class="efield"><span class="ek">To</span><input class="esub" id="eto" value="'+S.emailTo+'" oninput="S.emailTo=this.value"></div>'+
+'<div class="efield"><span class="ek">Subject</span><input class="esub" id="esub" value="'+S.emailSubj.replace(/"/g,'&quot;')+'" oninput="S.emailSubj=this.value;S.emailEdited=1;markEdit()"></div>'+
+'<textarea class="ebody" id="ebody" oninput="S.emailBody=this.value;S.emailEdited=1;markEdit()">'+S.emailBody+'</textarea>'+
+'<div class="ebar" id="ebar"><span>'+(S.emailEdited?'Edited - your changes will be sent':'All four fields above are editable')+'</span>'+
+'<span class="mono" style="font-size:11px">'+S.emailBody.length+' chars</span></div></div>'+
+'<div id="apw"><div class="btn-row">'+
+'<button class="btn btn-p btn-lg" onclick="sendAp(1)">'+I.mail+' Open in Gmail and send</button>'+
+'<button class="btn btn-g btn-lg" onclick="sendAp(0)">Record as sent</button>'+
+'<span class="hint">Response expected within '+L.sla+'</span></div>'+
+'<div class="bn b-blue" style="margin-top:14px"><div class="bn-ic">i</div><div>'+
+'<div class="bn-t">How sending works here</div>'+
+'<div class="bn-b"><strong>Open in Gmail</strong> launches a Gmail compose window pre-filled with the recipient, subject and body above &mdash; review it and press Send in Gmail to deliver a real email. '+
+'<strong>Record as sent</strong> skips Gmail and moves the request forward directly. Either way the approval flow continues below.</div></div></div></div>'}
+function markEdit(){const b=document.getElementById('ebar');
+if(b)b.innerHTML='<span>Edited - your changes will be sent</span><span class="mono" style="font-size:11px">'+S.emailBody.length+' chars</span>'}
+function resetEmail(){S.emailSubj=defSubj();S.emailBody=defBody();S.emailEdited=0;render();toast('Email restored to default')}
+function sendAp(viaGmail){const L=lead(),w=document.getElementById('apw');
+if(viaGmail){window.open(gmailUrl(S.emailTo,S.emailSubj,S.emailBody),'_blank');
+toast('Gmail compose opened - press Send in Gmail','ok')}
+const steps=viaGmail?['Composing request summary','Opening Gmail compose window','Handed to Gmail for sending','Awaiting response']
+:['Composing request summary','Retrieving credentials from Secret Manager','Sending to '+L.lead,'Awaiting response'];
+w.innerHTML='<div class="card"><div class="ch"><div class="ct">Approval in progress</div></div><div class="ps">'+
+steps.map((s,i)=>'<div class="pstep '+(i===0?'a':'')+'" id="ps'+i+'"><span>'+(i===0?'<span class="spin"></span>':'&#9675;')+'</span><span>'+s+'</span><span class="cnt" id="cnt'+i+'"></span></div>').join('')+'</div></div>';
+S.approval='sending';
+let i=0;
+const adv=()=>{const c=document.getElementById('ps'+i);
+if(c){c.className='pstep d';c.children[0].innerHTML='&#10003;'}
+i++;
+if(i<steps.length-1){const n=document.getElementById('ps'+i);
+n.className='pstep a';n.children[0].innerHTML='<span class="spin"></span>';setTimeout(adv,850)}
+else{const n=document.getElementById('ps'+i);
+n.className='pstep a';n.children[0].innerHTML='<span class="spin"></span>';
+let t=10;const cn=document.getElementById('cnt'+i);cn.textContent=t+'s';
+const tk=setInterval(()=>{t--;if(cn)cn.textContent=t+'s';if(t<=0){clearInterval(tk);approved()}},1000)}};
+setTimeout(adv,850)}
+function approved(){const a=A(),L=lead(),w=document.getElementById('apw');
+S.approval='approved';renderRail();renderStepper();toast('Approval received from '+L.lead,'ok');
+w.innerHTML='<div class="bn b-green"><div class="bn-ic">&#10003;</div><div>'+
+'<div class="bn-t">Approved by '+L.lead+'</div>'+
+'<div class="bn-b">Domain Lead &middot; '+domainName()+' &mdash; approved just now. The approval is being attached to '+S.crId+'.</div></div></div>'+
+'<div class="card" id="dmcard"><div class="ch"><div class="ct">Attaching approval and notifying Demand Management</div></div><div class="ps">'+
+'<div class="pstep a" id="dm0"><span><span class="spin"></span></span><span>Attaching Domain Lead approval to '+S.crId+'</span><span></span></div>'+
+'<div class="pstep" id="dm1"><span>&#9675;</span><span>Notifying the Demand Management team</span><span></span></div></div></div>';
+setTimeout(()=>{const d=document.getElementById('dm0');
+if(d){d.className='pstep d';d.children[0].innerHTML='&#10003;'}
+const n=document.getElementById('dm1');if(n){n.className='pstep a';n.children[0].innerHTML='<span class="spin"></span>'}},1400);
+setTimeout(()=>{S.dmNotified=1;const c=document.getElementById('dmcard');
+if(!c)return;
+const dmSubj=S.crId+' - Domain Lead approval attached, ready for change control';
+const dmBody='Change Request '+S.crId+' has been updated and submitted with the Domain Lead approval attached.\n\n'+
+'CR:              '+S.crId+'\n'+
+'Epic:            '+S.epicId+'\n'+
+'NAR ID:          '+a.nar+'\n'+
+'App Name:        '+a.app+'\n'+
+'Domain:          '+domainName()+'\n'+
+'Cost Center:     '+(S.intakeAnswers.cost_center||'-')+'\n'+
+'R-Type:          '+S.migType+'\n'+
+'LZ date:         '+(S.intakeAnswers.lz_date||'-')+'\n'+
+'Go-Live date:    '+(S.intakeAnswers.go_live||'-')+'\n'+
+'Approved by:     '+L.lead+', Domain Lead\n'+
+'Readiness:       '+score()+'/100\n\n'+
+'The CR is ready for portfolio analysis and the Demand Management change control process.\n\n'+
+'Sent by CloudGate on behalf of Pinku Barman (ITAO).';
+S.dmSubj=dmSubj;S.dmBody=dmBody;
+c.outerHTML='<div class="card"><div class="ch"><div class="ct">Notification to Demand Management</div><div class="cm">Auto-generated</div></div>'+
+'<div class="efield"><span class="ek">From</span><input class="esub" value="'+S.emailFrom+'" oninput="S.emailFrom=this.value"></div>'+
+'<div class="efield"><span class="ek">To</span><input class="esub" id="dmto" value="'+S.dmTo+'" oninput="S.dmTo=this.value"></div>'+
+'<div class="efield"><span class="ek">Subject</span><input class="esub" id="dmsub" value="'+dmSubj+'" oninput="S.dmSubj=this.value"></div>'+
+'<textarea class="ebody" id="dmbody" style="min-height:190px" oninput="S.dmBody=this.value">'+dmBody+'</textarea>'+
+'<div class="ebar"><span>Editable before sending</span><span class="mono" style="font-size:11px">'+dmBody.length+' chars</span></div></div>'+
+'<div class="btn-row" style="margin-top:0"><button class="btn btn-p" onclick="sendDm()">'+I.mail+' Open in Gmail and send</button>'+
+'<span class="hint">Or continue &mdash; the approval is already attached to '+S.crId+'</span></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'control\')">Continue to Change Control '+I.arr+'</button></div>';
+toast('Approval attached to '+S.crId,'ok')},3000)}
+function sendDm(){window.open(gmailUrl(S.dmTo,S.dmSubj,S.dmBody),'_blank');toast('Gmail compose opened - press Send in Gmail','ok')}
+
+/* ═══════════ ASSISTANT ═══════════ */
+const CONTACTS=[
+['Domain approval','Your Domain Lead','(assigned automatically)'],
+['Budget and funding','Finance Business Partner','finance.bp@example.com'],
+['Data classification, DPIA, PII','Data Privacy Office','privacy.office@example.com'],
+['Security, IAM, encryption','Cloud Security','cloud.security@example.com'],
+['Network and connectivity','Network Engineering','network.eng@example.com'],
+['Looker and BI migration','BI Platform Team','bi.platform@example.com'],
+['Blueprints, ERIs and ADRs','Cloud Architecture','cloud.architecture@example.com'],
+['JIRA tickets and process','Demand Management','demand.management@example.com'],
+['Software licensing','Vendor Management','vendor.mgmt@example.com'],
+['Data engineering build','Data Engineering','data.eng@example.com']];
+
+function ctxLine(){const a=A();
+if(!a)return 'No request open yet';
+const i=si(S.stage);
+if(i<0)return a.app+' &middot; Analysing documents';
+return a.app+' · Step '+(i+1)+' of '+STAGES.length}
+
+function blockerHelp(){const o=ob(),L=lead();
+if(!o.length){
+ if(!S.done.has('review'))return 'Nothing is blocking you at the moment. Blockers only appear after the readiness assessment in Step 04.';
+ return '<strong>Good news — you have no open blockers.</strong> Your request can move forward.<span class="tip">Score is '+score()+'/100 ('+sst(score()).t+'). High and medium gaps can stay open for now, but they must close before the Design gate.</span>';}
+let h='<strong>You have '+o.length+' blocker'+(o.length>1?'s':'')+' stopping this request.</strong> Each one must be resolved before the Demand gate can close.';
+o.forEach((b,i)=>{h+='<span class="warn"><strong>'+(i+1)+'. '+b.text+'</strong><br>'+b.rem+'</span>'});
+h+='<span class="tip"><strong>How to clear them:</strong> go to <strong>Step 04 Readiness</strong>, find the item in the gap register, press <strong>Resolve</strong>, pick a resolution type and write what you did. Your score recalculates immediately.</span>';
+h+='<br><br>Not sure who can help? Ask me <em>"who do I contact"</em> and I will match each blocker to a team.';
+return h}
+
+function whoToContact(){const L=lead(),o=ob();
+let h='<strong>Contact directory</strong>';
+if(L)h+='<div class="kv"><b>DOMAIN LEAD</b><span>'+L.lead+' &mdash; '+L.email+'</span></div>';
+if(o.length){h+='<br><strong>For your current blockers specifically:</strong><ul>';
+o.forEach(b=>{const t=b.text.toLowerCase();
+let who=t.indexOf('budget')>-1?'Finance Business Partner &mdash; finance.bp@example.com'
+:t.indexOf('classification')>-1||t.indexOf('pii')>-1||t.indexOf('dpia')>-1?'Data Privacy Office &mdash; privacy.office@example.com'
+:t.indexOf('rearchitect')>-1||t.indexOf('timeline')>-1?(L?L.lead+' (Domain Lead) &mdash; '+L.email:'Your Domain Lead')
+:t.indexOf('iam')>-1||t.indexOf('security')>-1?'Cloud Security &mdash; cloud.security@example.com'
+:'Demand Management &mdash; demand.management@example.com';
+h+='<li>'+b.text.slice(0,52)+(b.text.length>52?'…':'')+'<br><span style="color:var(--blue-600)">'+who+'</span></li>'});
+h+='</ul>'}
+h+='<br><strong>Everyone else</strong><div class="kv">';
+CONTACTS.slice(1).forEach(c=>{h+='<b>'+c[0].toUpperCase()+'</b><span>'+c[1]+'<br><span style="color:var(--slate-500)">'+c[2]+'</span></span>'});
+h+='</div>';return h}
+
+function whereAmI(){const a=A();
+if(!a)return 'You have not opened a request yet. Start on <strong>Step 01</strong> by entering your application NAR ID.<span class="tip">Try <code>118135-1</code> or <code>118135-2</code> if you are exploring.</span>';
+const o=ob(),st=sst(score()),i=si(S.stage);
+const stageTxt=i>=0?('Step '+(i+1)+' of '+STAGES.length+' &mdash; '+STAGES[i].n):'Analysing documents';
+let h='<strong>'+a.app+'</strong> ('+a.nar+')<div class="kv">'+
+'<b>STAGE</b><span>'+stageTxt+'</span>'+
+'<b>MIGRATION</b><span>'+(S.migType||'not selected')+'</span>'+
+'<b>DOMAIN</b><span>'+(S.domain?domainName():'not selected')+'</span>'+
+(lead()?'<b>APPROVER</b><span>'+lead().lead+'</span>':'')+
+(S.done.has('review')?'<b>READINESS</b><span>'+score()+'/100 &mdash; '+st.t+'</span>':'')+
+(S.crId?'<b>JIRA</b><span>'+S.crId+'</span>':'')+
+'<b>BLOCKERS</b><span>'+(o.length?o.length+' open':'none')+'</span></div>';
+h+='<br><strong>Next step:</strong> '+nextStepText();
+return h}
+
+function nextStepText(){const o=ob();
+if(o.length&&S.done.has('review'))return 'resolve your '+o.length+' blocker'+(o.length>1?'s':'')+' in Step 04 Readiness. Nothing else can move until then.';
+const m={application:'complete the four questions — NAR ID, migration type, domain, then upload your architecture documents.',
+review:'check the extracted architecture is correct, then confirm to run the readiness assessment.',
+assessment:'review your score and gaps, then continue to the recommendation.',
+recommend:'review the cost comparison and blueprint match, then raise your Change Request.',
+intake:'answer the six remaining CR template fields, then raise the Change Request.',
+approval:'send the approval request to your Domain Lead and wait for their response.',
+discovery:'work through the Discovery checklist with the named owners.',
+design:'work through the design readiness checklist and generate the onboarding pack.'};
+return m[S.stage]||'continue through the current step.'}
+
+const KB=[
+{k:['blocked','blocker','why can','cannot continue','cant continue','can\'t continue','stuck','disabled','greyed','grayed','not letting'],a:blockerHelp},
+{k:['contact','who do i','whom','reach out','speak to','talk to','email address','directory'],a:whoToContact},
+{k:['where am i','my status','my request','what stage','summary of my'],a:whereAmI},
+{k:['next','what now','what should i do','what do i do'],a:()=>'<strong>Your next step:</strong> '+nextStepText()+(ob().length?'':'<span class="tip">Ask me <em>"where am I"</em> for a full status summary.</span>')},
+{k:['resolve','fix','unblock','clear the block','how do i clear'],a:()=>'<strong>Resolving a blocker</strong><ul><li>Go to <strong>Step 04 Readiness</strong></li><li>Find the item in the gap register (filter by <em>Blockers</em> to see only these)</li><li>Press <strong>Resolve</strong></li><li>Pick a resolution type — evidence attached, scope reduced, timeline extended, or exception approved by your Domain Lead</li><li>Write what you actually did. This goes on the audit trail, so be specific</li><li>Press <strong>Record resolution</strong></li></ul>Your score recalculates immediately and the gate reopens once all blockers are clear.'+(ob().length?'<span class="warn">You currently have '+ob().length+' open. Ask me <em>"why am I blocked"</em> for the detail on each.</span>':'')},
+{k:['process','how does this work','overview','what are the steps','stages','phases','end to end','walk me through','lifecycle'],a:'<strong>The nine lifecycle phases</strong><ul><li><strong>1 Readiness Evaluation</strong> &mdash; evaluate the current application, estimate cost, informal heads-up with your Domain Lead. CloudGate steps 1&ndash;6</li><li><strong>2 Demand Management</strong> &mdash; raise the CR, formal Domain Lead approval, portfolio analysis, <em>Ready to Design?</em> tollgate, change control, stories generated. Steps 7&ndash;9</li><li><strong>3 Discovery</strong> &mdash; Application Discovery Questionnaire, data residency via DEx Tool, BAO approval, DEV LZ provisioned. Step 10</li><li><strong>4 Cloud Onboarding</strong></li><li><strong>5 Design</strong> &mdash; target architecture and design readiness. Step 11</li><li><strong>6 Build</strong> &middot; <strong>7 Testing and Final Design</strong> &middot; <strong>8 Deployment / Release Management</strong> &middot; <strong>9 On-Prem Decommissioning</strong></li></ul><span class="tip">Detailed stages for phases 4 and 6&ndash;9 are not yet published.</span>'},
+{k:['gate','tollgate','why gates','what is a gate','ready to design'],a:()=>'<strong>Gates and tollgates</strong><br><br>The key one is the <strong>Ready to Design?</strong> tollgate inside Demand Management. It confirms your team has reviewed and understood the standard design guidelines published by the <strong>Group Architecture team</strong>.<ul><li>Pass it &rarr; the application is prioritised for GCP and change control runs</li><li>Fail it &rarr; the CR routes to <strong>Remediation / Issue resolution</strong> instead</li></ul>'+(S.tollgate?'<span class="tip">You have passed the tollgate.</span>':'<span class="warn">Not passed yet. It is on step 07 Change Control.</span>')+'<br>Live phase status is in the right-hand panel on every screen.'},
+{k:['nar'],a:'<strong>NAR ID</strong> is your application register identifier, formatted like <code>118135-1</code>.<br><br>Entering it pulls the application name, description, type and data classification automatically, so you do not type them by hand.<span class="tip">If your NAR ID is not recognised, contact Demand Management at demand.management@example.com to check the register entry.</span>'},
+{k:['rehost','replatform','rearchitect','migration type','which migration','lift and shift'],a:()=>{const a=A();
+return '<strong>The three migration types</strong><ul><li><strong>ReHost</strong> — lift and shift, no code change. Fastest, but you keep your existing licensing and technical debt</li><li><strong>RePlatform</strong> — move to managed services with targeted changes. Usually the best balance</li><li><strong>ReArchitect</strong> — full cloud-native redesign. Highest long-term benefit, but typically 6–9 months for a warehouse of this size</li></ul>'+
+(a?'<span class="tip">For <strong>'+a.app+'</strong> the suggested type is <strong>'+a.recMig+'</strong>. Your batch warehouse maps cleanly onto BigQuery, so a full redesign rarely pays for itself.</span>':'')+
+'<br>Your choice directly changes the readiness score, the cost model and the recommended blueprint — so it is worth getting right.'}},
+{k:['blueprint','eri','reference implementation'],a:'<strong>Blueprints and ERIs</strong><br><br>A <strong>blueprint</strong> is an approved target architecture pattern from the db-catalogue, for example <code>GCP-BP-023</code> for on-premises warehouse to BigQuery.<br><br>An <strong>ERI</strong> (Executable Reference Implementation) is the working code and configuration that goes with it — Terraform, DAG templates, IAM bindings. You start from the ERI rather than a blank project.<span class="tip">Questions about which blueprint applies? Cloud Architecture — cloud.architecture@example.com</span>'},
+{k:['adr','architecture decision'],a:'An <strong>ADR</strong> (Architecture Decision Record) documents an approved technology choice and the reasoning behind it.<br><br>Every target component in the mapping table carries its ADR reference, so you can see the decision has already been made and approved centrally — you do not need to re-argue it.<div class="kv"><b>ADR-DWH-001</b><span>SQL Server to BigQuery</span><b>ADR-DWH-004</b><span>SSIS to Dataflow</span><b>ADR-DWH-005</b><span>SQL Server Agent to Composer</span><b>ADR-BI-002</b><span>Tableau to Looker</span><b>ADR-INT-003</b><span>Oracle to Datastream</span></div>'},
+{k:['looker','tableau','bi tool','dashboard','reporting tool'],a:'<strong>Looker is the recommended BI platform</strong> (ADR-BI-002).<br><br>The important constraint: <strong>Tableau is not permitted to connect to BigQuery in the EU region.</strong> If you need Tableau you must raise an architecture exception under <code>ADR-BI-002-EX</code>, and it must be approved before Design can proceed.<br><br>Looker also gives you native BigQuery integration, row- and column-level security, and no regional restriction.<span class="tip">BI Platform Team — bi.platform@example.com — can help scope the dashboard migration.</span>'},
+{k:['ssis'],a:'Your <strong>SSIS packages move to Cloud Data Fusion or Dataflow</strong> (ADR-DWH-004).<br><br>This is normally the largest single piece of work in a warehouse migration — you have 60+ packages. The ERI provides the conversion pattern, but each package still needs converting and testing.<span class="tip">Get the full package inventory documented early. Undocumented packages cannot be scoped, and that becomes a gap in your readiness score.</span>'},
+{k:['sql server agent','scheduler','job schedule','orchestration','airflow','composer'],a:'<strong>SQL Server Agent becomes Cloud Composer</strong>, which is managed Apache Airflow (ADR-DWH-005).<br><br>Your three daily job windows become Airflow DAGs. The schedule itself does not change — the same 02:00, 10:00 and 18:00 runs — but dependencies are expressed as a DAG rather than job steps.<span class="tip">Map your existing job chains before Design. Data Engineering — data.eng@example.com — can help.</span>'},
+{k:['dbt'],a:'<strong>dbt Core runs unchanged.</strong> You only switch the target profile to BigQuery (ADR-DWH-007).<br><br>No model rewrite is required, which is usually the single biggest effort saving in this type of migration. dbt runs on Cloud Composer after the load step.'},
+{k:['datastream','oracle','cdc','change data capture'],a:'<strong>System A (Oracle) moves to Datastream</strong> for change data capture (ADR-INT-003).<br><br>Instead of the nightly batch extract you have today, Datastream streams changes continuously with a 15-minute sync. Initial load is handled by backfill.<br><br>Your other three sources — the REST API, SharePoint and ServiceNow — move to Cloud Functions with a Pub/Sub buffer (ADR-INT-004).'},
+{k:['bigquery','warehouse','data warehouse','where does the data'],a:'<strong>BigQuery</strong> replaces MS SQL Server as the warehouse (ADR-DWH-001).<br><br>The recommended structure is three zones — <strong>Raw</strong>, <strong>Staging</strong> and <strong>Curated</strong> — partitioned by load date and clustered on your main business key.<br><br>At 1 TB you sit comfortably in the standard tier; no partitioning redesign is needed.'},
+{k:['cost','price','pricing','how much','expensive','saving','cheaper'],a:()=>{const a=A();
+let h='<strong>How the cost estimate works</strong><br><br>CloudGate maps each of your current components to its GCP equivalent, sizes it from your extracted profile (data volume, job frequency, integration count) and applies list pricing.<br><br>It is shown as a <strong>range</strong> because query volume and autoscaling behaviour are not fully known until Discovery.';
+if(a){const mid=Math.round((a.target.total.l+a.target.total.h)/2);
+h+='<div class="kv"><b>CURRENT</b><span>'+usd(a.current.total)+' / month on-premises</span><b>TARGET</b><span>'+usd(a.target.total.l)+' – '+usd(a.target.total.h)+' / month on GCP</span><b>SAVING</b><span>about '+usd(a.current.total-mid)+' / month</span></div>';
+h+='<span class="tip">The biggest single saving is retiring the MS SQL Server licence. That alone is '+usd(a.current.rows[0].v)+' per month.</span>'}
+return h}},
+{k:['dpia','data classification','privacy','pii','gdpr','regulated','personal data'],a:'<strong>Data classification and DPIA</strong><br><br>If your application holds PII or regulated data, two things are mandatory <em>before</em> a landing zone is provisioned:<ul><li>A completed <strong>Data Protection Impact Assessment (DPIA)</strong></li><li>A <strong>data classification assessment</strong> signed off by Data Governance</li></ul>This is a hard blocker — there is no way around it, and starting it late is the most common cause of delay.<span class="tip">Data Privacy Office — privacy.office@example.com. Allow two to three weeks.</span>'},
+{k:['budget','funding','who approves the budget','money'],a:()=>'<strong>Budget approval</strong> must be in place before the Demand gate can close.<br><br>Your Finance Business Partner raises and approves it — <strong>finance.bp@example.com</strong>.<br><br>If your budget is genuinely still pending but you need to progress, your Domain Lead can record an <strong>approved exception</strong> against the blocker. That is a formal decision on the audit trail, not a workaround.'+
+(S.intakeAnswers.budget?'<span class="'+(S.intakeAnswers.budget.toLowerCase().indexOf('approv')>-1?'tip':'warn')+'">You answered: <strong>'+S.intakeAnswers.budget+'</strong>'+(S.intakeAnswers.budget.toLowerCase().indexOf('approv')>-1?' — no blocker raised.':' — this has raised a blocker.')+'</span>':'')},
+{k:['timeline','how long','duration','when will','how many months','realistic'],a:'<strong>Typical timelines for a 1 TB warehouse with eight integrations</strong><ul><li><strong>ReHost</strong> — 2 to 3 months</li><li><strong>RePlatform</strong> — 4 to 6 months</li><li><strong>ReArchitect</strong> — 6 to 9 months</li></ul>The single biggest driver is the SSIS conversion effort, not the data volume.<span class="warn">Picking ReArchitect with a short go-live date raises a blocker automatically. It is better to extend the date or reduce scope than to commit to something undeliverable.</span>'},
+{k:['readiness','score','how is the score','calculated','why is my score'],a:()=>{let h='<strong>How the readiness score works</strong><br><br>Seven dimensions, each scored out of 10 and weighted:<div class="kv"><b>×3</b><span>Architecture clarity</span><b>×3</b><span>Migration type fit</span><b>×2</b><span>Data readiness</span><b>×2</b><span>Dependency mapping</span><b>×2</b><span>Security / IAM posture</span><b>×1</b><span>Operational readiness</span><b>×1</b><span>Budget alignment</span></div><br><strong>Thresholds:</strong> 80+ is Ready, 60–79 is Conditionally Ready, below 60 is Not Ready.';
+if(S.done.has('review'))h+='<span class="tip">You are at <strong>'+score()+'/100 — '+sst(score()).t+'</strong>. Resolving blockers raises the score.</span>';
+return h}},
+{k:['jira','ticket','cr','change request','gcpdm','epic','story','stories'],a:()=>'<strong>The CR and its stories</strong><br><br>Demand Management runs on a Change Request raised from the standard template, keyed <code>GCPDM-nnnn</code> under epic <code>'+S.epicId+'</code>. Summary format is <em>Raised a CR &lt;NAR ID&gt; &lt;Application Name&gt;</em>.<br><br><strong>The CR carries:</strong> NAR ID, App Name, Domain Name, Cost Center, R-Type, Start date, LZ date, Go-Live date, Domain Lead, and the attached Domain Lead approval.<br><br>Once change control approves, <strong>stories are generated under the epic</strong> &mdash; those are the actual delivery tickets.'+(S.crId?'<span class="tip">Your CR is <strong>'+S.crId+'</strong>.</span>':'')},
+{k:['demand management','demand record','what is demand'],a:()=>'<strong>Phase 2 &mdash; Demand Management</strong><br><br>Owned by the Demand Management team. The sequence is:<ul><li>You raise the <strong>CR</strong> from the standard template under epic '+S.epicId+'</li><li>Your <strong>Domain Lead approves</strong> &mdash; the approval is attached to the CR</li><li><strong>Portfolio analysis and planning</strong></li><li><strong>Ready to Design?</strong> tollgate</li><li>If passed &rarr; <strong>Application prioritised for GCP</strong></li><li><strong>Change Control Process</strong> assesses impact and, if approved, <strong>generates the stories</strong> under the epic</li></ul><span class="tip">demand.management@example.com</span>'},
+{k:['domain lead','who approves','approver','who is my lead','sign off'],a:()=>{const L=lead();
+if(!L)return 'Your Domain Lead is assigned <strong>automatically</strong> once you pick your domain in Step 01. You never have to look up who it is.<br><br>Pick your domain and their name, email, backup and SLA all appear immediately.';
+return '<strong>Your Domain Lead is '+L.lead+'</strong><div class="kv"><b>DOMAIN</b><span>'+domainName()+'</span><b>EMAIL</b><span>'+L.email+'</span><b>BACKUP</b><span>'+L.backup+'</span><b>SLA</b><span>'+L.sla+'</span></div><br>They were matched automatically from your domain selection — no lookup needed.<span class="tip">If they are unavailable, the backup can approve. Past SLA, escalate to demand.management@example.com.</span>'}},
+{k:['after approval','what happens after','once approved','post approval'],a:'<strong>After your Domain Lead approves</strong><ul><li>The approval is <strong>attached to the CR</strong> automatically</li><li>Demand Management is notified</li><li><strong>Portfolio analysis and planning</strong> runs</li><li>You must pass the <strong>Ready to Design?</strong> tollgate</li><li>The application is <strong>prioritised for GCP</strong></li><li><strong>Change control</strong> assesses impact and generates the delivery <strong>stories under the epic</strong></li></ul><span class="tip">Those stories are the real work. Discovery starts against them.</span>'},
+{k:['upload','document','file','pdf','docx','pptx','what documents','which format'],a:'<strong>What to upload</strong><ul><li>Architecture or design documents</li><li>Data flow diagrams</li><li>Operations runbooks</li><li>Interface or integration specifications</li></ul><strong>Accepted formats:</strong> PDF, DOCX, PPTX — or paste a link to a Confluence or SharePoint page.<span class="tip">More detail means a better extraction and a higher architecture clarity score. Partial documents still work — CloudGate flags what is missing rather than refusing.</span>'},
+{k:['exception','waiver','override','bypass'],a:'<strong>Exceptions</strong><br><br>Where a blocker cannot be resolved conventionally, your Domain Lead can approve a formal exception. In the gap register, pick <strong>"Exception approved by Domain Lead"</strong> as the resolution type and record the justification.<br><br>This is a recorded decision on the audit trail, not a way around the control. Two common cases:<ul><li>Budget pending but delivery must start</li><li>Tableau required instead of Looker (ADR-BI-002-EX)</li></ul><span class="warn">Always get the exception agreed with your Domain Lead before recording it.</span>'},
+{k:['discovery','what happens in discovery'],a:'<strong>Phase 3 &mdash; Discovery</strong><br><br>Two things must complete:<ul><li>The <strong>Application Discovery Questionnaire</strong></li><li>The <strong>data residency request</strong>, submitted by the ITAO through the <strong>DEx Tool</strong> and approved by the <strong>BAO</strong></li></ul>The phase ends when the <strong>DEV Landing Zone is provisioned</strong>.<br><br>Alongside this, the technical gaps from your readiness assessment are closed &mdash; SSIS inventory, dbt lineage, DAG mapping and so on.'},
+{k:['design','ready to design','architecture design','target architecture'],a:'<strong>Ready to Design</strong> gives you the full target architecture — the layered diagram, every recommended GCP service with its configuration, and the ADR behind each choice.<br><br>The checklist covers what must be agreed before build starts: project and VPC, IAM model, BigQuery structure, connectivity, and the ADR sign-off.<span class="tip">Cloud Architecture — cloud.architecture@example.com — reviews the design.</span>'},
+{k:['landing zone','vpc','project','environment'],a:'A <strong>landing zone</strong> is the pre-configured GCP project and network your application lands in, with guardrails already applied.<br><br>It is provisioned by SRE after the Design gate. For regulated data it is EU-region only, with VPC Service Controls around BigQuery, GCS and Composer.<span class="tip">Network Engineering — network.eng@example.com — for connectivity. Cloud Security — cloud.security@example.com — for the perimeter.</span>'},
+{k:['dex','data exchange','residency','data residency'],a:'<strong>DEx Tool &mdash; Data Exchange Registry</strong><br><br>In Discovery, the <strong>ITAO</strong> submits a <strong>data residency request</strong> through the DEx Tool. The <strong>BAO (Business Application Owner)</strong> must approve it.<br><br>This gates LZ provisioning &mdash; the DEV Landing Zone is not provisioned until residency is approved.<span class="tip">Start this early. It is a common cause of delay because it needs a person outside your delivery team.</span>'},
+{k:['itao','bao','roles','who is the itao'],a:()=>'<strong>Key roles</strong><div class="kv"><b>ITAO</b><span>IT Application Owner &mdash; raises the CR, submits the discovery questionnaire and the data residency request. That is you on this request.</span><b>BAO</b><span>Business Application Owner &mdash; approves the data residency request in the DEx Tool.</span><b>DOMAIN LEAD</b><span>'+(lead()?lead().lead:'assigned from your domain')+' &mdash; gives formal approval, attached to the CR.</span><b>DEMAND MGMT</b><span>Runs portfolio analysis, the tollgate, change control and story generation.</span><b>GROUP ARCH</b><span>Publishes the design guidelines the tollgate tests you against.</span></div>'},
+{k:['heads up','heads-up','pre-discussion','informal','before raising'],a:()=>{const L=lead();
+return '<strong>Informal heads-up</strong><br><br>Readiness Evaluation includes a pre-discussion with your Domain Lead so they are not seeing the CR cold. It is <strong>not</strong> the formal approval &mdash; that comes after the CR is raised.'+
+(L?'<div class="kv"><b>WHO</b><span>'+L.lead+'</span><b>EMAIL</b><span>'+L.email+'</span></div>':'')+
+'<span class="tip">There is a <strong>Send heads-up email</strong> button at the bottom of step 04 Recommendation that pre-fills a short summary.</span>'}},
+{k:['cost center','cost centre','lz date','start date','template field'],a:()=>'<strong>CR template fields</strong><br><br>The Change Request carries these, most of them filled automatically:<div class="kv"><b>AUTO</b><span>NAR ID, App Name, Domain Name, R-Type, Domain Lead, ITAO</span><b>YOU ENTER</b><span>Cost Center, Start date, LZ date, Go-Live date, Budget status, Criticality</span><b>ATTACHED</b><span>Domain Lead approval, once received</span></div><br><strong>LZ date</strong> is when the DEV Landing Zone should be provisioned &mdash; it sits between your start date and go-live, and Demand Management checks it against provisioning capacity.'},
+{k:['hello','hi ','hey','help','what can you'],a:'Hello. I can help with anything on this onboarding.<br><br>Common things people ask:<ul><li><em>Why am I blocked?</em> — I read your actual blockers and explain each one</li><li><em>Who do I contact?</em> — matched to your situation, not a generic list</li><li><em>Where am I?</em> — full status of your request</li><li><em>Explain the process</em> — the whole flow, end to end</li></ul>Ask in your own words. I will do my best to match it.'}];
+
+function botAnswer(q){const t=' '+q.toLowerCase().replace(/[?.,!]/g,' ')+' ';
+for(const r of KB){for(const k of r.k){if(t.indexOf(k)>-1)return typeof r.a==='function'?r.a():r.a}}
+return 'I did not quite catch that. Try one of these:<ul><li><em>Why am I blocked?</em></li><li><em>Who do I contact?</em></li><li><em>Explain the process</em></li><li><em>What is an ADR?</em></li><li><em>Why Looker instead of Tableau?</em></li><li><em>How is the cost calculated?</em></li></ul>Or ask about a specific service — SSIS, dbt, Datastream, BigQuery, Composer.'}
+
+const SUGG={application:['What is a NAR ID?','Which migration type should I pick?','Who approves my request?'],
+review:['What is an ADR?','Why Looker instead of Tableau?','What replaces SSIS?'],
+assessment:['Why am I blocked?','How do I resolve a blocker?','How is the score calculated?'],
+recommend:['How is the cost calculated?','What is a blueprint?','Why is it a range?'],
+intake:['What is the CR template?','What is an LZ date?','Who is my Domain Lead?'],
+approval:['What happens after approval?','How long does approval take?','Who is my Domain Lead?'],
+control:['What is the Ready to Design tollgate?','What are the stories for?','What happens after approval?'],
+discovery:['What is the DEx Tool?','What is a BAO?','What happens in Discovery?'],
+design:['What happens after Design?','Who reviews the design?','What is a landing zone?']};
+
+let helpOpen=false,helpInit=false;
+function toggleHelp(){helpOpen=!helpOpen;
+document.getElementById('hp').classList.toggle('on',helpOpen);
+document.getElementById('fab').classList.toggle('open',helpOpen);
+if(helpOpen&&!helpInit){helpInit=true;
+hpush('Hello Pinku. I am here to help with the onboarding process.<br><br>I know where you are in the flow, what is blocking you, and who to contact. Ask me anything — or pick a suggestion below.','b')}
+if(helpOpen){updateSugg();document.getElementById('hq').focus()}}
+function updateSugg(){const el=document.getElementById('hsug');if(!el)return;
+const base=(SUGG[S.stage]||[]).slice();
+if(ob().length)base.unshift('Why am I blocked?');
+if(base.indexOf('Who do I contact?')===-1)base.push('Who do I contact?');
+el.innerHTML=base.slice(0,4).map(s=>'<button class="hchip" onclick="askBot(\''+s.replace(/'/g,"\\'")+'\')">'+s+'</button>').join('');
+const c=document.getElementById('hpctx');if(c)c.textContent=ctxLine()}
+function hpush(html,who){const m=document.getElementById('hpm'),d=document.createElement('div');
+d.className='hmsg '+(who==='u'?'u':'');
+d.innerHTML=who==='u'?'<div class="hav u">PB</div><div class="hbub">'+html+'</div>'
+:'<div class="hav b">CG</div><div class="hbub">'+html+'</div>';
+m.appendChild(d);m.scrollTop=9e9;return d}
+function askBot(preset){const i=document.getElementById('hq');
+const q=preset||i.value.trim();if(!q)return;
+if(!preset)i.value='';
+hpush(q,'u');
+const t=hpush('<span class="dot"></span><span class="dot"></span><span class="dot"></span>','b');
+setTimeout(()=>{t.remove();hpush(botAnswer(q),'b');updateSugg()},480+Math.random()*280)}
+function updateFabDot(){const d=document.getElementById('fabdot');if(!d)return;
+const n=ob().length;d.style.display=n?'flex':'none';d.textContent=n>9?'9+':n}
+
+
+/* ═══ 09 CHANGE CONTROL ═══ */
+function storyList(){const a=A();
+const base=1+parseInt(S.crId.split('-')[1],10);
+const items=['Complete Application Discovery Questionnaire',
+'Submit data residency request via DEx Tool (Data Exchange Registry)',
+'Obtain BAO approval for the data residency request',
+'Provision DEV Landing Zone',
+'Complete SSIS package inventory and conversion assessment',
+'Map SQL Server Agent job chains to Cloud Composer DAG structure',
+'Export dbt lineage manifest for migration validation',
+'Scope Looker migration for existing Tableau workbooks (ADR-BI-002)',
+'Network connectivity assessment - on-premises to GCP',
+'Draft Architecture Decision Record referencing '+a.bpTop.id];
+if(a.regulated)items.splice(3,0,'Complete Data Protection Impact Assessment (DPIA)',
+'Data classification sign-off by Data Governance');
+return items.map((t,i)=>['GCPDM-'+(base+i),t])}
+function vControl(){const a=A(),L=lead();
+return head('Step 07 of 09 &middot; Phase 2 Demand Management','Change control and prioritisation',
+'The Demand Management team assesses the approved CR, confirms the application is ready to design, prioritises it for GCP, and generates the delivery stories under epic '+S.epicId+'.')+
+'<div class="bn b-green"><div class="bn-ic">&#10003;</div><div>'+
+'<div class="bn-t">'+S.crId+' approved by '+L.lead+'</div>'+
+'<div class="bn-b">Domain Lead approval is attached to the CR. Demand Management has been notified and portfolio analysis is complete.</div></div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Portfolio analysis and planning</div><div class="cm">Demand Management team</div></div>'+
+'<div class="ps">'+
+'<div class="pstep d"><span>&#10003;</span><span>CR validated against the standard template</span><span></span></div>'+
+'<div class="pstep d"><span>&#10003;</span><span>Domain Lead approval attachment verified</span><span></span></div>'+
+'<div class="pstep d"><span>&#10003;</span><span>Cost Center '+(S.intakeAnswers.cost_center||'-')+' confirmed against the domain budget</span><span></span></div>'+
+'<div class="pstep d"><span>&#10003;</span><span>LZ date '+(S.intakeAnswers.lz_date||'-')+' assessed against provisioning capacity</span><span></span></div>'+
+'</div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Ready to Design? &mdash; tollgate</div>'+
+'<div class="cm">'+(S.tollgate?'Passed':'Awaiting confirmation')+'</div></div>'+
+'<div class="cb"><p style="font-size:13.5px;color:var(--slate-600);margin-bottom:14px">This tollgate confirms the application team has reviewed and understood the standard design guidelines published by the Group Architecture team. It must be passed before the CR can be prioritised.</p>'+
+'<div class="ck '+(S.tollgate?'done':'')+'" style="border:1px solid '+(S.tollgate?'var(--green-700)':'var(--slate-300)')+';border-radius:5px;padding:14px 16px" onclick="toggleTollgate()">'+
+'<span class="ckb"></span><span class="ckt" style="font-size:13.5px">I confirm that the application team has reviewed and understood the standard design guidelines published by the Group Architecture team, and that '+a.app+' can proceed to design.</span><span class="cko">ITAO</span></div>'+
+(S.tollgate?'':'<div class="bn b-amber" style="margin-top:14px;margin-bottom:0"><div class="bn-ic">!</div><div>'+
+'<div class="bn-t">Tollgate not yet passed</div><div class="bn-b">If the design guidelines have not been reviewed, this CR routes to <strong>Remediation / Issue resolution</strong> rather than prioritisation. Contact Cloud Architecture at cloud.architecture@example.com for the current guideline pack.</div></div></div>')+
+'</div></div>'+
+(S.tollgate?
+(S.ccApproved?
+'<div class="card"><div class="ch"><div class="ct">Change Control Process</div><div class="cm">Approved</div></div>'+
+'<div class="ps">'+
+'<div class="pstep d"><span>&#10003;</span><span>Change impact assessed</span><span></span></div>'+
+'<div class="pstep d"><span>&#10003;</span><span>Application prioritised for GCP</span><span></span></div>'+
+'<div class="pstep d"><span>&#10003;</span><span>Change control approved &mdash; stories generated under '+S.epicId+'</span><span></span></div>'+
+'</div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Stories generated under epic '+S.epicId+'</div>'+
+'<div class="cm">'+storyList().length+' stories</div></div>'+
+'<div class="cb flush"><table class="dt"><thead><tr><th style="width:22%">STORY</th><th>SUMMARY</th><th style="width:16%">STATUS</th></tr></thead><tbody>'+
+storyList().map(s=>'<tr><td class="mono" style="color:var(--blue-600);font-weight:600">'+s[0]+'</td>'+
+'<td>'+s[1]+'</td><td><span class="pill p-grey">To Do</span></td></tr>').join('')+
+'</tbody></table></div></div>'+
+'<div class="bn b-blue"><div class="bn-ic">i</div><div><div class="bn-t">Phase 2 complete</div>'+
+'<div class="bn-b">The application is prioritised for GCP and the delivery backlog exists. Discovery work now starts against these stories.</div></div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'discovery\')">Continue to Discovery '+I.arr+'</button></div>'
+:'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="runCC()">Submit to Change Control '+I.arr+'</button>'+
+'<span class="hint">Demand Management assesses impact, then generates the delivery stories</span></div>')
+:'<div class="btn-row"><button class="btn btn-p btn-lg" disabled>Submit to Change Control</button>'+
+'<span class="hint err">'+I.warn+' Pass the Ready to Design tollgate to continue</span></div>')}
+function toggleTollgate(){S.tollgate=!S.tollgate;render();
+toast(S.tollgate?'Ready to Design tollgate passed':'Tollgate confirmation removed',S.tollgate?'ok':'')}
+function runCC(){S.ccApproved=true;render();renderRail();
+toast('Change control approved &mdash; '+storyList().length+' stories created','ok')}
+
+
+function ckl(g,k){return g.map((gr,gi)=>'<div class="ckc">'+gr.cat+'</div>'+
+gr.items.map((it,ii)=>{const id=k+'-'+gi+'-'+ii,d=S.checked.has(id);
+return '<div class="ck '+(d?'done':'')+'" id="'+id+'" onclick="tick(\''+id+'\',\''+k+'\')">'+
+'<span class="ckb"></span><span class="ckt">'+it.t+'</span><span class="cko">'+it.o+'</span></div>'}).join('')).join('')}
+function tick(id,k){S.checked.has(id)?S.checked.delete(id):S.checked.add(id);
+document.getElementById(id).classList.toggle('done');
+const a=A(),grp=k==='dsc'?a.discovery:a.design;
+const tot=grp.reduce((n,g)=>n+g.items.length,0);
+let dn=0;S.checked.forEach(x=>{if(x.indexOf(k+'-')===0)dn++});
+const f=document.getElementById('pfill'),t=document.getElementById('ptxt');
+if(f)f.style.width=(dn/tot*100)+'%';if(t)t.textContent=dn+' of '+tot+' complete'}
+function clCard(k,title,ey,pt,pd,noHead){const a=A(),g=k==='dsc'?a.discovery:a.design;
+const tot=g.reduce((n,x)=>n+x.items.length,0);
+let dn=0;S.checked.forEach(x=>{if(x.indexOf(k+'-')===0)dn++});
+return (noHead?'':head(ey,pt,pd))+'<div class="card"><div class="ch"><div class="ct">'+title+'</div></div>'+
+'<div class="prog"><div class="ptxt"><span>Progress</span><span id="ptxt">'+dn+' of '+tot+' complete</span></div>'+
+'<div class="ptrack"><div class="pfill" id="pfill" style="width:'+(tot?dn/tot*100:0)+'%"></div></div></div>'+
+'<div class="cb flush">'+ckl(g,k)+'</div></div>'}
+function vDisc(){return clCard('dsc','Discovery actions','Step 08 of 09 &middot; Phase 3 Discovery','Discovery checklist',
+'These are the stories generated under epic '+S.epicId+'. The phase completes when the DEV Landing Zone is provisioned.')+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'design\')">Continue to Design '+I.arr+'</button></div>'}
+function archSvg(){const reg=A().regulated;
+const B=(x,y,w,h,fill,stroke,label,sub,tc)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="4" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>'+
+'<text x="'+(x+w/2)+'" y="'+(y+(sub?18:h/2+4))+'" text-anchor="middle" font-family="IBM Plex Sans" font-size="11.5" font-weight="600" fill="'+(tc||'#0A1F3D')+'">'+label+'</text>'+
+(sub?'<text x="'+(x+w/2)+'" y="'+(y+31)+'" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="'+(tc||'#64748B')+'" opacity=".85">'+sub+'</text>':'');
+const AR=(x1,y1,x2,y2)=>'<path d="M'+x1+' '+y1+' L'+(x2-7)+' '+y2+'" stroke="#94A3B8" stroke-width="1.4" fill="none" marker-end="url(#ah)"/>';
+const COL=(x,label)=>'<text x="'+x+'" y="24" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" font-weight="600" fill="#64748B" letter-spacing="1.2">'+label+'</text>';
+const src='#F1F5F9',srcS='#CBD5E1',gcp='#EFF6FF',gcpS='#1A5FB4',bq='#1A5FB4',lk='#F0FDF4',lkS='#15803D';
+let s='<svg viewBox="0 0 1080 '+(reg?430:390)+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">'+
+'<defs><marker id="ah" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 z" fill="#94A3B8"/></marker></defs>'+
+COL(85,'SOURCE SYSTEMS')+COL(285,'INGESTION')+COL(475,'PROCESSING')+COL(690,'WAREHOUSE')+COL(960,'CONSUMPTION');
+// sources
+const srcs=[['System A','Oracle 19c'],['System B','Cloud API'],['System C','SharePoint'],['System D','ServiceNow']];
+srcs.forEach((v,i)=>{const y=48+i*62;s+=B(15,y,140,44,src,srcS,v[0],v[1])});
+// ingestion
+s+=B(215,48,140,44,gcp,gcpS,'Datastream','Oracle CDC');
+s+=B(215,110,140,44,gcp,gcpS,'Cloud Functions','REST / Graph API');
+s+=B(215,172,140,44,gcp,gcpS,'Pub/Sub','Event buffer');
+s+=B(215,234,140,44,gcp,gcpS,'Cloud Storage','Landing zone');
+// processing
+s+=B(405,80,140,44,gcp,gcpS,'Dataflow','SSIS replacement');
+s+=B(405,142,140,44,gcp,gcpS,'Cloud Composer','Airflow DAGs');
+s+=B(405,204,140,44,gcp,gcpS,'dbt on Composer','Transform layer');
+// warehouse
+s+='<rect x="600" y="48" width="180" height="176" rx="5" fill="'+bq+'" stroke="#12305A" stroke-width="2"/>'+
+'<text x="690" y="70" text-anchor="middle" font-family="IBM Plex Sans" font-size="13" font-weight="700" fill="#fff">BigQuery</text>'+
+'<text x="690" y="84" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#DBEAFE">'+(reg?'EU multi-region':'Data warehouse')+'</text>';
+['Raw zone','Staging zone','Curated zone'].forEach((z,i)=>{const y=98+i*40;
+s+='<rect x="615" y="'+y+'" width="150" height="32" rx="3" fill="#2D7DD2" opacity=".55"/>'+
+'<text x="690" y="'+(y+20)+'" text-anchor="middle" font-family="IBM Plex Sans" font-size="10.5" font-weight="500" fill="#fff">'+z+'</text>'});
+// consumption
+s+=B(880,48,180,48,lk,lkS,'Looker','Primary BI · ADR-BI-002');
+const dn=[['System X','Oracle'],['System Y','BigQuery'],['System Z','SharePoint']];
+dn.forEach((v,i)=>{const y=112+i*56;s+=B(880,y,180,44,src,srcS,v[0],v[1])});
+// arrows
+s+=AR(155,70,215,70)+AR(155,132,215,132)+AR(155,194,215,194)+AR(155,256,215,256);
+s+=AR(355,70,405,102)+AR(355,132,405,164)+AR(355,194,405,164)+AR(355,256,405,226);
+s+=AR(545,102,600,110)+AR(545,164,600,150)+AR(545,226,600,190);
+s+=AR(780,72,880,72)+AR(780,120,880,134)+AR(780,150,880,190)+AR(780,180,880,246);
+// governance bar
+const gy=reg?300:296;
+s+='<rect x="15" y="'+gy+'" width="1045" height="'+(reg?52:44)+'" rx="5" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.5"/>'+
+'<text x="34" y="'+(gy+19)+'" font-family="IBM Plex Mono" font-size="9" font-weight="600" fill="#6D28D9" letter-spacing="1">CROSS-CUTTING</text>';
+const gsv=reg?['Cloud IAM','Cloud KMS (CMEK)','Cloud DLP','VPC Service Controls','Cloud Armor','Monitoring + Logging','Audit Logs']
+:['Cloud IAM','Cloud KMS','VPC peering','Cloud Monitoring','Cloud Logging','Secret Manager'];
+gsv.forEach((g,i)=>{const w=Math.floor(1000/gsv.length),x=34+i*w;
+s+='<text x="'+x+'" y="'+(gy+(reg?38:36))+'" font-family="IBM Plex Sans" font-size="10.5" font-weight="500" fill="#334155">'+g+'</text>'});
+if(reg)s+='<text x="34" y="'+(gy+68)+'" font-family="IBM Plex Sans" font-size="10" fill="#B45309">All services deployed in EU region only — data residency requirement for MiFID II reporting</text>';
+s+='</svg>';return s}
+
+function svcTable(){const reg=A().regulated;
+let rows=[
+['BigQuery','Data warehouse',reg?'Standard edition, EU multi-region, partitioned by load date, clustered on client ID, column-level security':'Standard edition, EU region, partitioned by load date, clustered on business key','ADR-DWH-001'],
+['Cloud Composer 2','Orchestration &mdash; replaces SQL Server Agent',reg?'Medium environment, HA configuration, private IP, 3 daily DAG schedules':'Small environment, 3 workers, private IP, 3 daily DAG schedules','ADR-DWH-005'],
+['Dataflow','Batch transformation &mdash; replaces SSIS','Flex templates, n1-standard-2, autoscale 2&ndash;8 workers','ADR-DWH-004'],
+['dbt on Composer','Transformation layer','dbt Core 1.5 unchanged, BigQuery target profile, models run post-load','ADR-DWH-007'],
+['Datastream','Oracle CDC &mdash; System A','Private connectivity, 15-minute sync, backfill on initial load','ADR-INT-003'],
+['Cloud Functions','REST ingestion &mdash; Systems B, C, D','2nd gen, Python 3.11, 512 MB, Secret Manager for API credentials','ADR-INT-004'],
+['Pub/Sub','Event buffer between ingest and processing','Standard topics, 7-day retention, dead-letter queue','ADR-INT-004'],
+['Cloud Storage','Landing zone and archive','Standard &rarr; Nearline at 30 days &rarr; Coldline at 90 days','ADR-DWH-002'],
+['Looker','BI platform &mdash; replaces Tableau',reg?'Standard, BigQuery connection, row-level security on regulated tables, PDTs enabled':'Standard, BigQuery connection, persistent derived tables enabled','ADR-BI-002'],
+['Cloud IAM','Access control','Custom roles per team, Workload Identity Federation, no service account keys','ADR-SEC-001']];
+if(reg)rows=rows.concat([
+['Cloud KMS','Encryption key management','CMEK for all regulated datasets, EU key ring, 90-day rotation','ADR-SEC-004'],
+['Cloud DLP','PII discovery and classification','Scheduled scans on curated zone, de-identification templates for non-prod','ADR-SEC-005'],
+['VPC Service Controls','Data exfiltration perimeter','Service perimeter around BigQuery, GCS and Composer','ADR-SEC-006'],
+['Cloud Armor','Edge protection','WAF rules on Looker ingress, geo-restriction to EU','ADR-SEC-007']]);
+rows.push(['Cloud Monitoring','Observability','Dashboards per DAG, alerting on job failure and cost anomalies','ADR-OPS-002']);
+return '<table class="dt"><thead><tr><th style="width:16%">GCP service</th><th style="width:22%">Purpose</th>'+
+'<th style="width:47%">Recommended configuration</th><th style="width:15%">ADR</th></tr></thead><tbody>'+
+rows.map(r=>'<tr><td class="sname">'+r[0]+'</td><td class="stech">'+r[1]+'</td><td style="font-size:12.5px">'+r[2]+'</td>'+
+'<td><span class="adr">'+r[3]+'</span></td></tr>').join('')+'</tbody></table>'}
+
+function vDesign(){const a=A();
+return head('Step 09 of 09 &middot; Phase 5 Design','Recommended architecture and design readiness',
+'Target architecture for a '+S.migType+' migration against blueprint '+a.bpTop.id+', with the recommended GCP service configuration and ADR references throughout.')+
+'<div class="card"><div class="ch"><div class="ct">Recommended target architecture</div>'+
+'<div class="cm">'+a.bpTop.id+' &middot; '+a.bpTop.eri.split(' - ')[0]+'</div></div>'+
+'<div style="padding:20px;overflow-x:auto"><div style="min-width:900px">'+archSvg()+'</div></div>'+
+'<div class="notes">Source systems retain their existing interfaces. Datastream replaces the nightly Oracle batch with change data capture; the three REST and file-based sources move to Cloud Functions with a Pub/Sub buffer. '+
+'SSIS logic is rebuilt in Dataflow, orchestrated by Cloud Composer on the existing three-window daily schedule. dbt runs unchanged against a BigQuery target profile. '+
+'Looker replaces Tableau as the primary BI layer per ADR-BI-002.</div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Recommended GCP services and configuration</div>'+
+'<div class="cm">'+(a.regulated?'15':'11')+' services</div></div><div class="cb flush">'+svcTable()+'</div></div>'+
+clCard('dsg','Design readiness checklist','','','',1)+
+'<div class="bn b-blue" style="margin-top:16px"><div class="bn-ic">i</div><div>'+
+'<div class="bn-t">Remaining lifecycle phases</div>'+
+'<div class="bn-b">Phase 6 Build, Phase 7 Testing and Final Design, Phase 8 Deployment / Release Management and Phase 9 On-Prem Decommissioning follow the same gate model. '+
+'Detailed stages for these phases are not yet defined and will be added to CloudGate once published.</div></div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="toast(\'Onboarding pack generated\',\'ok\')">Generate onboarding pack</button>'+
+'<button class="btn btn-g" onclick="resetAll()">'+I.rst+' New request</button></div>'}
+
+initState();render();
+</script>
+</body>
+</html>
