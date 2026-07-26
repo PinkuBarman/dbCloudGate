@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CloudGate — GCP Onboarding Platform</title>
+<title>dbCloudGate — GCP Onboarding Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@ body{font-family:var(--fs);background:var(--slate-100);color:var(--slate-900);fo
 svg{display:block}
 .appbar{background:var(--navy-900);color:#fff;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
 .ab-l{display:flex;align-items:center;gap:16px}.logo{display:flex;align-items:center;gap:10px}
-.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,var(--blue-500),var(--blue-600));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border-radius:4px}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,var(--blue-500),var(--blue-600));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;letter-spacing:-.3px;border-radius:4px}
 .logo-text{font-weight:600;font-size:16.5px;letter-spacing:-.02em}
 .logo-sub{font-size:12.5px;color:var(--slate-400);border-left:1px solid var(--navy-700);padding-left:16px}
 .ab-r{display:flex;align-items:center;gap:18px;font-size:12.5px}
@@ -279,6 +279,8 @@ table.dt tbody tr:hover td{background:var(--slate-50)}
 .cnt{font-family:var(--fm);font-size:12px;color:var(--blue-600);font-weight:600}
 .spin{width:14px;height:14px;border:2px solid var(--slate-300);border-top-color:var(--blue-600);border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
+.twc{color:var(--blue-600);font-weight:400;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
 .prog{padding:13px 20px;border-bottom:1px solid var(--slate-200)}
 .ptrack{height:6px;background:var(--slate-200);border-radius:3px;overflow:hidden;margin-top:7px}
 .pfill{height:6px;background:var(--green-700);border-radius:3px;transition:width .4s ease}
@@ -364,7 +366,7 @@ table.dt tbody tr:hover td{background:var(--slate-50)}
 </head>
 <body>
 <div class="appbar">
-<div class="ab-l"><div class="logo"><div class="logo-mark">CG</div><div class="logo-text">dbCloudGate</div></div>
+<div class="ab-l"><div class="logo"><div class="logo-mark">dbCG</div><div class="logo-text">dbCloudGate</div></div>
 <div class="logo-sub">GCP Onboarding Platform</div></div>
 <div class="ab-r"><span class="env">POC</span>
 <div class="user"><span>Pinku Barman</span><div class="user-av">PB</div></div></div>
@@ -373,7 +375,7 @@ table.dt tbody tr:hover td{background:var(--slate-50)}
 <div class="layout"><main class="main" id="main"></main><aside class="rail" id="rail"></aside></div>
 <div class="toasts" id="toasts"></div>
 <div class="hp" id="hp">
-<div class="hph"><div class="hph-av">CG</div>
+<div class="hph"><div class="hph-av">dbCG</div>
 <div><div class="hph-t">dbCloudGate Assistant</div><div class="hph-s" id="hpctx">Onboarding help</div></div>
 <button class="hph-x" onclick="toggleHelp()" title="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
 <div class="hpm" id="hpm"></div>
@@ -399,7 +401,7 @@ mail:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="curren
 const DOMAINS={
 'Data & Analytics':{lead:'Marijn Vermeer',email:'marijn.vermeer@example.com',backup:'Aisha Rahman',sla:'5 business days'},
 'Regulatory Reporting':{lead:'Idris Okonkwo',email:'idris.okonkwo@example.com',backup:'Elena Vasquez',sla:'3 business days'},
-'Finance':{lead:'Claudia Restrepo',email:'claudia.restrepo@example.com',backup:'Jonas Weber',sla:'5 business days'},
+'Corporate Shared Function':{lead:'Claudia Restrepo',email:'claudia.restrepo@example.com',backup:'Jonas Weber',sla:'5 business days'},
 'Risk Management':{lead:'Tobias Lindqvist',email:'tobias.lindqvist@example.com',backup:'Priya Menon',sla:'4 business days'},
 'Treasury':{lead:'Amara Nwosu',email:'amara.nwosu@example.com',backup:'Stefan Novak',sla:'5 business days'},
 'Corporate Banking':{lead:'Henrik Sorensen',email:'henrik.sorensen@example.com',backup:'Lucia Ferrari',sla:'5 business days'},
@@ -411,7 +413,7 @@ const OTHER_LEAD={lead:'Central Onboarding Desk',email:'cloud.onboarding@example
 const MIG=[{k:'ReHost',d:'Lift and shift with no code change. Fastest, but carries existing licensing and technical debt.'},
 {k:'RePlatform',d:'Move to managed cloud services with targeted changes. Balanced effort and benefit.'},
 {k:'ReArchitect',d:'Redesign for cloud-native patterns. Highest benefit, longest delivery timeline.'}];
-const NAR={'118135-1':{key:'a'},'118135-2':{key:'b'}};
+const NAR={'118135-1':{key:'a'},'103799-1':{key:'b'}};
 
 const ARCH={systemType:'On-premises Enterprise Data Warehouse',
 database:'Microsoft SQL Server 2019 - Enterprise Edition',
@@ -440,8 +442,8 @@ mapping:[
 
 const APPS={
 a:{key:'a',app:'EDW-Core',nar:'118135-1',
-appDesc:'Group finance data warehouse - management reporting and regulatory extracts',
-recMig:'RePlatform',dataClass:'Internal - no PII in scope',regulated:0,arch:ARCH,
+appDesc:'eDiscovery Technology data warehouse - management reporting and regulatory extracts',
+recMig:'RePlatform',domain:'Corporate Shared Function',dataClass:'Confidential - no PII in scope',regulated:0,arch:ARCH,
 sampleFiles:[{n:'EDW-Core_Architecture_v3.2.pdf',s:'2.4 MB',t:'pdf'},{n:'EDW_DataFlow_Diagram.pptx',s:'1.1 MB',t:'ppt'},{n:'EDW_Operations_Runbook.docx',s:'684 KB',t:'doc'}],
 baseDims:[{n:'Architecture clarity',w:3,s:9},{n:'Data readiness',w:2,s:7},{n:'Dependency mapping',w:2,s:8},{n:'Security / IAM posture',w:2,s:6},{n:'Operational readiness',w:1,s:8}],
 migFit:{ReHost:{s:5,gap:{id:'m1',sev:'MEDIUM',text:'ReHost retains MS SQL Server licensing on Compute Engine',rem:'Licensing cost of approximately $5,500 per month continues. Consider RePlatform to BigQuery to retire it.',lift:0}},
@@ -451,10 +453,10 @@ baseGaps:[{id:'a1',sev:'HIGH',text:'SSIS package inventory incomplete - 47 of ~6
 {id:'a2',sev:'MEDIUM',text:'dbt model lineage not exported for migration validation',rem:'Run dbt docs generate and attach the manifest to the Discovery pack.',lift:0},
 {id:'a3',sev:'MEDIUM',text:'SQL Server Agent job dependencies not mapped to DAG structure',rem:'Map the 3 daily job chains to Composer DAGs before Design.',lift:0},
 {id:'a4',sev:'LOW',text:'Tableau extract refresh schedules not documented',rem:'List refresh windows so Looker dashboard equivalents can be scoped.',lift:0}],
-current:{rows:[{c:'MS SQL Server Enterprise',s:'Licence + Software Assurance',v:5500},
-{c:'Server hardware',s:'Amortised - 3 nodes',v:1180},{c:'SAN storage',s:'1 TB usable + snapshots',v:790},
-{c:'Tableau Server',s:'Licence + maintenance',v:1400},{c:'Data centre',s:'Rack, power, cooling',v:610},
-{c:'Backup and DR',s:'Tape + offsite replication',v:720},{c:'Support and maintenance',s:'0.4 FTE allocation',v:2800}],total:13000},
+current:{rows:[{c:'MS SQL Server Enterprise',s:'Licence + Software Assurance',v:3000},
+{c:'SAN storage',s:'1 TB usable + snapshots',v:790},
+{c:'Tableau Server',s:'Licence + maintenance',v:1400},
+{c:'Backup and DR',s:'Tape + offsite replication',v:720},{c:'Support and maintenance',s:'0.4 FTE allocation',v:2800}],total:8710},
 target:{rows:[{c:'BigQuery',s:'Storage + on-demand query',l:450,h:840},
 {c:'Cloud Composer 2',s:'Airflow - replaces SQL Server Agent',l:370,h:520},
 {c:'Dataflow',s:'Batch transforms - replaces SSIS',l:230,h:420},
@@ -465,7 +467,7 @@ target:{rows:[{c:'BigQuery',s:'Storage + on-demand query',l:450,h:840},
 {c:'Networking',s:'Egress + Interconnect share',l:100,h:195},
 {c:'Operations',s:'Monitoring + Logging',l:55,h:160}],total:{l:2322,h:3930}},
 costNotes:['1-year Committed Use Discount applied to Composer and Dataflow - approximately 28% saving',
-'MS SQL Server licence retirement is the single largest saving at $5,500 per month',
+'MS SQL Server licence retirement saves approximately $3,000 per month',
 'Looker replaces Tableau licensing; allocated share of the enterprise agreement shown',
 'Non-Production environment adds approximately 35%','Confidence: MEDIUM - refine after SSIS inventory is complete'],
 bpTop:{id:'GCP-BP-023',name:'On-Premises Data Warehouse to BigQuery (RePlatform)',eri:'ERI-BQ-DWH-04 - BigQuery + Composer + Dataflow + Datastream + Looker',fit:89,
@@ -508,12 +510,12 @@ design:[{cat:'Core - all migration types',items:[
 {t:'Composer environment sized and DAG structure drafted (ADR-DWH-005)',o:'Data Eng'},
 {t:'Datastream CDC configuration for System A validated (ADR-INT-003)',o:'Data Eng'},
 {t:'dbt target profile switched to BigQuery in a test branch (ADR-DWH-007)',o:'Analytics Eng'},
-{t:'Looker semantic model drafted for finance reporting (ADR-BI-002)',o:'BI team'},
+{t:'Looker semantic model drafted for Corporate Shared Function reporting (ADR-BI-002)',o:'BI team'},
 {t:'Architecture Decision Record drafted, referencing GCP-BP-023',o:'Architect'},
 {t:'FinOps cost estimate reviewed and signed off by Domain Lead',o:'Domain Lead'}]}]},
-b:{key:'b',app:'EDW-Regulatory',nar:'118135-2',
+b:{key:'b',app:'EDW-Regulatory',nar:'103799-1',
 appDesc:'Regulatory reporting mart - MiFID II transaction reporting and client disclosures',
-recMig:'RePlatform',dataClass:'PII - Regulated (GDPR, MiFID II)',regulated:1,
+recMig:'RePlatform',domain:'Regulatory Reporting',dataClass:'Strictly Confidential - Regulated (GDPR, MiFID II)',regulated:1,
 arch:Object.assign({},ARCH,{volume:'1 TB compressed - includes 340 GB of client PII',
 jobs:'3 scheduled runs per day - ~1 hour each - near-real-time streaming under consideration'}),
 sampleFiles:[{n:'EDW-Regulatory_Architecture_v1.8.pdf',s:'3.1 MB',t:'pdf'},{n:'MiFID_DataFlow_Specification.docx',s:'920 KB',t:'doc'},{n:'Regulatory_Reporting_Overview.pptx',s:'1.6 MB',t:'ppt'}],
@@ -526,11 +528,11 @@ baseGaps:[{id:'b3',sev:'BLOCKER',text:'Regulated / PII data with no completed da
 {id:'b5',sev:'HIGH',text:'3 of 4 upstream integration contracts undocumented (Systems B, C, D)',rem:'Only System A has a documented interface contract. Capture the remaining three during Discovery.',lift:0},
 {id:'b6',sev:'MEDIUM',text:'SSIS to Dataflow conversion effort not estimated for 60+ packages',rem:'Run a package complexity assessment to size the conversion.',lift:0},
 {id:'b7',sev:'LOW',text:'Tableau extract refresh dependencies not mapped',rem:'Document refresh windows for the regulatory dashboards before Looker migration.',lift:0}],
-current:{rows:[{c:'MS SQL Server Enterprise',s:'Licence + SA, AlwaysOn HA pair',v:8200},
-{c:'Server hardware',s:'Amortised - 4 nodes + DR',v:1900},{c:'SAN storage',s:'Encrypted, 7-year retention',v:1300},
-{c:'Tableau Server',s:'Licence + maintenance',v:1400},{c:'Data centre',s:'Rack, power, cooling',v:850},
+current:{rows:[{c:'MS SQL Server Enterprise',s:'Licence + SA, AlwaysOn HA pair',v:3000},
+{c:'SAN storage',s:'Encrypted, 7-year retention',v:1300},
+{c:'Tableau Server',s:'Licence + maintenance',v:1400},
 {c:'Backup and DR',s:'Regulatory retention + offsite',v:1600},{c:'Compliance tooling',s:'Audit, encryption, monitoring',v:1100},
-{c:'Support and maintenance',s:'0.5 FTE allocation',v:3600}],total:19950},
+{c:'Support and maintenance',s:'0.5 FTE allocation',v:3600}],total:12000},
 target:{rows:[{c:'BigQuery',s:'Storage + slot reservation (regulated)',l:560,h:1015},
 {c:'Cloud Composer 2',s:'Airflow - high availability',l:520,h:745},
 {c:'Dataflow',s:'Batch + selective streaming',l:670,h:1240},
@@ -543,7 +545,7 @@ target:{rows:[{c:'BigQuery',s:'Storage + slot reservation (regulated)',l:560,h:1
 {c:'Operations',s:'Monitoring, Logging, audit retention',l:86,h:195}],total:{l:3439,h:5934}},
 costNotes:['No Committed Use Discount applied until migration type and timeline are confirmed',
 'Regulated data adds Cloud KMS, DLP and extended audit log retention',
-'MS SQL Server HA licence retirement is the largest saving at $8,200 per month',
+'MS SQL Server licence retirement saves approximately $3,000 per month',
 'Looker is mandatory here - Tableau cannot connect to BigQuery in the EU region (ADR-BI-002)',
 'Disaster recovery adds a further 40% if required from day one','Confidence: LOW - refine once integration scope is confirmed'],
 bpTop:{id:'GCP-BP-023',name:'On-Premises Data Warehouse to BigQuery (RePlatform)',eri:'ERI-BQ-DWH-04 - BigQuery + Composer + Dataflow + Datastream + Looker',fit:84,
@@ -606,7 +608,7 @@ files:[],urls:[],upTab:'files',gapFilter:'all',resolutions:{},
 intakeStep:0,intakeAnswers:{},intakeComplete:false,crId:null,epicId:'GCPDM-1801',
 tollgate:false,ccApproved:false,stories:null,headsUpSent:false,
 emailSubj:null,emailBody:null,emailEdited:false,emailFrom:'pinkuraj.l@gmail.com',emailTo:null,
-dmTo:'demand.management@example.com',approval:'idle',dmNotified:false,checked:new Set()}}
+dmTo:'demand.management@example.com',approval:'idle',dmNotified:false,checked:new Set(),reviewTyped:false,recTyped:false,designTab:'ihld',sddGenerated:false}}
 function A(){return S.appKey?APPS[S.appKey]:null}
 function lead(){if(!S.domain)return null;return S.domain==='__other'?OTHER_LEAD:DOMAINS[S.domain]}
 function domainName(){return S.domain==='__other'?(S.domainOther||'Other'):S.domain}
@@ -621,8 +623,7 @@ return g.map(x=>({...x,status:S.resolutions[x.id]?'resolved':'open',resolution:S
 function ob(){return gaps().filter(g=>g.sev==='BLOCKER'&&g.status==='open')}
 function dims(){const a=A();if(!a)return[];
 const mf=S.migType?a.migFit[S.migType].s:5;
-const bd=S.intakeAnswers.budget?((S.intakeAnswers.budget||'').toLowerCase().indexOf('approv')>-1?9:2):5;
-return[a.baseDims[0],{n:'Migration type fit',w:3,s:mf},...a.baseDims.slice(1),{n:'Budget alignment',w:1,s:bd}]}
+return[a.baseDims[0],{n:'Migration type fit',w:3,s:mf},...a.baseDims.slice(1)]}
 function rawScore(){const d=dims();if(!d.length)return 0;let n=0,dn=0;d.forEach(x=>{n+=x.s*x.w;dn+=x.w*10});return Math.round(n/dn*100)}
 function score(){let b=rawScore();gaps().forEach(g=>{if(g.status==='resolved')b+=g.lift});return Math.min(b,100)}
 function sst(v){return v>=80?{t:'READY',c:'p-green',d:'No blockers. This request can proceed to Discovery.'}
@@ -712,7 +713,9 @@ recommend:vRecommend,intake:vIntake,approval:vApproval,control:vControl,discover
 document.getElementById('main').innerHTML=fn();
 if(typeof updateFabDot==='function'){updateFabDot();if(helpOpen)updateSugg()}
 if(S.stage==='assessment')setTimeout(()=>document.querySelectorAll('.dfl').forEach((b,i)=>setTimeout(()=>b.style.width=b.dataset.w+'%',i*70)),60);
-if(S.stage==='intake'){S.intakeComplete?restoreChat():setTimeout(askNext,500)}}
+if(S.stage==='intake'){S.intakeComplete?restoreChat():setTimeout(askNext,500)}
+if(S.stage==='review'&&!S.reviewTyped)setTimeout(animateReview,40)
+if(S.stage==='recommend'&&!S.recTyped)setTimeout(animateRecommend,40)}
 function head(c,t,d){return '<div class="ph"><div class="crumb">'+c+'</div><div class="pt">'+t+'</div><div class="pd">'+d+'</div></div>'}
 
 function vApplication(){const a=A(),L=lead(),n=S.files.length+S.urls.length;
@@ -726,15 +729,10 @@ return head('Step 01 of 09 &middot; Phase 1 Readiness Evaluation','Identify the 
 '<button class="btn btn-p" onclick="lookupNar()">'+I.srch+' Look up</button><span></span></div>'+
 (a?'<div class="resolved"><div class="rtick">&#10003;</div><div><div class="rname">'+a.app+'</div>'+
 '<div class="rmeta">'+a.appDesc+'</div><div class="rmeta" style="margin-top:5px"><span class="pill p-blue">Data Warehouse</span> <span class="pill '+(a.regulated?'p-red':'p-grey')+'">'+a.dataClass+'</span></div></div></div>'
-:'<div class="hintrow"><span>Try:</span><span class="chip" onclick="setNar(\'118135-1\')">118135-1</span><span class="chip" onclick="setNar(\'118135-2\')">118135-2</span></div>')+
+:'<div class="hintrow"><span>Try:</span><span class="chip" onclick="setNar(\'118135-1\')">118135-1</span><span class="chip" onclick="setNar(\'103799-1\')">103799-1</span></div>')+
 '</div></div>'+
-'<div class="qblk '+(!q1?'':q2?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q2?'&#10003;':'2')+'</span>Which migration type applies?</div>'+
-'<div class="qd">This drives the readiness assessment, cost model and blueprint recommendation.</div><div class="qbody"><div class="opts">'+
-MIG.map(m=>'<div class="opt '+(S.migType===m.k?'on':'')+'" onclick="setMig(\''+m.k+'\')"><div class="optn"><span class="optr"></span>'+m.k+
-(a&&a.recMig===m.k?'<span class="opt-badge">Suggested</span>':'')+'</div><div class="optd">'+m.d+'</div></div>').join('')+
-'</div></div></div>'+
-'<div class="qblk '+(!q2?'':q3?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q3?'&#10003;':'3')+'</span>Which domain owns this application?</div>'+
-'<div class="qd">The Domain Lead who must approve this request is assigned automatically. You do not need to look them up.</div><div class="qbody">'+
+'<div class="qblk '+(!q1?'':q3?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q3?'&#10003;':'2')+'</span>Which domain owns this application?</div>'+
+'<div class="qd">Pre-selected automatically from the NAR ID, along with the Domain Lead who must approve this request. Change it below if it is not right.</div><div class="qbody">'+
 '<select class="sel" onchange="setDomain(this.value)"><option value="">Select a domain...</option>'+
 Object.keys(DOMAINS).map(d=>'<option value="'+d+'" '+(S.domain===d?'selected':'')+'>'+d+'</option>').join('')+
 '<option value="__other" '+(S.domain==='__other'?'selected':'')+'>Other - not listed</option></select>'+
@@ -743,8 +741,13 @@ Object.keys(DOMAINS).map(d=>'<option value="'+d+'" '+(S.domain===d?'selected':''
 '<div class="ln">'+L.lead+'</div><div class="lm">Domain Lead &middot; '+domainName()+'</div>'+
 '<div class="lm">'+L.email+' &middot; Backup: '+L.backup+' &middot; SLA '+L.sla+'</div></div></div>':'')+
 '</div></div>'+
-'<div class="qblk '+(!q3?'':q4?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q4?'&#10003;':'4')+'</span>Provide your architecture documentation</div>'+
-'<div class="qd">CloudGate reads these to extract the technical profile, score readiness, estimate cost and recommend a blueprint.</div><div class="qbody">'+
+'<div class="qblk '+(!q3?'':q2?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q2?'&#10003;':'3')+'</span>Which migration type applies?</div>'+
+'<div class="qd">This drives the readiness assessment, cost model and blueprint recommendation.</div><div class="qbody"><div class="opts">'+
+MIG.map(m=>'<div class="opt '+(S.migType===m.k?'on':'')+'" onclick="setMig(\''+m.k+'\')"><div class="optn"><span class="optr"></span>'+m.k+
+(a&&a.recMig===m.k?'<span class="opt-badge">Suggested</span>':'')+'</div><div class="optd">'+m.d+'</div></div>').join('')+
+'</div></div></div>'+
+'<div class="qblk '+(!q2?'':q4?'ans':'act')+'"><div class="qt"><span class="qnum">'+(q4?'&#10003;':'4')+'</span>Provide your architecture documentation</div>'+
+'<div class="qd">dbCloudGate reads these to extract the technical profile, score readiness, estimate cost and recommend a blueprint.</div><div class="qbody">'+
 '<div class="mini-tabs">'+
 '<button class="mini-tab '+(S.upTab==='files'?'on':'')+'" onclick="S.upTab=\'files\';render()">'+I.file+' Documents</button>'+
 '<button class="mini-tab '+(S.upTab==='url'?'on':'')+'" onclick="S.upTab=\'url\';render()">'+I.link+' Link</button></div>'+
@@ -771,13 +774,13 @@ S.urls.map((u,i)=>'<div class="frow"><div class="fic url">URL</div>'+
 '</div></div></div>'+
 '<div class="btn-row"><button class="btn btn-p btn-lg" onclick="doUpload()" '+(q1&&q2&&q3&&q4?'':'disabled')+'>'+I.up+' Upload and analyse</button>'+
 (q1&&q2&&q3&&q4?'<span class="hint">'+n+' item'+(n>1?'s':'')+' ready</span>'
-:'<span class="hint">'+(!q1?'Look up your NAR ID to begin':!q2?'Select a migration type':!q3?'Select your domain':'Add at least one document or link')+'</span>')+'</div>'}
+:'<span class="hint">'+(!q1?'Look up your NAR ID to begin':!q3?'Select your domain':!q2?'Select a migration type':'Add at least one document or link')+'</span>')+'</div>'}
 function setNar(v){document.getElementById('narIn').value=v;lookupNar()}
 function lookupNar(){const v=document.getElementById('narIn').value.trim();S.narInput=v;
 if(!v){toast('Enter a NAR ID','err');return}
 const m=NAR[v];
 if(!m){S.appKey=null;render();toast('NAR ID not found in the register','err');return}
-S.appKey=m.key;S.migType=null;S.domain=null;S.files=[];S.urls=[];render();toast('Application resolved: '+APPS[m.key].app,'ok')}
+S.appKey=m.key;S.migType=APPS[m.key].recMig||null;S.domain=APPS[m.key].domain||null;S.domainOther='';S.files=[];S.urls=[];render();toast('Application resolved: '+APPS[m.key].app,'ok');if(S.domain&&DOMAINS[S.domain])toast('Domain auto-detected from NAR ID: '+S.domain+' - Lead '+DOMAINS[S.domain].lead,'ok')}
 function setMig(k){S.migType=k;render()}
 function setDomain(v){S.domain=v||null;render();if(v&&v!=='__other')toast('Domain Lead assigned: '+DOMAINS[v].lead,'ok')}
 
@@ -799,7 +802,7 @@ let i=0;const d=document.getElementById('loadD');
 const t=setInterval(()=>{i=(i+1)%msgs.length;if(d)d.textContent=msgs[i]},760);
 items.forEach((_,x)=>setTimeout(()=>{const e=document.getElementById('lf'+x);
 if(e){e.classList.add('done');e.querySelector('.lfs').textContent='Parsed'}},900+x*900));
-setTimeout(()=>{clearInterval(t);go('review');toast('Architecture profile extracted','ok')},Math.max(4600,items.length*900+1500))}
+setTimeout(()=>{clearInterval(t);var sec=0,total=13;if(d)d.textContent='Thinking\u2026 0s';var tk=setInterval(()=>{sec++;if(d)d.textContent='Thinking\u2026 '+sec+'s';if(sec>=total)clearInterval(tk);},1000);setTimeout(()=>{clearInterval(tk);go('review');toast('Architecture profile extracted','ok')},total*1000)},Math.max(4600,items.length*900+1500))}
 function vAnalysing(items){items=items||[];
 return '<div class="card"><div class="lw"><div class="bspin"></div>'+
 '<div class="lt">Analysing architecture documentation</div>'+
@@ -808,6 +811,117 @@ return '<div class="card"><div class="lw"><div class="bspin"></div>'+
 '<span>'+I.file+'</span><span style="word-break:break-all">'+n+'</span>'+
 '<span class="lfs" style="font-family:var(--fm);font-size:11px">Queued</span></div>').join('')+'</div>':'')+'</div></div>'}
 
+function animateReview(){S.reviewTyped=true;
+var main=document.getElementById('main');if(!main)return;
+var cards=[].slice.call(main.querySelectorAll('.card'));
+var btnrow=main.querySelector('.btn-row');var head=main.querySelector('.ph');
+cards.forEach(function(c){c.style.opacity='0';c.style.transform='translateY(10px)';c.style.transition='opacity .45s ease, transform .45s ease'});
+if(btnrow){btnrow.style.opacity='0';btnrow.style.transition='opacity .45s ease'}
+var ind=document.createElement('div');
+ind.style.cssText='display:flex;align-items:center;gap:10px;margin:-2px 0 18px;font-size:13px;color:var(--blue-600);font-family:var(--fm)';
+ind.innerHTML='<span class="spin"></span><span id="aiwt">Vertex AI is reading the document…</span>';
+if(head)head.insertAdjacentElement('afterend',ind);else main.insertBefore(ind,main.firstChild);
+var txt=ind.querySelector('#aiwt');
+function show(c){if(!c)return;c.style.opacity='1';c.style.transform='none';}
+function typeCard(card,done){
+var dds=[].slice.call(card.querySelectorAll('dd'));
+var plain=dds.filter(function(d){return d.children.length===0;});
+var vals=plain.map(function(d){return d.textContent;});
+plain.forEach(function(d){d.innerHTML='<span class="tw"></span><span class="twc">&#9611;</span>';});
+var idx=0;
+function typeOne(){
+if(idx>=plain.length){dds.forEach(function(d){var c=d.querySelector('.twc');if(c)c.remove();});done&&done();return;}
+var d=plain[idx],full=vals[idx],span=d.querySelector('.tw'),cur=d.querySelector('.twc'),i=0;
+var iv=setInterval(function(){span.textContent=full.slice(0,i);i++;
+if(i>full.length){clearInterval(iv);if(cur)cur.remove();idx++;setTimeout(typeOne,180);}},30);
+}
+typeOne();
+}
+function typeRow(tr){
+var tds=[].slice.call(tr.children).filter(function(td){return td.children.length===0 && td.textContent.trim();});
+tds.forEach(function(td){var full=td.textContent;td.textContent='';var i=0;
+var iv=setInterval(function(){td.textContent=full.slice(0,i);i++;if(i>full.length)clearInterval(iv);},55);});
+}
+function typeNotes(card,cb){
+var note=card.querySelector('.notes');
+if(!note){cb&&cb();return;}
+var strong=note.querySelector('strong');
+var labelHTML=strong?strong.outerHTML:'';
+var labelText=strong?strong.textContent:'';
+var trailing=note.textContent.slice(labelText.length);
+note.style.visibility='visible';
+note.innerHTML=labelHTML+'<span class="tw"></span><span class="twc">&#9611;</span>';
+var span=note.querySelector('.tw'),cur=note.querySelector('.twc'),i=0;
+var iv=setInterval(function(){span.textContent=trailing.slice(0,i);i++;
+if(i>trailing.length){clearInterval(iv);if(cur)cur.remove();cb&&cb();}},55);
+}
+function typeTable(card,done){
+show(card);
+var note=card.querySelector('.notes');if(note)note.style.visibility='hidden';
+var rows=[].slice.call(card.querySelectorAll('tbody tr'));
+if(!rows.length){typeNotes(card,function(){setTimeout(done,150);});return;}
+rows.forEach(function(tr){tr.style.opacity='0';tr.style.transition='opacity .25s ease';});
+var k=0;
+(function nextRow(){
+if(k>=rows.length){typeNotes(card,function(){setTimeout(done,180);});return;}
+var tr=rows[k];tr.style.opacity='1';typeRow(tr);k++;setTimeout(nextRow,700);
+})();
+}
+setTimeout(function(){
+show(cards[0]);
+if(txt)txt.textContent='Document AI is extracting the schema…';
+typeCard(cards[0],function(){
+var labels=['Writing upstream systems…','Writing downstream consumers…','Drawing the current architecture…','Mapping components to GCP services…'];
+var rest=cards.slice(1),ri=0;
+(function nextTable(){
+if(ri>=rest.length){
+ind.innerHTML='<span style="color:var(--green-700);font-weight:700">✓</span><span style="color:var(--green-700)">Profile analyzed and generated by Document AI - Vertex AI</span>';
+if(btnrow)btnrow.style.opacity='1';return;
+}
+if(txt)txt.textContent=labels[ri]||'Writing…';
+typeTable(rest[ri],function(){ri++;nextTable();});
+})();
+});
+},500);
+}
+function curArchSvg(){
+var B=function(x,y,w,h,fill,stroke,label,sub,tc){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="4" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>'+
+'<text x="'+(x+w/2)+'" y="'+(y+(sub?18:h/2+4))+'" text-anchor="middle" font-family="IBM Plex Sans" font-size="11.5" font-weight="600" fill="'+(tc||'#0A1F3D')+'">'+label+'</text>'+
+(sub?'<text x="'+(x+w/2)+'" y="'+(y+31)+'" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="'+(tc||'#64748B')+'" opacity=".85">'+sub+'</text>':'');};
+var AR=function(x1,y1,x2,y2){return '<path d="M'+x1+' '+y1+' L'+(x2-7)+' '+y2+'" stroke="#94A3B8" stroke-width="1.4" fill="none" marker-end="url(#ah2)"/>';};
+var COL=function(x,label){return '<text x="'+x+'" y="24" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" font-weight="600" fill="#64748B" letter-spacing="1.2">'+label+'</text>';};
+var src='#F1F5F9',srcS='#CBD5E1',leg='#F8FAFC',legS='#94A3B8',dw='#334155';
+var s='<svg viewBox="0 0 1080 390" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">'+
+'<defs><marker id="ah2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 z" fill="#94A3B8"/></marker></defs>'+
+COL(85,'SOURCE SYSTEMS')+COL(285,'EXTRACT / ETL')+COL(475,'PROCESSING')+COL(690,'WAREHOUSE')+COL(960,'CONSUMPTION');
+var srcs=[['System A','Oracle 19c'],['System B','Cloud API'],['System C','SharePoint'],['System D','ServiceNow']];
+srcs.forEach(function(v,i){var y=48+i*62;s+=B(15,y,140,44,src,srcS,v[0],v[1]);});
+s+=B(215,48,140,44,leg,legS,'Python / SSIS','Oracle batch run');
+s+=B(215,110,140,44,leg,legS,'Python / Pandas','REST hourly poll');
+s+=B(215,172,140,44,leg,legS,'SSIS + Python','SharePoint files');
+s+=B(215,234,140,44,leg,legS,'Python / Pandas','ServiceNow API');
+s+=B(405,100,140,44,leg,legS,'SQL Server Agent','Job scheduler');
+s+=B(405,178,140,44,leg,legS,'dbt Core','Model layer');
+s+='<rect x="600" y="48" width="180" height="176" rx="5" fill="'+dw+'" stroke="#0F172A" stroke-width="2"/>'+
+'<text x="690" y="70" text-anchor="middle" font-family="IBM Plex Sans" font-size="12.5" font-weight="700" fill="#fff">MS SQL Server</text>'+
+'<text x="690" y="84" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#CBD5E1">2019 Enterprise DW</text>';
+['Staging schema','Core / Mart','Reporting views'].forEach(function(z,i){var y=98+i*40;
+s+='<rect x="615" y="'+y+'" width="150" height="32" rx="3" fill="#64748B" opacity=".55"/>'+
+'<text x="690" y="'+(y+20)+'" text-anchor="middle" font-family="IBM Plex Sans" font-size="10.5" font-weight="500" fill="#fff">'+z+'</text>';});
+s+=B(880,48,180,48,'#F1F5F9','#94A3B8','Tableau Server','Primary BI');
+var dn=[['System X','Oracle'],['System Y','BigQuery'],['System Z','SharePoint']];
+dn.forEach(function(v,i){var y=112+i*56;s+=B(880,y,180,44,src,srcS,v[0],v[1]);});
+s+=AR(155,70,215,70)+AR(155,132,215,132)+AR(155,194,215,194)+AR(155,256,215,256);
+s+=AR(355,70,405,122)+AR(355,132,405,122)+AR(355,194,405,122)+AR(355,256,405,122);
+s+=AR(475,144,482,178)+AR(545,122,600,120)+AR(545,200,600,190);
+s+=AR(780,72,880,72)+AR(780,120,880,134)+AR(780,150,880,190)+AR(780,180,880,246);
+var gy=296;
+s+='<rect x="15" y="'+gy+'" width="1045" height="44" rx="5" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5"/>'+
+'<text x="34" y="'+(gy+19)+'" font-family="IBM Plex Mono" font-size="9" font-weight="600" fill="#475569" letter-spacing="1">ON-PREM OPERATIONS</text>';
+var gsv=['Active Directory','Windows Auth','SAN + Tape Backup','SQL Server Agent'];
+gsv.forEach(function(g,i){var w=Math.floor(1000/gsv.length),x=34+i*w;
+s+='<text x="'+x+'" y="'+(gy+36)+'" font-family="IBM Plex Sans" font-size="10.5" font-weight="500" fill="#334155">'+g+'</text>';});
+s+='</svg>';return s;}
 function vReview(){const a=A(),ar=a.arch;
 const rows=ar.mapping.map(m=>{
 const badge=m.rec?'<span class="pill p-green" style="margin-left:8px">Option 1 &middot; Recommended</span>'
@@ -815,7 +929,7 @@ const badge=m.rec?'<span class="pill p-green" style="margin-left:8px">Option 1 &
 return '<tr'+(m.exc?' style="background:var(--amber-50)"':'')+'><td class="sname">'+m.f+'</td>'+
 '<td style="color:var(--slate-300)">'+I.arr+'</td>'+
 '<td><span style="color:'+(m.exc?'var(--amber-700)':'var(--blue-600)')+';font-weight:600">'+m.t+'</span>'+badge+'</td>'+
-'<td><span class="adr">'+m.adr+'</span></td><td class="stech">'+m.n+'</td></tr>'}).join('');
+'<td>'+adrLink(m.adr)+'</td><td class="stech">'+m.n+'</td></tr>'}).join('');
 return head('Step 02 of 09 &middot; Phase 1 Readiness Evaluation','Confirm the extracted architecture',
 'The readiness score, cost estimate and blueprint recommendation are all derived from this profile. Every target component references an approved Architecture Decision Record.')+
 '<div class="card"><div class="ch"><div class="ct">'+a.app+' - extracted profile</div>'+
@@ -833,7 +947,7 @@ ar.upstream.map(u=>'<tr><td class="sname">'+u.n+'</td><td class="stech">'+u.t+'<
 '<div class="cb flush"><table class="dt"><thead><tr><th>Consumer</th><th>Interface</th><th>Pattern</th><th>Current method</th></tr></thead><tbody>'+
 ar.downstream.map(u=>'<tr><td class="sname">'+u.n+'</td><td class="stech">'+u.t+'</td><td>'+u.m+'</td><td class="mono">'+u.v+'</td></tr>').join('')+
 '</tbody></table></div></div>'+
-'<div class="card"><div class="ch"><div class="ct">GCP component mapping</div><div class="cm">Per approved ADRs</div></div>'+
+'<div class="card"><div class="ch"><div class="ct">Current architecture (as-is)</div><div class="cm">Extracted from your documents</div></div>'+'<div style="padding:20px;overflow-x:auto"><div style="min-width:900px">'+curArchSvg()+'</div></div>'+'<div class="notes">As-is: a Microsoft SQL Server 2019 Enterprise warehouse, fed by SSIS and Python jobs on SQL Server Agent schedules, with Tableau for BI. The mapping below moves each part to a managed GCP target.</div></div>'+'<div class="card"><div class="ch"><div class="ct">GCP component mapping</div><div class="cm">Per approved ADRs</div></div>'+
 '<div class="cb flush"><table class="dt"><thead><tr><th style="width:20%">Current</th><th style="width:3%"></th>'+
 '<th style="width:30%">GCP target</th><th style="width:14%">ADR reference</th><th>Note</th></tr></thead><tbody>'+rows+'</tbody></table>'+
 '<div class="notes"><strong style="color:var(--amber-700)">BI platform decision (ADR-BI-002):</strong> Looker is the recommended target. Tableau is not permitted to connect to BigQuery in the EU region - selecting Tableau requires an approved architecture exception (ADR-BI-002-EX) before Design can proceed.</div></div></div>'+
@@ -848,7 +962,7 @@ const f=S.gapFilter;
 const shown=G.filter(g=>f==='all'?1:f==='blocker'?g.sev==='BLOCKER':f==='open'?g.status==='open':g.status==='resolved');
 const cnt={all:G.length,blocker:G.filter(g=>g.sev==='BLOCKER').length,open:G.filter(g=>g.status==='open').length,resolved:G.filter(g=>g.status==='resolved').length};
 return head('Step 03 of 09 &middot; Phase 1 Readiness Evaluation','Readiness assessment',
-'Scored across seven weighted dimensions using your confirmed architecture profile and selected migration type.')+
+'Scored across six weighted dimensions using your confirmed architecture profile and selected migration type. Funding is assessed separately at the Demand gate.')+
 (o.length?'<div class="bn b-red"><div class="bn-ic">&#10005;</div><div><div class="bn-t">Demand gate is blocked - '+o.length+' blocker'+(o.length>1?'s':'')+' outstanding</div>'+
 '<div class="bn-b">This request cannot progress until every blocker below is resolved or has a recorded exception.</div></div></div>'
 :'<div class="bn b-green"><div class="bn-ic">&#10003;</div><div><div class="bn-t">No blockers outstanding</div>'+
@@ -872,7 +986,7 @@ return '<div class="dim"><div class="dn">'+d.n+'<span class="dw">x'+d.w+'</span>
 '<button class="gf '+(f==='open'?'on':'')+'" onclick="S.gapFilter=\'open\';render()">Open ('+cnt.open+')</button>'+
 '<button class="gf '+(f==='resolved'?'on':'')+'" onclick="S.gapFilter=\'resolved\';render()">Resolved ('+cnt.resolved+')</button></div>'+
 '<div class="cb flush">'+(shown.length?shown.map(gapRow).join(''):'<div style="padding:34px;text-align:center;color:var(--slate-400);font-size:13px">No items match this filter</div>')+'</div></div>'+
-'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'recommend\')" '+(o.length?'disabled':'')+'>Continue to cost analysis '+I.arr+'</button>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="loadRecommend()" '+(o.length?'disabled':'')+'>Continue to cost analysis '+I.arr+'</button>'+
 (o.length?'<span class="hint err">'+I.warn+' Resolve '+o.length+' blocker'+(o.length>1?'s':'')+' to continue</span>':'')+'</div>'}
 function gapRow(g){const sc={BLOCKER:'p-red',HIGH:'p-amber',MEDIUM:'p-amber',LOW:'p-blue'}[g.sev],r=g.status==='resolved';
 return '<div class="gap '+(r?'res':'')+'"><div class="gt"><div><span class="pill '+(r?'p-green':sc)+'">'+(r?'Resolved':g.sev)+'</span></div>'+
@@ -893,15 +1007,70 @@ function resolveG(id){const t=document.getElementById('rt-'+id).value,d=document
 if(!d){toast('Enter a resolution detail - this is recorded on the audit trail','err');return}
 S.resolutions[id]=t+' - '+d;render();toast('Blocker resolved, score recalculated','ok')}
 
+function loadRecommend(){
+var main=document.getElementById('main');if(!main){go('recommend');return;}
+main.innerHTML='<div class="card"><div class="lw"><div class="bspin"></div>'+
+'<div class="lt">Preparing cost and blueprint recommendation</div>'+
+'<div class="ld" id="loadD2">Collecting information…</div></div></div>';
+window.scrollTo({top:0});
+var msgs=['Collecting information…','Analysing information…','Thinking…'];
+var i=0,sec=0;var d=document.getElementById('loadD2');
+var t=setInterval(function(){i=(i+1)%msgs.length;if(d)d.textContent=msgs[i];},1600);
+var tk=setInterval(function(){sec++;if(sec>=10)clearInterval(tk);},1000);
+setTimeout(function(){clearInterval(t);clearInterval(tk);go('recommend');},10000);
+}
+function animateRecommend(){S.recTyped=true;
+var main=document.getElementById('main');if(!main)return;
+var head=main.querySelector('.ph');
+var blocks=[].slice.call(main.children).filter(function(el){return el!==head && el.className.indexOf('aiind')===-1;});
+blocks.forEach(function(el){el.style.opacity='0';el.style.transform='translateY(10px)';el.style.transition='opacity .4s ease, transform .4s ease';});
+var ind=document.createElement('div');ind.className='aiind';
+ind.style.cssText='display:flex;align-items:center;gap:10px;margin:-2px 0 18px;font-size:13px;color:var(--blue-600);font-family:var(--fm)';
+ind.innerHTML='<span class="spin"></span><span id="aiwt2">Generating cost and blueprint recommendation…</span>';
+if(head)head.insertAdjacentElement('afterend',ind);else main.insertBefore(ind,main.firstChild);
+var txt=ind.querySelector('#aiwt2');
+function show(c){if(!c)return;c.style.opacity='1';c.style.transform='none';}
+function typeRow(tr){var tds=[].slice.call(tr.children).filter(function(td){return td.children.length===0&&td.textContent.trim();});
+tds.forEach(function(td){var full=td.textContent;td.textContent='';var i=0;var iv=setInterval(function(){td.textContent=full.slice(0,i);i++;if(i>full.length)clearInterval(iv);},95);});}
+function typeRows(tb,cb){var rows=[].slice.call(tb.querySelectorAll('tr'));if(!rows.length){cb&&cb();return;}
+rows.forEach(function(tr){tr.style.opacity='0';tr.style.transition='opacity .25s ease';});
+var k=0;(function nx(){if(k>=rows.length){setTimeout(cb,180);return;}var tr=rows[k];tr.style.opacity='1';typeRow(tr);k++;setTimeout(nx,950);})();}
+function typeList(ul,cb){var lis=[].slice.call(ul.querySelectorAll('li'));if(!lis.length){cb&&cb();return;}
+var vals=lis.map(function(li){return li.textContent;});
+lis.forEach(function(li){li.style.opacity='0';li.style.transition='opacity .25s ease';});
+var k=0;(function nx(){if(k>=lis.length){setTimeout(cb,150);return;}
+var li=lis[k],full=vals[k];li.textContent='';li.style.opacity='1';var i=0;
+var iv=setInterval(function(){li.textContent=full.slice(0,i);i++;if(i>full.length){clearInterval(iv);k++;setTimeout(nx,200);}},85);})();}
+function label(el){var t=(el.textContent||'');
+if(t.indexOf('on-premises breakdown')>-1)return 'Analysing current on-premises costs…';
+if(t.indexOf('GCP breakdown')>-1)return 'Estimating GCP target costs…';
+if(el.className.indexOf('sec-h')>-1&&t.indexOf('Blueprint match')>-1)return 'Matching approved blueprints…';
+if(el.className.indexOf('sec-h')>-1&&t.indexOf('target architecture')>-1)return 'Drafting the target architecture…';
+if(el.className.indexOf('sec-h')>-1&&t.indexOf('raise the CR')>-1)return 'Finalising the recommendation…';
+return null;}
+var bi=0;
+(function nextBlock(){
+if(bi>=blocks.length){ind.innerHTML='<span style="color:var(--green-700);font-weight:700">✓</span><span style="color:var(--green-700)">Recommendation analyzed and generated by Document AI - Vertex AI</span>';return;}
+var el=blocks[bi];var lb=label(el);if(lb&&txt)txt.textContent=lb;
+var tb=el.querySelector('table.dt tbody');
+var ul=el.querySelector('.notes ul');
+if(ul){[].slice.call(ul.querySelectorAll('li')).forEach(function(li){li.style.opacity='0';});}
+show(el);
+var after=function(){bi++;setTimeout(nextBlock,(tb||ul)?140:300);};
+if(tb){typeRows(tb,function(){if(ul)typeList(ul,after);else after();});}
+else if(ul){typeList(ul,after);}
+else{setTimeout(after,300);}
+})();
+}
 function vRecommend(){const a=A(),L=lead(),cur=a.current,tgt=a.target;
 const mid=Math.round((tgt.total.l+tgt.total.h)/2);
 const save=cur.total-mid,pct=Math.round(save/cur.total*100),annual=save*12;
 const init=L.lead.split(' ').map(x=>x[0]).join('').slice(0,2);
 const card=(b,rec)=>'<div class="bp '+(rec?'rec':'')+'"><div class="bph">'+
-'<div><div class="bpid">'+b.id+'<span class="pill '+(rec?'p-blue':'p-grey')+'">'+(rec?'Recommended':'Alternative')+'</span></div>'+
+'<div><div class="bpid">'+bpLinkT(b.id)+'<span class="pill '+(rec?'p-blue':'p-grey')+'">'+(rec?'Recommended':'Alternative')+'</span></div>'+
 '<div class="bpn">'+b.name+'</div></div><div><div class="bpf '+(rec?'':'d')+'">'+b.fit+'%</div><div class="bpfl">Fit</div></div></div>'+
-'<div class="bpe">'+b.eri+'</div><div class="bpr">'+
-b.reasons.map(r=>'<div class="bpi"><span class="m '+(r.y?'y':'n')+'">'+(r.y?'&#10003;':'&#10005;')+'</span><span>'+r.t+'</span></div>').join('')+'</div></div>';
+'<div class="bpe">'+linkRefsText(b.eri)+'</div><div class="bpr">'+
+b.reasons.map(r=>'<div class="bpi"><span class="m '+(r.y?'y':'n')+'">'+(r.y?'&#10003;':'&#10005;')+'</span><span>'+linkRefsText(r.t)+'</span></div>').join('')+'</div></div>';
 return head('Step 04 of 09 &middot; Phase 1 Readiness Evaluation','Cost and blueprint recommendation',
 'What a '+S.migType+' migration will cost against the current on-premises run rate, and which approved blueprint fits your profile. This is the final step of Readiness Evaluation.')+
 '<div class="sec-h">Cost analysis</div>'+
@@ -927,7 +1096,8 @@ tgt.rows.map(r=>'<tr><td class="sname">'+r.c+'</td><td class="stech">'+r.s+'</td
 (a.bpTop.note?'<div class="bn b-amber"><div class="bn-ic">!</div><div><div class="bn-t">Worth reviewing with your Domain Lead</div>'+
 '<div class="bn-b">'+a.bpTop.note+'</div></div></div>':'')+
 card(a.bpTop,1)+card(a.bpAlt,0)+
-'<div class="sec-h">Before you raise the CR</div>'+
+'<div class="sec-h">Recommended target architecture</div>'+
+'<div class="card"><div class="ch"><div class="ct">Recommended target architecture</div>'+'<div class="cm">'+bpLinkT(a.bpTop.id)+' &middot; '+eriLinkT(a.bpTop.eri.split(' - ')[0])+'</div></div>'+'<div style="padding:20px;overflow-x:auto"><div style="min-width:900px">'+archSvg()+'</div></div>'+'<div class="notes">Source systems retain their existing interfaces. Datastream replaces the nightly Oracle batch with change data capture; the three REST and file-based sources move to Cloud Functions with a Pub/Sub buffer. SSIS logic is rebuilt in Dataflow, orchestrated by Cloud Composer on the existing three-window daily schedule. dbt runs unchanged against a BigQuery target profile. Looker replaces Tableau as the primary BI layer per '+adrLinkT('ADR-BI-002')+'. Review this target design with your Domain Lead during the informal pre-discussion, before the CR is raised.</div></div>'+'<div class="sec-h">Before you raise the CR</div>'+
 '<div class="card"><div class="ch"><div class="ct">Informal heads-up with your Domain Lead</div>'+
 '<div class="cm">Recommended, not mandatory</div></div>'+
 '<div class="cb"><p style="font-size:13.5px;color:var(--slate-600);margin-bottom:14px">'+
@@ -937,10 +1107,11 @@ card(a.bpTop,1)+card(a.bpAlt,0)+
 '<div class="apn">'+L.lead+'</div><div class="apm">Domain Lead &middot; '+domainName()+'</div>'+
 '<div class="apm">'+L.email+'</div></div></div>'+
 '<div class="btn-row" style="margin-top:0"><button class="btn btn-g" onclick="sendHeadsUp()">'+I.mail+' Send heads-up email</button>'+
-(S.headsUpSent?'<span class="hint" style="color:var(--green-700)">&#10003; Heads-up sent</span>':'<span class="hint">Optional &mdash; opens Gmail with a short summary</span>')+
+'<a href="#" onclick="sendHeadsUp(\'gmail\');return false" style="color:var(--blue-600);font-size:12px;font-weight:500">Use Gmail instead</a>'+
+(S.headsUpSent?'<span class="hint" style="color:var(--green-700)">&#10003; Heads-up sent</span>':'<span class="hint">Optional &mdash; opens your default email client (Outlook in the org)</span>')+
 '</div></div></div>'+
 '<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'intake\')">Continue to Demand Management '+I.arr+'</button></div>'}
-function sendHeadsUp(){const a=A(),L=lead(),mid=Math.round((a.target.total.l+a.target.total.h)/2);
+function sendHeadsUp(via){const a=A(),L=lead(),mid=Math.round((a.target.total.l+a.target.total.h)/2);
 const sub='Heads-up - planning GCP onboarding for '+a.app+' ('+a.nar+')';
 const body='Hi '+L.lead.split(' ')[0]+',\n\n'+
 'A quick heads-up before I raise the formal CR. I have completed the Readiness Evaluation for '+a.app+' and wanted to give you early sight of it.\n\n'+
@@ -954,8 +1125,8 @@ const body='Hi '+L.lead.split(' ')[0]+',\n\n'+
 'Blueprint:       '+a.bpTop.id+' ('+a.bpTop.fit+'% fit)\n\n'+
 'Happy to walk through any of this before the CR comes to you formally.\n\n'+
 'Thanks,\nPinku Barman (ITAO)';
-window.open(gmailUrl(L.email,sub,body),'_blank');
-S.headsUpSent=true;render();toast('Heads-up email opened in Gmail','ok')}
+openMail(L.email,sub,body,via);
+S.headsUpSent=true;render();toast(via==='gmail'?'Heads-up opened in Gmail':'Heads-up opened in your default email client','ok')}
 
 const IQ=[{q:'What is the Cost Center for this application?',f:'cost_center',ex:'FIN-4820'},
 {q:'What is the planned project start date?',f:'start_date',ex:'2026-03-02'},
@@ -967,7 +1138,7 @@ function vIntake(){const a=A(),L=lead();
 const pf=[{k:'NAR ID',v:a.nar},{k:'App Name',v:a.app},{k:'Domain Name',v:domainName()},
 {k:'R-Type',v:S.migType},{k:'Domain Lead',v:L.lead},{k:'ITAO',v:'Pinku Barman'},
 {k:'Data classification',v:a.dataClass},
-{k:'Recommended blueprint',v:a.bpTop.id+' ('+a.bpTop.fit+'% fit)'},
+{k:'Recommended blueprint',v:bpLinkT(a.bpTop.id)+' ('+a.bpTop.fit+'% fit)'},
 {k:'Estimated GCP cost',v:usd(a.target.total.l)+' - '+usd(a.target.total.h)+' / month'}];
 return head('Step 05 of 09 &middot; Phase 2 Demand Management','Raise the Change Request',
 'The CR is created from the standard template. Everything captured during Readiness Evaluation is carried forward &mdash; six template fields remain.')+
@@ -1004,7 +1175,7 @@ return '<div class="card"><div class="ch"><div class="ct">Change Request raised<
 '<div class="cb flush" style="padding:5px 0;border-top:1px solid var(--slate-100)">'+
 f.map(x=>'<div class="pf"><div class="pfk">'+x[0]+'</div><div class="pfv">'+x[1]+'</div><div></div></div>').join('')+
 '</div></div>'+
-'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'approval\')">Request Domain Lead approval '+I.arr+'</button></div>';}
+'<div class="btn-row">'+(S.approval==='approved'?'<button class="btn btn-p btn-lg" onclick="go(\'control\')">Continue to Change Control '+I.arr+'</button>'+'<span class="hint" style="color:var(--green-700)">&#10003; Domain Lead approval attached</span>':'<button class="btn btn-p btn-lg" onclick="go(\'approval\')">Request Domain Lead approval '+I.arr+'</button>')+'</div>';}
 return '<div class="bn b-green"><div class="bn-ic">&#10003;</div><div><div class="bn-t">CR template complete</div>'+
 '<div class="bn-b">All fields captured and no blockers outstanding. Raising the CR creates the Change Request under epic '+S.epicId+' and routes it to '+L.lead+' for formal approval.</div></div></div>'+
 '<div class="btn-row"><button class="btn btn-p btn-lg" onclick="submitCR()">Raise CR '+I.arr+'</button></div>'}
@@ -1012,8 +1183,8 @@ function submitCR(){S.crId='GCPDM-'+(1840+Math.floor(Math.random()*59));render()
 function pm(h,c){const x=document.getElementById('chat'),d=document.createElement('div');
 d.className='msg '+(c||'');d.innerHTML=h;x.appendChild(d);x.scrollTop=9e9;return d}
 function askNext(){const q=IQ[S.intakeStep];if(!q)return;
-const t=pm('<div class="av b">CG</div><div class="bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>');
-setTimeout(()=>{t.remove();const m=pm('<div class="av b">CG</div><div class="bub"></div>'),b=m.querySelector('.bub');let i=0;
+const t=pm('<div class="av b">dbCG</div><div class="bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>');
+setTimeout(()=>{t.remove();const m=pm('<div class="av b">dbCG</div><div class="bub"></div>'),b=m.querySelector('.bub');let i=0;
 const iv=setInterval(()=>{i++;b.textContent=q.q.slice(0,i);document.getElementById('chat').scrollTop=9e9;
 if(i>=q.q.length){clearInterval(iv);
 document.getElementById('quick').innerHTML='<button class="qr" onclick="qr(\''+q.ex+'\')">'+q.ex+'</button>'+
@@ -1027,8 +1198,8 @@ inp.value='';document.getElementById('quick').innerHTML='';
 S.intakeAnswers[q.f]=v;
 let delay=1000;
 if(q.f==='budget'){const ok=v.toLowerCase().indexOf('approv')>-1;delay=2200;
-setTimeout(()=>{pm(ok?'<div class="av b">CG</div><div class="bub">Noted.<div class="bf ok"><strong>&#10003;</strong><span>Budget approved. No blocker raised against the Demand gate.</span></div></div>'
-:'<div class="av b">CG</div><div class="bub">Recorded, but I have to flag this against the Demand gate.<div class="bf blk"><strong>BLOCKER</strong><span>Budget approval is required before the Demand gate can close.</span></div></div>');
+setTimeout(()=>{pm(ok?'<div class="av b">dbCG</div><div class="bub">Noted.<div class="bf ok"><strong>&#10003;</strong><span>Budget approved. No blocker raised against the Demand gate.</span></div></div>'
+:'<div class="av b">dbCG</div><div class="bub">Recorded, but I have to flag this against the Demand gate.<div class="bf blk"><strong>BLOCKER</strong><span>Budget approval is required before the Demand gate can close.</span></div></div>');
 toast(ok?'Budget confirmed':'Blocker raised against this request',ok?'ok':'err');renderRail();renderStepper()},800)}
 S.intakeStep++;
 const pr=document.getElementById('prog');if(pr)pr.textContent='Field '+Math.min(S.intakeStep+1,IQ.length)+' of '+IQ.length;
@@ -1036,15 +1207,15 @@ setTimeout(()=>{if(S.intakeStep<IQ.length){askNext();return}
 const o=ob(),L=lead();
 const close=o.length?'All fields captured. However, '+o.length+' blocker'+(o.length>1?'s remain':' remains')+' open, so I cannot raise the CR yet.'
 :'All CR template fields captured and no blockers outstanding. I can now raise the Change Request under epic '+S.epicId+' and route it to '+L.lead+' for formal approval.';
-setTimeout(()=>{const t=pm('<div class="av b">CG</div><div class="bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>');
-setTimeout(()=>{t.remove();const m=pm('<div class="av b">CG</div><div class="bub"></div>'),b=m.querySelector('.bub');let i=0;
+setTimeout(()=>{const t=pm('<div class="av b">dbCG</div><div class="bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>');
+setTimeout(()=>{t.remove();const m=pm('<div class="av b">dbCG</div><div class="bub"></div>'),b=m.querySelector('.bub');let i=0;
 const iv=setInterval(()=>{i++;b.textContent=close.slice(0,i);document.getElementById('chat').scrollTop=9e9;
 if(i>=close.length){clearInterval(iv);S.intakeComplete=1;
 document.getElementById('cin').disabled=1;document.getElementById('cbtn').disabled=1;
 document.getElementById('cin').placeholder='Demand record complete';
 document.getElementById('ifoot').innerHTML=ifoot();renderRail();renderStepper()}},12)},560)},600)},delay)}
 function restoreChat(){IQ.forEach((q,i)=>{if(i>=S.intakeStep)return;
-pm('<div class="av b">CG</div><div class="bub">'+q.q+'</div>');
+pm('<div class="av b">dbCG</div><div class="bub">'+q.q+'</div>');
 pm('<div class="bub">'+(S.intakeAnswers[q.f]||'')+'</div><div class="av us">PB</div>','u')})}
 
 function defSubj(){const a=A();return 'Approval required - GCP onboarding CR '+S.crId+' - '+a.app}
@@ -1081,9 +1252,17 @@ a.bpTop.id+' - '+a.bpTop.name+'\n'+
 'Reference:          '+a.bpTop.eri+'\n\n'+
 'Please review and approve, or request changes, using the links below.\n\n'+
 '[ APPROVE ]     [ REQUEST CHANGES ]\n\n'+
-'Sent by CloudGate on behalf of Pinku Barman (ITAO).'}
+'Sent by dbCloudGate on behalf of Pinku Barman (ITAO).'}
 function gmailUrl(to,subj,body){return 'https://mail.google.com/mail/?view=cm&fs=1&to='+
 encodeURIComponent(to)+'&su='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body)}
+function mailtoUrl(to,subj,body){return 'mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body)}
+function openMail(to,subj,body,via){if(via==='gmail'){window.open(gmailUrl(to,subj,body),'_blank')}else{var a=document.createElement('a');a.href=mailtoUrl(to,subj,body);document.body.appendChild(a);a.click();a.remove()}}
+function refBase(){return 'https://confluence.example.com/display/GCPARCH/'}
+function adrLink(id){return '<a href="'+refBase()+'ADR/'+encodeURIComponent(id)+'" target="_blank" rel="noopener" class="adr" style="text-decoration:none">'+id+'</a>'}
+function adrLinkT(id){return '<a href="'+refBase()+'ADR/'+encodeURIComponent(id)+'" target="_blank" rel="noopener" style="color:var(--blue-600);font-weight:500;text-decoration:underline">'+id+'</a>'}
+function bpLinkT(id){return '<a href="'+refBase()+'Blueprints/'+encodeURIComponent(id)+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">'+id+'</a>'}
+function eriLinkT(id){return '<a href="'+refBase()+'ERI/'+encodeURIComponent(id)+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">'+id+'</a>'}
+function linkRefsText(t){return String(t).replace(/GCP-BP-\d+/g,function(m){return bpLinkT(m)}).replace(/ERI-[A-Z0-9\-]+/g,function(m){return eriLinkT(m)}).replace(/ADR-[A-Z0-9\-]+/g,function(m){return adrLinkT(m)})}
 function vApproval(){const L=lead(),init=L.lead.split(' ').map(x=>x[0]).join('').slice(0,2);
 if(S.emailSubj===null)S.emailSubj=defSubj();
 if(S.emailBody===null)S.emailBody=defBody();
@@ -1102,21 +1281,27 @@ return head('Step 06 of 09 &middot; Phase 2 Demand Management','Send the approva
 '<textarea class="ebody" id="ebody" oninput="S.emailBody=this.value;S.emailEdited=1;markEdit()">'+S.emailBody+'</textarea>'+
 '<div class="ebar" id="ebar"><span>'+(S.emailEdited?'Edited - your changes will be sent':'All four fields above are editable')+'</span>'+
 '<span class="mono" style="font-size:11px">'+S.emailBody.length+' chars</span></div></div>'+
-'<div id="apw"><div class="btn-row">'+
-'<button class="btn btn-p btn-lg" onclick="sendAp(1)">'+I.mail+' Open in Gmail and send</button>'+
+'<div id="apw">'+(S.approval==='approved'?
+'<div class="bn b-green"><div class="bn-ic">&#10003;</div><div><div class="bn-t">Approval received from '+L.lead+'</div>'+
+'<div class="bn-b">Domain Lead &middot; '+domainName()+' &mdash; this request is already approved, so there is no need to send it again.</div></div></div>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'control\')">Continue to Change Control '+I.arr+'</button>'+
+'<span class="hint" style="color:var(--green-700)">&#10003; Approval attached</span></div>'
+:'<div class="btn-row">'+
+'<button class="btn btn-p btn-lg" onclick="sendAp(\'mail\')">'+I.mail+' Open in email client and send</button>'+
+'<a href="#" onclick="sendAp(\'gmail\');return false" style="color:var(--blue-600);font-size:12.5px;font-weight:500;align-self:center">Use Gmail instead</a>'+
 '<button class="btn btn-g btn-lg" onclick="sendAp(0)">Record as sent</button>'+
 '<span class="hint">Response expected within '+L.sla+'</span></div>'+
 '<div class="bn b-blue" style="margin-top:14px"><div class="bn-ic">i</div><div>'+
 '<div class="bn-t">How sending works here</div>'+
-'<div class="bn-b"><strong>Open in Gmail</strong> launches a Gmail compose window pre-filled with the recipient, subject and body above &mdash; review it and press Send in Gmail to deliver a real email. '+
-'<strong>Record as sent</strong> skips Gmail and moves the request forward directly. Either way the approval flow continues below.</div></div></div></div>'}
+'<div class="bn-b"><strong>Open in email client</strong> launches your email client (Outlook in the organisation environment) with the recipient, subject and body above pre-filled &mdash; review it and press Send to deliver a real email. '+
+'<strong>Record as sent</strong> skips the email client and moves the request forward directly. Either way the approval flow continues below.</div></div></div>')+'</div>'}
 function markEdit(){const b=document.getElementById('ebar');
 if(b)b.innerHTML='<span>Edited - your changes will be sent</span><span class="mono" style="font-size:11px">'+S.emailBody.length+' chars</span>'}
 function resetEmail(){S.emailSubj=defSubj();S.emailBody=defBody();S.emailEdited=0;render();toast('Email restored to default')}
-function sendAp(viaGmail){const L=lead(),w=document.getElementById('apw');
-if(viaGmail){window.open(gmailUrl(S.emailTo,S.emailSubj,S.emailBody),'_blank');
-toast('Gmail compose opened - press Send in Gmail','ok')}
-const steps=viaGmail?['Composing request summary','Opening Gmail compose window','Handed to Gmail for sending','Awaiting response']
+function sendAp(mode){const L=lead(),w=document.getElementById('apw');const viaMail=(mode==='mail'||mode==='gmail');
+if(viaMail){openMail(S.emailTo,S.emailSubj,S.emailBody,mode==='gmail'?'gmail':'mail');
+toast(mode==='gmail'?'Gmail compose opened - review and press Send':'Email compose opened in your default client - review and press Send','ok')}
+const steps=viaMail?['Composing request summary','Opening email compose window','Handed to email client for sending','Awaiting response']
 :['Composing request summary','Retrieving credentials from Secret Manager','Sending to '+L.lead,'Awaiting response'];
 w.innerHTML='<div class="card"><div class="ch"><div class="ct">Approval in progress</div></div><div class="ps">'+
 steps.map((s,i)=>'<div class="pstep '+(i===0?'a':'')+'" id="ps'+i+'"><span>'+(i===0?'<span class="spin"></span>':'&#9675;')+'</span><span>'+s+'</span><span class="cnt" id="cnt'+i+'"></span></div>').join('')+'</div></div>';
@@ -1159,7 +1344,7 @@ const dmBody='Change Request '+S.crId+' has been updated and submitted with the 
 'Approved by:     '+L.lead+', Domain Lead\n'+
 'Readiness:       '+score()+'/100\n\n'+
 'The CR is ready for portfolio analysis and the Demand Management change control process.\n\n'+
-'Sent by CloudGate on behalf of Pinku Barman (ITAO).';
+'Sent by dbCloudGate on behalf of Pinku Barman (ITAO).';
 S.dmSubj=dmSubj;S.dmBody=dmBody;
 c.outerHTML='<div class="card"><div class="ch"><div class="ct">Notification to Demand Management</div><div class="cm">Auto-generated</div></div>'+
 '<div class="efield"><span class="ek">From</span><input class="esub" value="'+S.emailFrom+'" oninput="S.emailFrom=this.value"></div>'+
@@ -1167,11 +1352,12 @@ c.outerHTML='<div class="card"><div class="ch"><div class="ct">Notification to D
 '<div class="efield"><span class="ek">Subject</span><input class="esub" id="dmsub" value="'+dmSubj+'" oninput="S.dmSubj=this.value"></div>'+
 '<textarea class="ebody" id="dmbody" style="min-height:190px" oninput="S.dmBody=this.value">'+dmBody+'</textarea>'+
 '<div class="ebar"><span>Editable before sending</span><span class="mono" style="font-size:11px">'+dmBody.length+' chars</span></div></div>'+
-'<div class="btn-row" style="margin-top:0"><button class="btn btn-p" onclick="sendDm()">'+I.mail+' Open in Gmail and send</button>'+
+'<div class="btn-row" style="margin-top:0"><button class="btn btn-p" onclick="sendDm()">'+I.mail+' Open in email client and send</button>'+
+'<a href="#" onclick="sendDm(\'gmail\');return false" style="color:var(--blue-600);font-size:12px;font-weight:500">Use Gmail instead</a>'+
 '<span class="hint">Or continue &mdash; the approval is already attached to '+S.crId+'</span></div>'+
 '<div class="btn-row"><button class="btn btn-p btn-lg" onclick="go(\'control\')">Continue to Change Control '+I.arr+'</button></div>';
 toast('Approval attached to '+S.crId,'ok')},3000)}
-function sendDm(){window.open(gmailUrl(S.dmTo,S.dmSubj,S.dmBody),'_blank');toast('Gmail compose opened - press Send in Gmail','ok')}
+function sendDm(via){openMail(S.dmTo,S.dmSubj,S.dmBody,via);toast(via==='gmail'?'Gmail compose opened - review and press Send':'Email compose opened in your default client - review and press Send','ok')}
 
 /* ═══════════ ASSISTANT ═══════════ */
 const CONTACTS=[
@@ -1219,7 +1405,7 @@ CONTACTS.slice(1).forEach(c=>{h+='<b>'+c[0].toUpperCase()+'</b><span>'+c[1]+'<br
 h+='</div>';return h}
 
 function whereAmI(){const a=A();
-if(!a)return 'You have not opened a request yet. Start on <strong>Step 01</strong> by entering your application NAR ID.<span class="tip">Try <code>118135-1</code> or <code>118135-2</code> if you are exploring.</span>';
+if(!a)return 'You have not opened a request yet. Start on <strong>Step 01</strong> by entering your application NAR ID.<span class="tip">Try <code>118135-1</code> or <code>103799-1</code> if you are exploring.</span>';
 const o=ob(),st=sst(score()),i=si(S.stage);
 const stageTxt=i>=0?('Step '+(i+1)+' of '+STAGES.length+' &mdash; '+STAGES[i].n):'Analysing documents';
 let h='<strong>'+a.app+'</strong> ('+a.nar+')<div class="kv">'+
@@ -1251,7 +1437,7 @@ const KB=[
 {k:['where am i','my status','my request','what stage','summary of my'],a:whereAmI},
 {k:['next','what now','what should i do','what do i do'],a:()=>'<strong>Your next step:</strong> '+nextStepText()+(ob().length?'':'<span class="tip">Ask me <em>"where am I"</em> for a full status summary.</span>')},
 {k:['resolve','fix','unblock','clear the block','how do i clear'],a:()=>'<strong>Resolving a blocker</strong><ul><li>Go to <strong>Step 04 Readiness</strong></li><li>Find the item in the gap register (filter by <em>Blockers</em> to see only these)</li><li>Press <strong>Resolve</strong></li><li>Pick a resolution type — evidence attached, scope reduced, timeline extended, or exception approved by your Domain Lead</li><li>Write what you actually did. This goes on the audit trail, so be specific</li><li>Press <strong>Record resolution</strong></li></ul>Your score recalculates immediately and the gate reopens once all blockers are clear.'+(ob().length?'<span class="warn">You currently have '+ob().length+' open. Ask me <em>"why am I blocked"</em> for the detail on each.</span>':'')},
-{k:['process','how does this work','overview','what are the steps','stages','phases','end to end','walk me through','lifecycle'],a:'<strong>The nine lifecycle phases</strong><ul><li><strong>1 Readiness Evaluation</strong> &mdash; evaluate the current application, estimate cost, informal heads-up with your Domain Lead. CloudGate steps 1&ndash;6</li><li><strong>2 Demand Management</strong> &mdash; raise the CR, formal Domain Lead approval, portfolio analysis, <em>Ready to Design?</em> tollgate, change control, stories generated. Steps 7&ndash;9</li><li><strong>3 Discovery</strong> &mdash; Application Discovery Questionnaire, data residency via DEx Tool, BAO approval, DEV LZ provisioned. Step 10</li><li><strong>4 Cloud Onboarding</strong></li><li><strong>5 Design</strong> &mdash; target architecture and design readiness. Step 11</li><li><strong>6 Build</strong> &middot; <strong>7 Testing and Final Design</strong> &middot; <strong>8 Deployment / Release Management</strong> &middot; <strong>9 On-Prem Decommissioning</strong></li></ul><span class="tip">Detailed stages for phases 4 and 6&ndash;9 are not yet published.</span>'},
+{k:['process','how does this work','overview','what are the steps','stages','phases','end to end','walk me through','lifecycle'],a:'<strong>The nine lifecycle phases</strong><ul><li><strong>1 Readiness Evaluation</strong> &mdash; evaluate the current application, estimate cost, informal heads-up with your Domain Lead. dbCloudGate steps 1&ndash;6</li><li><strong>2 Demand Management</strong> &mdash; raise the CR, formal Domain Lead approval, portfolio analysis, <em>Ready to Design?</em> tollgate, change control, stories generated. Steps 7&ndash;9</li><li><strong>3 Discovery</strong> &mdash; Application Discovery Questionnaire, data residency via DEx Tool, BAO approval, DEV LZ provisioned. Step 10</li><li><strong>4 Cloud Onboarding</strong></li><li><strong>5 Design</strong> &mdash; target architecture and design readiness. Step 11</li><li><strong>6 Build</strong> &middot; <strong>7 Testing and Final Design</strong> &middot; <strong>8 Deployment / Release Management</strong> &middot; <strong>9 On-Prem Decommissioning</strong></li></ul><span class="tip">Detailed stages for phases 4 and 6&ndash;9 are not yet published.</span>'},
 {k:['gate','tollgate','why gates','what is a gate','ready to design'],a:()=>'<strong>Gates and tollgates</strong><br><br>The key one is the <strong>Ready to Design?</strong> tollgate inside Demand Management. It confirms your team has reviewed and understood the standard design guidelines published by the <strong>Group Architecture team</strong>.<ul><li>Pass it &rarr; the application is prioritised for GCP and change control runs</li><li>Fail it &rarr; the CR routes to <strong>Remediation / Issue resolution</strong> instead</li></ul>'+(S.tollgate?'<span class="tip">You have passed the tollgate.</span>':'<span class="warn">Not passed yet. It is on step 07 Change Control.</span>')+'<br>Live phase status is in the right-hand panel on every screen.'},
 {k:['nar'],a:'<strong>NAR ID</strong> is your application register identifier, formatted like <code>118135-1</code>.<br><br>Entering it pulls the application name, description, type and data classification automatically, so you do not type them by hand.<span class="tip">If your NAR ID is not recognised, contact Demand Management at demand.management@example.com to check the register entry.</span>'},
 {k:['rehost','replatform','rearchitect','migration type','which migration','lift and shift'],a:()=>{const a=A();
@@ -1267,7 +1453,7 @@ return '<strong>The three migration types</strong><ul><li><strong>ReHost</strong
 {k:['datastream','oracle','cdc','change data capture'],a:'<strong>System A (Oracle) moves to Datastream</strong> for change data capture (ADR-INT-003).<br><br>Instead of the nightly batch extract you have today, Datastream streams changes continuously with a 15-minute sync. Initial load is handled by backfill.<br><br>Your other three sources — the REST API, SharePoint and ServiceNow — move to Cloud Functions with a Pub/Sub buffer (ADR-INT-004).'},
 {k:['bigquery','warehouse','data warehouse','where does the data'],a:'<strong>BigQuery</strong> replaces MS SQL Server as the warehouse (ADR-DWH-001).<br><br>The recommended structure is three zones — <strong>Raw</strong>, <strong>Staging</strong> and <strong>Curated</strong> — partitioned by load date and clustered on your main business key.<br><br>At 1 TB you sit comfortably in the standard tier; no partitioning redesign is needed.'},
 {k:['cost','price','pricing','how much','expensive','saving','cheaper'],a:()=>{const a=A();
-let h='<strong>How the cost estimate works</strong><br><br>CloudGate maps each of your current components to its GCP equivalent, sizes it from your extracted profile (data volume, job frequency, integration count) and applies list pricing.<br><br>It is shown as a <strong>range</strong> because query volume and autoscaling behaviour are not fully known until Discovery.';
+let h='<strong>How the cost estimate works</strong><br><br>dbCloudGate maps each of your current components to its GCP equivalent, sizes it from your extracted profile (data volume, job frequency, integration count) and applies list pricing.<br><br>It is shown as a <strong>range</strong> because query volume and autoscaling behaviour are not fully known until Discovery.';
 if(a){const mid=Math.round((a.target.total.l+a.target.total.h)/2);
 h+='<div class="kv"><b>CURRENT</b><span>'+usd(a.current.total)+' / month on-premises</span><b>TARGET</b><span>'+usd(a.target.total.l)+' – '+usd(a.target.total.h)+' / month on GCP</span><b>SAVING</b><span>about '+usd(a.current.total-mid)+' / month</span></div>';
 h+='<span class="tip">The biggest single saving is retiring the MS SQL Server licence. That alone is '+usd(a.current.rows[0].v)+' per month.</span>'}
@@ -1276,7 +1462,7 @@ return h}},
 {k:['budget','funding','who approves the budget','money'],a:()=>'<strong>Budget approval</strong> must be in place before the Demand gate can close.<br><br>Your Finance Business Partner raises and approves it — <strong>finance.bp@example.com</strong>.<br><br>If your budget is genuinely still pending but you need to progress, your Domain Lead can record an <strong>approved exception</strong> against the blocker. That is a formal decision on the audit trail, not a workaround.'+
 (S.intakeAnswers.budget?'<span class="'+(S.intakeAnswers.budget.toLowerCase().indexOf('approv')>-1?'tip':'warn')+'">You answered: <strong>'+S.intakeAnswers.budget+'</strong>'+(S.intakeAnswers.budget.toLowerCase().indexOf('approv')>-1?' — no blocker raised.':' — this has raised a blocker.')+'</span>':'')},
 {k:['timeline','how long','duration','when will','how many months','realistic'],a:'<strong>Typical timelines for a 1 TB warehouse with eight integrations</strong><ul><li><strong>ReHost</strong> — 2 to 3 months</li><li><strong>RePlatform</strong> — 4 to 6 months</li><li><strong>ReArchitect</strong> — 6 to 9 months</li></ul>The single biggest driver is the SSIS conversion effort, not the data volume.<span class="warn">Picking ReArchitect with a short go-live date raises a blocker automatically. It is better to extend the date or reduce scope than to commit to something undeliverable.</span>'},
-{k:['readiness','score','how is the score','calculated','why is my score'],a:()=>{let h='<strong>How the readiness score works</strong><br><br>Seven dimensions, each scored out of 10 and weighted:<div class="kv"><b>×3</b><span>Architecture clarity</span><b>×3</b><span>Migration type fit</span><b>×2</b><span>Data readiness</span><b>×2</b><span>Dependency mapping</span><b>×2</b><span>Security / IAM posture</span><b>×1</b><span>Operational readiness</span><b>×1</b><span>Budget alignment</span></div><br><strong>Thresholds:</strong> 80+ is Ready, 60–79 is Conditionally Ready, below 60 is Not Ready.';
+{k:['readiness','score','how is the score','calculated','why is my score'],a:()=>{let h='<strong>How the readiness score works</strong><br><br>Six dimensions, each scored out of 10 and weighted:<div class="kv"><b>×3</b><span>Architecture clarity</span><b>×3</b><span>Migration type fit</span><b>×2</b><span>Data readiness</span><b>×2</b><span>Dependency mapping</span><b>×2</b><span>Security / IAM posture</span><b>×1</b><span>Operational readiness</span></div><br><strong>Thresholds:</strong> 80+ is Ready, 60–79 is Conditionally Ready, below 60 is Not Ready.';
 if(S.done.has('review'))h+='<span class="tip">You are at <strong>'+score()+'/100 — '+sst(score()).t+'</strong>. Resolving blockers raises the score.</span>';
 return h}},
 {k:['jira','ticket','cr','change request','gcpdm','epic','story','stories'],a:()=>'<strong>The CR and its stories</strong><br><br>Demand Management runs on a Change Request raised from the standard template, keyed <code>GCPDM-nnnn</code> under epic <code>'+S.epicId+'</code>. Summary format is <em>Raised a CR &lt;NAR ID&gt; &lt;Application Name&gt;</em>.<br><br><strong>The CR carries:</strong> NAR ID, App Name, Domain Name, Cost Center, R-Type, Start date, LZ date, Go-Live date, Domain Lead, and the attached Domain Lead approval.<br><br>Once change control approves, <strong>stories are generated under the epic</strong> &mdash; those are the actual delivery tickets.'+(S.crId?'<span class="tip">Your CR is <strong>'+S.crId+'</strong>.</span>':'')},
@@ -1285,7 +1471,7 @@ return h}},
 if(!L)return 'Your Domain Lead is assigned <strong>automatically</strong> once you pick your domain in Step 01. You never have to look up who it is.<br><br>Pick your domain and their name, email, backup and SLA all appear immediately.';
 return '<strong>Your Domain Lead is '+L.lead+'</strong><div class="kv"><b>DOMAIN</b><span>'+domainName()+'</span><b>EMAIL</b><span>'+L.email+'</span><b>BACKUP</b><span>'+L.backup+'</span><b>SLA</b><span>'+L.sla+'</span></div><br>They were matched automatically from your domain selection — no lookup needed.<span class="tip">If they are unavailable, the backup can approve. Past SLA, escalate to demand.management@example.com.</span>'}},
 {k:['after approval','what happens after','once approved','post approval'],a:'<strong>After your Domain Lead approves</strong><ul><li>The approval is <strong>attached to the CR</strong> automatically</li><li>Demand Management is notified</li><li><strong>Portfolio analysis and planning</strong> runs</li><li>You must pass the <strong>Ready to Design?</strong> tollgate</li><li>The application is <strong>prioritised for GCP</strong></li><li><strong>Change control</strong> assesses impact and generates the delivery <strong>stories under the epic</strong></li></ul><span class="tip">Those stories are the real work. Discovery starts against them.</span>'},
-{k:['upload','document','file','pdf','docx','pptx','what documents','which format'],a:'<strong>What to upload</strong><ul><li>Architecture or design documents</li><li>Data flow diagrams</li><li>Operations runbooks</li><li>Interface or integration specifications</li></ul><strong>Accepted formats:</strong> PDF, DOCX, PPTX — or paste a link to a Confluence or SharePoint page.<span class="tip">More detail means a better extraction and a higher architecture clarity score. Partial documents still work — CloudGate flags what is missing rather than refusing.</span>'},
+{k:['upload','document','file','pdf','docx','pptx','what documents','which format'],a:'<strong>What to upload</strong><ul><li>Architecture or design documents</li><li>Data flow diagrams</li><li>Operations runbooks</li><li>Interface or integration specifications</li></ul><strong>Accepted formats:</strong> PDF, DOCX, PPTX — or paste a link to a Confluence or SharePoint page.<span class="tip">More detail means a better extraction and a higher architecture clarity score. Partial documents still work — dbCloudGate flags what is missing rather than refusing.</span>'},
 {k:['exception','waiver','override','bypass'],a:'<strong>Exceptions</strong><br><br>Where a blocker cannot be resolved conventionally, your Domain Lead can approve a formal exception. In the gap register, pick <strong>"Exception approved by Domain Lead"</strong> as the resolution type and record the justification.<br><br>This is a recorded decision on the audit trail, not a way around the control. Two common cases:<ul><li>Budget pending but delivery must start</li><li>Tableau required instead of Looker (ADR-BI-002-EX)</li></ul><span class="warn">Always get the exception agreed with your Domain Lead before recording it.</span>'},
 {k:['discovery','what happens in discovery'],a:'<strong>Phase 3 &mdash; Discovery</strong><br><br>Two things must complete:<ul><li>The <strong>Application Discovery Questionnaire</strong></li><li>The <strong>data residency request</strong>, submitted by the ITAO through the <strong>DEx Tool</strong> and approved by the <strong>BAO</strong></li></ul>The phase ends when the <strong>DEV Landing Zone is provisioned</strong>.<br><br>Alongside this, the technical gaps from your readiness assessment are closed &mdash; SSIS inventory, dbt lineage, DAG mapping and so on.'},
 {k:['design','ready to design','architecture design','target architecture'],a:'<strong>Ready to Design</strong> gives you the full target architecture — the layered diagram, every recommended GCP service with its configuration, and the ADR behind each choice.<br><br>The checklist covers what must be agreed before build starts: project and VPC, IAM model, BigQuery structure, connectivity, and the ADR sign-off.<span class="tip">Cloud Architecture — cloud.architecture@example.com — reviews the design.</span>'},
@@ -1329,7 +1515,7 @@ const c=document.getElementById('hpctx');if(c)c.textContent=ctxLine()}
 function hpush(html,who){const m=document.getElementById('hpm'),d=document.createElement('div');
 d.className='hmsg '+(who==='u'?'u':'');
 d.innerHTML=who==='u'?'<div class="hav u">PB</div><div class="hbub">'+html+'</div>'
-:'<div class="hav b">CG</div><div class="hbub">'+html+'</div>';
+:'<div class="hav b">dbCG</div><div class="hbub">'+html+'</div>';
 m.appendChild(d);m.scrollTop=9e9;return d}
 function askBot(preset){const i=document.getElementById('hq');
 const q=preset||i.value.trim();if(!q)return;
@@ -1432,31 +1618,39 @@ const B=(x,y,w,h,fill,stroke,label,sub,tc)=>'<rect x="'+x+'" y="'+y+'" width="'+
 (sub?'<text x="'+(x+w/2)+'" y="'+(y+31)+'" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="'+(tc||'#64748B')+'" opacity=".85">'+sub+'</text>':'');
 const AR=(x1,y1,x2,y2)=>'<path d="M'+x1+' '+y1+' L'+(x2-7)+' '+y2+'" stroke="#94A3B8" stroke-width="1.4" fill="none" marker-end="url(#ah)"/>';
 const COL=(x,label)=>'<text x="'+x+'" y="24" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" font-weight="600" fill="#64748B" letter-spacing="1.2">'+label+'</text>';
+const gsvc=function(x,y,w,h,color,mono,label,sub,bf,bs){var by=y+(h-20)/2,bx=x+9,ff=bf||'#EFF6FF',st=bs||'#1A5FB4';
+return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="4" fill="'+ff+'" stroke="'+st+'" stroke-width="1.5"/>'+
+'<rect x="'+bx+'" y="'+by+'" width="20" height="20" rx="4" fill="'+color+'"/>'+
+'<text x="'+(bx+10)+'" y="'+(by+13.5)+'" text-anchor="middle" font-family="IBM Plex Sans" font-size="'+(mono.length>2?7:9)+'" font-weight="700" fill="#fff">'+mono+'</text>'+
+'<text x="'+(x+37)+'" y="'+(y+(sub?18:h/2+4))+'" font-family="IBM Plex Sans" font-size="11" font-weight="600" fill="#0A1F3D">'+label+'</text>'+
+(sub?'<text x="'+(x+37)+'" y="'+(y+31)+'" font-family="IBM Plex Mono" font-size="8.5" fill="#64748B" opacity=".85">'+sub+'</text>':'');};
 const src='#F1F5F9',srcS='#CBD5E1',gcp='#EFF6FF',gcpS='#1A5FB4',bq='#1A5FB4',lk='#F0FDF4',lkS='#15803D';
-let s='<svg viewBox="0 0 1080 '+(reg?430:390)+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">'+
+let s='<svg viewBox="0 0 1080 '+(reg?460:420)+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">'+
 '<defs><marker id="ah" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 z" fill="#94A3B8"/></marker></defs>'+
+'<circle cx="22" cy="17" r="6.5" fill="#4285F4"/><circle cx="33" cy="16" r="9" fill="#4285F4"/><circle cx="15" cy="19" r="5.5" fill="#4285F4"/><rect x="15" y="16" width="23" height="10" rx="5" fill="#4285F4"/><text x="49" y="23" font-family="IBM Plex Sans" font-size="13" font-weight="600" fill="#1A5FB4">Google Cloud</text>'+
+'<g transform="translate(0,30)">'+
 COL(85,'SOURCE SYSTEMS')+COL(285,'INGESTION')+COL(475,'PROCESSING')+COL(690,'WAREHOUSE')+COL(960,'CONSUMPTION');
 // sources
 const srcs=[['System A','Oracle 19c'],['System B','Cloud API'],['System C','SharePoint'],['System D','ServiceNow']];
 srcs.forEach((v,i)=>{const y=48+i*62;s+=B(15,y,140,44,src,srcS,v[0],v[1])});
 // ingestion
-s+=B(215,48,140,44,gcp,gcpS,'Datastream','Oracle CDC');
-s+=B(215,110,140,44,gcp,gcpS,'Cloud Functions','REST / Graph API');
-s+=B(215,172,140,44,gcp,gcpS,'Pub/Sub','Event buffer');
-s+=B(215,234,140,44,gcp,gcpS,'Cloud Storage','Landing zone');
+s+=gsvc(215,48,140,44,'#4285F4','DS','Datastream','Oracle CDC');
+s+=gsvc(215,110,140,44,'#4285F4','CF','Cloud Functions','REST / Graph API');
+s+=gsvc(215,172,140,44,'#EA4335','PS','Pub/Sub','Event buffer');
+s+=gsvc(215,234,140,44,'#FBBC04','GCS','Cloud Storage','Landing zone');
 // processing
-s+=B(405,80,140,44,gcp,gcpS,'Dataflow','SSIS replacement');
-s+=B(405,142,140,44,gcp,gcpS,'Cloud Composer','Airflow DAGs');
-s+=B(405,204,140,44,gcp,gcpS,'dbt on Composer','Transform layer');
+s+=gsvc(405,80,140,44,'#4285F4','DF','Dataflow','SSIS replacement');
+s+=gsvc(405,142,140,44,'#4285F4','CC','Cloud Composer','Airflow DAGs');
+s+=gsvc(405,204,140,44,'#FF694B','dbt','dbt on Composer','Transform layer');
 // warehouse
 s+='<rect x="600" y="48" width="180" height="176" rx="5" fill="'+bq+'" stroke="#12305A" stroke-width="2"/>'+
 '<text x="690" y="70" text-anchor="middle" font-family="IBM Plex Sans" font-size="13" font-weight="700" fill="#fff">BigQuery</text>'+
-'<text x="690" y="84" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#DBEAFE">'+(reg?'EU multi-region':'Data warehouse')+'</text>';
+'<text x="690" y="84" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#DBEAFE">'+(reg?'EU multi-region':'Data warehouse')+'</text>'+'<rect x="612" y="58" width="20" height="20" rx="4" fill="#ffffff"/><text x="622" y="72" text-anchor="middle" font-family="IBM Plex Sans" font-size="8.5" font-weight="700" fill="#1A5FB4">BQ</text>';
 ['Raw zone','Staging zone','Curated zone'].forEach((z,i)=>{const y=98+i*40;
 s+='<rect x="615" y="'+y+'" width="150" height="32" rx="3" fill="#2D7DD2" opacity=".55"/>'+
 '<text x="690" y="'+(y+20)+'" text-anchor="middle" font-family="IBM Plex Sans" font-size="10.5" font-weight="500" fill="#fff">'+z+'</text>'});
 // consumption
-s+=B(880,48,180,48,lk,lkS,'Looker','Primary BI · ADR-BI-002');
+s+=gsvc(880,48,180,48,'#34A853','LK','Looker','Primary BI · ADR-BI-002','#F0FDF4','#15803D');
 const dn=[['System X','Oracle'],['System Y','BigQuery'],['System Z','SharePoint']];
 dn.forEach((v,i)=>{const y=112+i*56;s+=B(880,y,180,44,src,srcS,v[0],v[1])});
 // arrows
@@ -1473,7 +1667,7 @@ const gsv=reg?['Cloud IAM','Cloud KMS (CMEK)','Cloud DLP','VPC Service Controls'
 gsv.forEach((g,i)=>{const w=Math.floor(1000/gsv.length),x=34+i*w;
 s+='<text x="'+x+'" y="'+(gy+(reg?38:36))+'" font-family="IBM Plex Sans" font-size="10.5" font-weight="500" fill="#334155">'+g+'</text>'});
 if(reg)s+='<text x="34" y="'+(gy+68)+'" font-family="IBM Plex Sans" font-size="10" fill="#B45309">All services deployed in EU region only — data residency requirement for MiFID II reporting</text>';
-s+='</svg>';return s}
+s+='</g></svg>';return s}
 
 function svcTable(){const reg=A().regulated;
 let rows=[
@@ -1496,26 +1690,115 @@ rows.push(['Cloud Monitoring','Observability','Dashboards per DAG, alerting on j
 return '<table class="dt"><thead><tr><th style="width:16%">GCP service</th><th style="width:22%">Purpose</th>'+
 '<th style="width:47%">Recommended configuration</th><th style="width:15%">ADR</th></tr></thead><tbody>'+
 rows.map(r=>'<tr><td class="sname">'+r[0]+'</td><td class="stech">'+r[1]+'</td><td style="font-size:12.5px">'+r[2]+'</td>'+
-'<td><span class="adr">'+r[3]+'</span></td></tr>').join('')+'</tbody></table>'}
+'<td>'+adrLink(r[3])+'</td></tr>').join('')+'</tbody></table>'}
 
 function vDesign(){const a=A();
-return head('Step 09 of 09 &middot; Phase 5 Design','Recommended architecture and design readiness',
-'Target architecture for a '+S.migType+' migration against blueprint '+a.bpTop.id+', with the recommended GCP service configuration and ADR references throughout.')+
-'<div class="card"><div class="ch"><div class="ct">Recommended target architecture</div>'+
-'<div class="cm">'+a.bpTop.id+' &middot; '+a.bpTop.eri.split(' - ')[0]+'</div></div>'+
+return head('Step 09 of 09 &middot; Phase 5 Design','Design deliverables',
+'Two design deliverables for a '+S.migType+' migration against blueprint '+bpLinkT(a.bpTop.id)+': the initial High Level Design (iHLD) and the Solution Design Document (SDD).')+
+'<div class="mini-tabs" style="margin-bottom:16px">'+
+'<button class="mini-tab '+(S.designTab!=='sdd'?'on':'')+'" onclick="S.designTab=\'ihld\';render()">iHLD &mdash; Initial High Level Design</button>'+
+'<button class="mini-tab '+(S.designTab==='sdd'?'on':'')+'" onclick="S.designTab=\'sdd\';render()">SDD &mdash; Solution Design Document</button></div>'+
+(S.designTab==='sdd'?vDesignSDD():vDesignIHLD())}
+function vDesignIHLD(){const a=A();
+return '<div class="card"><div class="ch"><div class="ct">Recommended target architecture</div>'+
+'<div class="cm">'+bpLinkT(a.bpTop.id)+' &middot; '+eriLinkT(a.bpTop.eri.split(' - ')[0])+'</div></div>'+
 '<div style="padding:20px;overflow-x:auto"><div style="min-width:900px">'+archSvg()+'</div></div>'+
 '<div class="notes">Source systems retain their existing interfaces. Datastream replaces the nightly Oracle batch with change data capture; the three REST and file-based sources move to Cloud Functions with a Pub/Sub buffer. '+
 'SSIS logic is rebuilt in Dataflow, orchestrated by Cloud Composer on the existing three-window daily schedule. dbt runs unchanged against a BigQuery target profile. '+
-'Looker replaces Tableau as the primary BI layer per ADR-BI-002.</div></div>'+
+'Looker replaces Tableau as the primary BI layer per '+adrLinkT('ADR-BI-002')+'.</div></div>'+
 '<div class="card"><div class="ch"><div class="ct">Recommended GCP services and configuration</div>'+
 '<div class="cm">'+(a.regulated?'15':'11')+' services</div></div><div class="cb flush">'+svcTable()+'</div></div>'+
 clCard('dsg','Design readiness checklist','','','',1)+
 '<div class="bn b-blue" style="margin-top:16px"><div class="bn-ic">i</div><div>'+
 '<div class="bn-t">Remaining lifecycle phases</div>'+
 '<div class="bn-b">Phase 6 Build, Phase 7 Testing and Final Design, Phase 8 Deployment / Release Management and Phase 9 On-Prem Decommissioning follow the same gate model. '+
-'Detailed stages for these phases are not yet defined and will be added to CloudGate once published.</div></div></div>'+
+'Detailed stages for these phases are not yet defined and will be added to dbCloudGate once published.</div></div></div>'+
 '<div class="btn-row"><button class="btn btn-p btn-lg" onclick="toast(\'Onboarding pack generated\',\'ok\')">Generate onboarding pack</button>'+
 '<button class="btn btn-g" onclick="resetAll()">'+I.rst+' New request</button></div>'}
+function vDesignSDD(){const a=A();var name=a.nar+' '+a.app+' '+S.migType+' (SDD v3.4)';
+return '<div class="card"><div class="ch"><div class="ct">Solution Design Document</div><div class="cm">Template v3.4</div></div>'+
+'<div class="cb"><dl class="dl">'+
+'<dt>Source template</dt><dd>Group Architecture &middot; SDD Template v3.4 (Confluence)</dd>'+
+'<dt>Target space</dt><dd>'+a.app+' project space &middot; '+domainName()+'</dd>'+
+'<dt>Naming convention</dt><dd class="mono">NARID  App Name  Migration Type  (SDD v-template version)</dd>'+
+'<dt>Document name</dt><dd class="mono">'+name+'</dd>'+
+'<dt>Status</dt><dd>'+(S.sddGenerated?'<span class="pill p-green">Generated &amp; populated</span>':'<span class="pill p-amber">Not generated</span>')+'</dd></dl>'+
+(S.sddGenerated?'<p style="font-size:12.5px;color:var(--slate-600);margin-top:4px">Published to the '+a.app+' project Confluence space. Sections 1&ndash;3 populated automatically from dbCloudGate details; remaining sections are placeholders.</p>'
+:'<p style="font-size:13px;color:var(--slate-600);margin-top:6px">dbCloudGate copies the Group Architecture SDD template into your project Confluence space and updates it automatically, following the guidance in the template, using the details gathered and planned across the onboarding flow.</p>'+
+'<div class="btn-row"><button class="btn btn-p btn-lg" onclick="genSDD()">Generate SDD from template</button></div>')+
+'</div></div>'+
+(S.sddGenerated?sddDoc():'')}
+function genSDD(){var m=document.getElementById('main');if(!m)return;
+var steps=['Locating Group Architecture SDD template (v3.4)…','Copying template into '+A().app+' project space…','Reading gathered details from dbCloudGate…','Populating Introduction, Governance and Application Overview…','Publishing to Confluence…'];
+m.innerHTML='<div class="card"><div class="lw"><div class="bspin"></div><div class="lt">Generating Solution Design Document</div><div class="ld" id="sddld">'+steps[0]+'</div></div></div>';
+window.scrollTo({top:0});
+var i=0,d=document.getElementById('sddld');
+var t=setInterval(function(){i++;if(d&&i<steps.length)d.textContent=steps[i];if(i>=steps.length-1)clearInterval(t);},1200);
+setTimeout(function(){S.sddGenerated=true;S.designTab='sdd';render();toast('SDD generated and published to Confluence','ok');},steps.length*1200+400);}
+function sddDoc(){const a=A(),ar=a.arch,L=lead(),I=S.intakeAnswers;
+var today=new Date().toISOString().slice(0,10);
+var H=function(n,t){return '<div style="font-size:15px;font-weight:700;color:var(--navy-900);margin:20px 0 4px;padding-top:14px;border-top:1px solid var(--slate-200)">'+n+'. '+t+'</div>';};
+var SH=function(n,t){return '<div style="font-size:13.5px;font-weight:600;color:var(--blue-600);margin:14px 0 6px">'+n+' '+t+'</div>';};
+var P=function(t){return '<p style="font-size:13px;color:var(--slate-700);line-height:1.6;margin-bottom:8px">'+t+'</p>';};
+var TBD='<p style="font-size:12.5px;color:var(--slate-400);font-style:italic;margin:6px 0">To be completed in a later revision.</p>';
+var d='<div class="card"><div class="ch"><div class="ct">'+a.nar+' '+a.app+' '+S.migType+' (SDD v3.4)</div><div class="cm">Confluence &middot; '+a.app+' space</div></div><div class="cb">';
+d+=H('1','Introduction');
+d+=SH('1.1','Purpose, Scope, and Phases of Migration');
+d+=P('<strong>Purpose:</strong> This Solution Design Document defines the target-state design for migrating '+a.app+' ('+a.nar+') from its on-premises '+ar.systemType+' to Google Cloud Platform under a <strong>'+S.migType+'</strong> approach, aligned to approved blueprint '+a.bpTop.id+'.');
+d+=P('<strong>Scope:</strong> In scope &mdash; the '+ar.database+' warehouse ('+ar.volume+'), '+ar.upstream.length+' upstream integrations, '+ar.downstream.length+' downstream consumers, ETL and orchestration ('+ar.etl+'), and the BI layer ('+ar.bi+'). Out of scope &mdash; non-migration change requests and downstream system remediation.');
+d+=P('<strong>Phases of Migration:</strong> Readiness Evaluation &rarr; Demand Management &rarr; Discovery &rarr; Design &rarr; Build &rarr; Testing &amp; Final Design &rarr; Deployment / Release Management &rarr; On-Prem Decommissioning.');
+d+=SH('1.2','Go-live dates');
+d+='<table class="dt"><tbody>'+
+'<tr><td class="sname">Project start</td><td>'+(I.start_date||'&mdash;')+'</td></tr>'+
+'<tr><td class="sname">Target Landing Zone (LZ) date</td><td>'+(I.lz_date||'&mdash;')+'</td></tr>'+
+'<tr><td class="sname">Target go-live</td><td>'+(I.go_live||'&mdash;')+'</td></tr></tbody></table>';
+d+=H('2','Governance');
+d+=SH('2.1','Change History');
+d+='<table class="dt"><thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Description</th></tr></thead><tbody>'+
+'<tr><td class="mono">v3.4</td><td class="mono">'+today+'</td><td>dbCloudGate (automated)</td><td>Initial SDD generated from the Group Architecture template and populated from dbCloudGate-gathered details.</td></tr></tbody></table>';
+d+=SH('2.2','Application Stakeholders');
+d+='<table class="dt"><thead><tr><th>Role</th><th>Name</th><th>Contact</th></tr></thead><tbody>'+
+'<tr><td class="sname">ITAO</td><td>Pinku Barman</td><td class="mono">pinkuraj.l@gmail.com</td></tr>'+
+'<tr><td class="sname">Domain Lead</td><td>'+L.lead+'</td><td class="mono">'+L.email+'</td></tr>'+
+'<tr><td class="sname">Backup Lead</td><td>'+L.backup+'</td><td>&mdash;</td></tr>'+
+'<tr><td class="sname">Domain</td><td>'+domainName()+'</td><td>&mdash;</td></tr></tbody></table>';
+d+=H('3','Application Overview');
+d+=SH('3.1','Business Function');
+d+=P(a.appDesc+'.');
+d+=SH('3.2','Quality Attributes / Non-Functional Requirements (NFRs)');
+d+='<table class="dt"><thead><tr><th>Attribute</th><th>Requirement</th></tr></thead><tbody>'+
+'<tr><td class="sname">Data classification</td><td>'+a.dataClass+'</td></tr>'+
+'<tr><td class="sname">Data residency</td><td>'+(a.regulated?'EU region only (GDPR / MiFID II)':'No specific residency restriction')+'</td></tr>'+
+'<tr><td class="sname">Availability</td><td>Business-hours availability; batch SLAs aligned to the '+ar.jobs+'</td></tr>'+
+'<tr><td class="sname">Data volume</td><td>'+ar.volume+'</td></tr>'+
+'<tr><td class="sname">Business criticality</td><td>'+(I.criticality||'&mdash;')+'</td></tr></tbody></table>';
+d+=SH('3.3','Design Decisions');
+var bp=a.bpTop.id,eri=a.bpTop.eri.split(' - ')[0],base='https://confluence.example.com/display/GCPARCH/';
+var lk=function(id,cat,pill){var href=base+cat+'/'+encodeURIComponent(id);return pill?'<a href="'+href+'" target="_blank" rel="noopener" class="adr" style="text-decoration:none">'+id+'</a>':'<a href="'+href+'" target="_blank" rel="noopener" style="color:var(--blue-600);font-weight:500;text-decoration:none;font-family:var(--fm);font-size:11.5px;white-space:nowrap">'+id+'</a>';};
+var dec=[
+{d:'Adopt BigQuery as the target data warehouse',r:'Serverless, columnar warehouse; T-SQL schema converted from MS SQL Server. Scales to the '+ar.volume+' dataset with no infrastructure to manage.',adr:'ADR-DWH-001',lc:'Design'},
+{d:'Rebuild ETL in Cloud Dataflow',r:'The 60+ SSIS packages are re-implemented as managed Dataflow pipelines, removing the Windows / SSIS runtime.',adr:'ADR-DWH-004',lc:'Execution'},
+{d:'Orchestrate with Cloud Composer (Airflow)',r:'SQL Server Agent job chains become Airflow DAGs on the existing three-window daily schedule.',adr:'ADR-DWH-005',lc:'Design'},
+{d:'Run dbt on Cloud Composer',r:'dbt Core models move without rewrite; only the target profile changes to BigQuery.',adr:'ADR-DWH-007',lc:'Execution'},
+{d:'Ingest the Oracle source via Datastream CDC',r:'Replaces the nightly batch extract with low-latency change data capture for System A.',adr:'ADR-INT-003',lc:'Design'},
+{d:'Event-driven ingest with Cloud Functions and Pub/Sub',r:'REST and file-based sources (Systems B, C and D) move to event-driven ingestion with a Pub/Sub buffer.',adr:'ADR-INT-004',lc:'Design'},
+{d:'Adopt Looker as the BI platform',r:'Native BigQuery integration with no EU regional restriction; replaces Tableau per the BI platform decision.',adr:'ADR-BI-002',lc:'Design'}];
+d+='<div style="overflow-x:auto"><table class="dt" style="min-width:1120px"><thead><tr><th>#</th><th>Decision</th><th>Detail and Rationale</th><th>Reference for Decision Tree</th><th>ADR</th><th>Blueprints</th><th>DRHA (as applicable)</th><th>Project Lifecycle</th></tr></thead><tbody>'+
+dec.map(function(x,i){return '<tr><td class="mono">D'+(i+1)+'</td>'+
+'<td class="sname" style="min-width:180px">'+x.d+'</td>'+
+'<td style="font-size:12.5px;color:var(--slate-600);min-width:240px">'+x.r+'</td>'+
+'<td>'+lk(eri,'ERI')+'</td>'+
+'<td>'+lk(x.adr,'ADR',1)+'</td>'+
+'<td>'+lk(bp,'Blueprints')+'</td>'+
+'<td>'+(a.regulated?lk('DRHA-'+(101+i),'DRHA'):'&mdash;')+'</td>'+
+'<td>'+x.lc+'</td></tr>';}).join('')+
+'</tbody></table></div>';
+d+=H('4','Technology')+TBD;
+d+=H('5','Data')+TBD;
+d+=H('6','Security')+TBD;
+d+=H('7','Operational')+TBD;
+d+=H('8','Appendix')+TBD;
+d+='</div></div>';return d;}
 
 initState();render();
 </script>
