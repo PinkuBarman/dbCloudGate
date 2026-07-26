@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dbCloudGate — Enterprise Tech-Stack Decision Guide (GCP)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy-900:#0A1F3D;--navy-800:#12305A;--navy-700:#1B4079;--blue-600:#1A5FB4;--blue-500:#2D7DD2;--blue-100:#DBEAFE;--blue-50:#EFF6FF;
+--slate-900:#0F172A;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748B;--slate-400:#94A3B8;--slate-300:#CBD5E1;--slate-200:#E2E8F0;--slate-100:#F1F5F9;--slate-50:#F8FAFC;
+--green-700:#15803D;--green-100:#DCFCE7;--green-50:#F0FDF4;--amber-700:#B45309;--amber-50:#FFFBEB;--red-700:#B91C1C;
+--fs:'IBM Plex Sans',system-ui,sans-serif;--fm:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--fs);background:var(--slate-100);color:var(--slate-900);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:34px 26px 90px}
+.appbar{background:var(--navy-900);color:#fff;padding:22px 26px;border-radius:10px;margin-bottom:26px}
+.appbar h1{font-size:23px;font-weight:600;letter-spacing:-.02em}
+.appbar p{color:var(--slate-300);font-size:13.5px;margin-top:5px;font-family:var(--fm)}
+h2{font-size:19px;font-weight:600;color:var(--navy-900);margin:34px 0 4px;letter-spacing:-.01em;padding-top:20px;border-top:2px solid var(--slate-200)}
+h2 .n{font-family:var(--fm);color:var(--blue-600);font-size:15px;margin-right:8px}
+.lede{color:var(--slate-600);font-size:13.5px;margin-bottom:15px;max-width:820px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--slate-200);border-radius:8px;box-shadow:0 1px 2px rgba(15,23,42,.05);overflow:hidden;margin-bottom:16px}
+.ch{padding:11px 16px;background:var(--slate-50);border-bottom:1px solid var(--slate-200);font-size:12px;font-weight:600;font-family:var(--fm);letter-spacing:.04em;text-transform:uppercase;color:var(--slate-500)}
+.cb{padding:6px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 14px;background:var(--slate-50);border-bottom:1px solid var(--slate-200);font-family:var(--fm);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-500);font-weight:600}
+td{padding:10px 14px;border-bottom:1px solid var(--slate-100);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr.rec td{background:var(--green-50)}
+tr.rec td:first-child{box-shadow:inset 3px 0 0 var(--green-700)}
+.opt{font-weight:600;color:var(--navy-900);white-space:nowrap}
+.badge{display:inline-block;font-family:var(--fm);font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--green-100);color:var(--green-700);margin-left:7px;letter-spacing:.04em;vertical-align:middle}
+.badge.alt{background:var(--slate-200);color:var(--slate-600)}
+.rc{margin:14px 0 8px;padding:13px 16px;background:var(--blue-50);border:1px solid #93C5FD;border-left:4px solid var(--blue-600);border-radius:6px;font-size:13.5px}
+.rc b{color:var(--navy-800)}
+.rc .lab{font-family:var(--fm);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue-600);font-weight:700;display:block;margin-bottom:4px}
+.purpose{background:var(--slate-50);border:1px solid var(--slate-200);border-left:4px solid var(--slate-400);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--slate-700);margin:8px 0 14px}
+.purpose .lab{font-family:var(--fm);font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--slate-500);font-weight:700;display:block;margin-bottom:3px}
+.tree{background:#fff;border:1px solid var(--slate-200);border-radius:8px;padding:6px 6px 2px;box-shadow:0 1px 2px rgba(15,23,42,.05);margin-bottom:16px}
+.tree .tt{font-family:var(--fm);font-size:11px;font-weight:600;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;padding:9px 12px 2px}
+.tree svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--slate-600);margin:10px 2px 22px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+.stack td:first-child{font-family:var(--fm);font-size:11px;color:var(--slate-500);white-space:nowrap;width:180px}
+.stack td:nth-child(2){font-weight:600;color:var(--navy-900)}
+.foot{margin-top:26px;padding-top:14px;border-top:1px solid var(--slate-200);color:var(--slate-400);font-size:11.5px;font-family:var(--fm)}
+.note{font-size:12.5px;color:var(--slate-600);padding:2px 2px 10px}
+.pill{font-family:var(--fm);font-size:10px;padding:2px 7px;border-radius:3px;background:var(--slate-100);border:1px solid var(--slate-200);color:var(--slate-600)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="appbar">
+<h1>dbCloudGate — Enterprise Tech-Stack Decision Guide</h1>
+<p>Languages &amp; GCP services · decision trees, comparisons and recommendations · draft for review</p>
+</div>
+
+<div class="lede">This guide works each major build decision as a short decision tree (what to pick given your constraints), a side-by-side comparison, and a recommended default. The green rows and callouts are the recommendation for an enterprise, regulated deployment; alternatives are valid where the noted condition applies. Once you finalise the picks, they fold into the build-plan document.</div>
+
+<div class="legend">
+<span><i class="sw" style="background:var(--navy-800)"></i> Decision / question</span>
+<span><i class="sw" style="background:var(--green-700)"></i> Recommended default</span>
+<span><i class="sw" style="background:var(--slate-300)"></i> Alternative (conditional)</span>
+</div>
+
+<div class="card">
+<div class="ch">TL;DR — recommended stack at a glance</div>
+<div class="cb"><table class="stack">
+<tr><td>Front end</td><td>React + TypeScript</td><td>Component ecosystem, hiring, works with any org design system.</td></tr>
+<tr><td>Core services</td><td>Java 21 + Spring Boot</td><td>Enterprise default; Go if you want leaner services and have the skills.</td></tr>
+<tr><td>AI service</td><td>Python + FastAPI</td><td>Best SDK/RAG support for Document AI &amp; Vertex AI; isolated microservice.</td></tr>
+<tr><td>Compute</td><td>Cloud Run</td><td>All services; GKE Autopilot only if you need a mesh or long-running workloads.</td></tr>
+<tr><td>Relational</td><td>Cloud SQL (PostgreSQL)</td><td>+ Firestore for flexible state, BigQuery for reporting. AlloyDB if you outgrow it.</td></tr>
+<tr><td>Orchestration</td><td>Cloud Workflows</td><td>+ Pub/Sub &amp; Cloud Tasks for async. Temporal only for long, complex human flows.</td></tr>
+<tr><td>API management</td><td>Apigee</td><td>Enterprise governance/exposure; API Gateway if internal-only and lighter.</td></tr>
+<tr><td>Model</td><td>Vertex AI — Gemini (default)</td><td>Model-agnostic layer; route to Claude (Model Garden) for extraction/SDD drafting.</td></tr>
+<tr><td>Retrieval / RAG</td><td>Vertex AI Search</td><td>Managed grounding over the ADR/blueprint corpus; Vector Search if you need custom.</td></tr>
+<tr><td>IaC</td><td>Terraform</td><td>De-facto GCP standard.</td></tr>
+<tr><td>CI/CD</td><td>Cloud Build + Cloud Deploy</td><td>Or your org's GitHub/GitLab CI, with Cloud Deploy for progressive delivery.</td></tr>
+<tr><td>Security</td><td>IAP · IAM · VPC-SC · KMS/CMEK · DLP · Secret Manager · SCC · Audit Logs</td><td>Non-negotiable governance layer.</td></tr>
+<tr><td>Observability</td><td>Cloud Ops (Monitoring, Logging, Trace, Error Reporting)</td><td>SLOs per service.</td></tr>
+</table></div>
+</div>
+
+<!-- 1 FRONTEND -->
+<h2><span class="n">1</span>Front-end language &amp; framework</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>This is what a person actually uses — the onboarding wizard, the readiness score, the cost and blueprint screens, the architecture diagrams and the generated SDD. It turns the whole process into a guided set of screens instead of spreadsheets and emails.</div>
+<div class="lede">A single-page app that renders the wizard, tables and diagrams. The choice is mostly about ecosystem and your org's existing standard.</div>
+<div class="card"><div class="cb"><table>
+<thead><tr><th>Option</th><th>Best when</th><th>Trade-offs</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">React + TypeScript<span class="badge">Recommended</span></td><td>You want the largest component ecosystem, easiest hiring, and freedom to adopt any design system.</td><td>Unopinionated — you assemble routing/state libraries yourself.</td></tr>
+<tr><td class="opt">Angular<span class="badge alt">Alt</span></td><td>Your org already standardises on Angular; you want an opinionated, batteries-included framework.</td><td>Steeper learning curve; heavier.</td></tr>
+<tr><td class="opt">Vue</td><td>Small team wanting a gentle learning curve.</td><td>Smaller enterprise footprint / hiring pool.</td></tr>
+</tbody></table></div></div>
+<div class="rc"><span class="lab">Recommendation</span><b>React + TypeScript</b>, unless your organisation already standardises on Angular — in which case use Angular to reuse skills and shared libraries.</div>
+
+<!-- 2 BACKEND LANGUAGE -->
+<h2><span class="n">2</span>Core back-end language</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>The engine behind those screens. It remembers each application’s request, enforces the gate rules (for example, it won’t let a CR be raised while a blocker is open), talks to Confluence, Jira and the CMDB, and keeps the audit trail. The “brain and plumbing” of the platform.</div>
+<div class="lede">The workflow engine, CR/approval logic and integration services. The AI work is deliberately a separate Python service (section 3).</div>
+<div class="grid2">
+<div class="tree"><div class="tt">Decision tree — core service language</div><div id="treeLang"></div></div>
+<div class="card"><div class="cb"><table>
+<thead><tr><th>Option</th><th>Best when</th><th>Trade-offs</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Java 21 + Spring Boot<span class="badge">Recommended</span></td><td>Enterprise/regulated shop; you value mature security libraries, strong typing and a deep hiring pool.</td><td>Heavier runtime; mitigate cold starts with CRaC or GraalVM native image.</td></tr>
+<tr><td class="opt">Go<span class="badge alt">Alt</span></td><td>You want lean images, fast cold starts and strong concurrency, and have Go skills.</td><td>Smaller enterprise dev pool; fewer batteries-included frameworks.</td></tr>
+<tr><td class="opt">Node.js + TypeScript</td><td>You want to unify with the front end and move fast on a smaller team.</td><td>Less ideal for CPU-heavy work and very large domain models.</td></tr>
+</tbody></table></div></div>
+</div>
+<div class="rc"><span class="lab">Recommendation</span><b>Java 21 + Spring Boot</b> for the core services in a regulated enterprise. Choose <b>Go</b> if lean, fast-starting services matter more and the team has Go depth. Keep one house language for the core; don't spread across three.</div>
+
+<!-- 3 AI SERVICE -->
+<h2><span class="n">3</span>AI / document-intelligence service language</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>The part that does the reading and thinking. It ingests the uploaded architecture documents, pulls out the technical profile, maps each current component to a GCP target, scores readiness and drafts the SDD — the capability the prototype shows as the “analysing” and typewriter steps.</div>
+<div class="lede">Extraction, mapping, scoring and SDD drafting — a distinct microservice so its dependencies and scaling are isolated from the core.</div>
+<div class="card"><div class="cb"><table>
+<thead><tr><th>Option</th><th>Best when</th><th>Trade-offs</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Python + FastAPI<span class="badge">Recommended</span></td><td>Anything touching Document AI, Vertex AI, embeddings or RAG frameworks — richest, first-class SDKs.</td><td>Not for high-throughput transactional APIs (that's the core service's job).</td></tr>
+<tr><td class="opt">Java / Node clients</td><td>You want the LLM calls in the core language and only use simple REST calls.</td><td>Thinner ecosystem for RAG/eval tooling; more glue code.</td></tr>
+</tbody></table></div></div>
+<div class="rc"><span class="lab">Recommendation</span><b>Python + FastAPI</b> as an isolated AI microservice the core calls over REST/gRPC. This keeps model/SDK churn away from your core services and gives you the best RAG and evaluation libraries.</div>
+
+<!-- 4 COMPUTE -->
+<h2><span class="n">4</span>Compute / hosting platform</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>Where all of the above actually runs. It keeps the services online, scales them up when many teams onboard at once, and costs little when idle — so you are not managing servers.</div>
+<div class="lede">Where the containers run. Favour the most-managed option that meets the requirement.</div>
+<div class="grid2">
+<div class="tree"><div class="tt">Decision tree — compute platform</div><div id="treeCompute"></div></div>
+<div class="card"><div class="cb"><table>
+<thead><tr><th>Option</th><th>Best when</th><th>Trade-offs</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Cloud Run<span class="badge">Recommended</span></td><td>Stateless containerised services (UI, APIs, AI service). Autoscales to zero, minimal ops.</td><td>Request cap; less control over networking/mesh; not for stateful workloads.</td></tr>
+<tr><td class="opt">GKE Autopilot<span class="badge alt">Alt</span></td><td>You need a service mesh, sidecars, long-running processes, or many tightly-coupled services.</td><td>Cluster/ops overhead and cost even in Autopilot.</td></tr>
+<tr><td class="opt">Cloud Functions (2nd gen)</td><td>Small, single-purpose event handlers (Pub/Sub, Storage triggers).</td><td>Not suited to full applications.</td></tr>
+</tbody></table></div></div>
+</div>
+<div class="rc"><span class="lab">Recommendation</span><b>Cloud Run</b> for every service. Reach for <b>GKE Autopilot</b> only when a concrete need appears (mesh, long-running jobs, sidecar-heavy patterns). Use <b>Cloud Functions</b> for glue event handlers.</div>
+
+<!-- 5 DATA -->
+<h2><span class="n">5</span>Data stores</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>The platform’s memory. Every request, gap, approval, Change Request, uploaded document and generated SDD is stored here, so nothing is lost, the audit trail is complete, and portfolio reporting is possible.</div>
+<div class="lede">Transactional workflow state, flexible request/session state, and analytics/reporting are three different jobs — use the right tool for each.</div>
+<div class="grid2">
+<div class="tree"><div class="tt">Decision tree — primary relational store</div><div id="treeData"></div></div>
+<div class="card"><div class="cb"><table>
+<thead><tr><th>Option</th><th>Best when</th><th>Trade-offs</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Cloud SQL (PostgreSQL)<span class="badge">Recommended</span></td><td>Transactional workflow, CR and approval data. Managed, HA, cost-effective.</td><td>Regional; vertical scaling limits (fine for this workload).</td></tr>
+<tr><td class="opt">AlloyDB for PostgreSQL<span class="badge alt">Alt</span></td><td>Postgres-compatible but you need higher performance or larger scale / mixed analytics.</td><td>Higher cost than Cloud SQL.</td></tr>
+<tr><td class="opt">Cloud Spanner</td><td>Global, multi-region, horizontally-scaled strong consistency.</td><td>Overkill and pricier for a single-region internal tool.</td></tr>
+<tr><td class="opt">Firestore</td><td>Flexible/real-time request &amp; session state, event-driven UI updates.</td><td>Not for complex relational queries — use alongside, not instead of, SQL.</td></tr>
+<tr><td class="opt">BigQuery</td><td>Portfolio reporting, analytics, audit-scale querying.</td><td>Analytical, not transactional.</td></tr>
+</tbody></table></div></div>
+</div>
+<div class="rc"><span class="lab">Recommendation</span><b>Cloud SQL for PostgreSQL</b> as the system of record, <b>Firestore</b> for flexible/real-time state, and <b>BigQuery</b> for reporting. Move the relational store to <b>AlloyDB</b> only if you outgrow Cloud SQL; <b>Cloud Storage</b> holds uploaded docs and generated artifacts.</div>
+
+<!-- 6 ORCHESTRATION -->
+<h2><span class="n">6</span>Workflow orchestration</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>The traffic controller for the step-by-step lifecycle (readiness → demand → approval → design). It runs the steps in the right order, pauses while it waits for a Domain Lead approval or a background job, and stops anything from skipping a gate.</div>
+<div class="lede">Driving the gated lifecycle (readiness → demand → approval → design) and the async work behind each step.</div>
+<div class="grid2">
+<div class="tree"><div class="tt">Decision tree — orchestration</div><div id="treeOrch"></div></div>
+<div class="card"><div class="cb"><table>
+<thead><tr><th>Option</th><th>Best when</th><th>Trade-offs</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Cloud Workflows<span class="badge">Recommended</span></td><td>Serverless step orchestration across GCP services and HTTP APIs for the gated flow.</td><td>Not ideal for very long-running (months) human waits with complex compensation.</td></tr>
+<tr><td class="opt">Pub/Sub + Cloud Tasks<span class="badge alt">Alt</span></td><td>Event fan-out and reliable async/retryable work behind steps.</td><td>You build the state machine yourself — pair with Workflows, don't replace it.</td></tr>
+<tr><td class="opt">Temporal (on GKE / Temporal Cloud)</td><td>Durable, long-running human-in-loop flows with rich compensation/rollback.</td><td>Additional platform to run and operate.</td></tr>
+<tr><td class="opt">Cloud Composer (Airflow)</td><td>Scheduled data/ETL pipelines expressed as DAGs.</td><td>Heavyweight for app workflow; it's a data-pipeline tool.</td></tr>
+</tbody></table></div></div>
+</div>
+<div class="rc"><span class="lab">Recommendation</span><b>Cloud Workflows</b> for the lifecycle transitions with <b>Pub/Sub + Cloud Tasks</b> for async work. Adopt <b>Temporal</b> only if approval waits and compensation logic become genuinely long and complex. Keep <b>Composer</b> for data pipelines, not app flow.</div>
+
+<!-- 7 API MGMT -->
+<h2><span class="n">7</span>API management &amp; edge</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>The secure front door to the platform’s APIs. It checks who is calling, blocks attacks, applies rate limits, and — with Apigee — lets other internal teams safely consume dbCloudGate’s services.</div>
+<div class="card"><div class="cb"><table>
+<thead><tr><th>Option</th><th>Best when</th><th>Trade-offs</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Apigee<span class="badge">Recommended</span></td><td>Enterprise API governance: quotas, security, analytics, a developer portal, exposing APIs to other teams.</td><td>Cost; more to operate.</td></tr>
+<tr><td class="opt">API Gateway<span class="badge alt">Alt</span></td><td>Internal-only, lighter needs in front of Cloud Run / Functions.</td><td>Fewer governance/analytics features than Apigee.</td></tr>
+</tbody></table></div></div>
+<div class="note">Front everything with the global external HTTPS Load Balancer + <span class="pill">Cloud Armor</span> (WAF) and <span class="pill">Identity-Aware Proxy</span> regardless of the gateway choice.</div>
+<div class="rc"><span class="lab">Recommendation</span><b>Apigee</b> if the platform's APIs will be governed/exposed enterprise-wide; <b>API Gateway</b> if it stays internal and you want the lighter, cheaper option.</div>
+
+<!-- 8 MODEL + RAG -->
+<h2><span class="n">8</span>Foundation model &amp; retrieval (RAG)</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>The actual AI “brain” that powers the extraction, recommendations and SDD text, plus the grounding library that makes it cite your real ADRs and blueprints instead of inventing references.</div>
+<div class="lede">The GenAI core. Build a thin model-abstraction layer so you can route per task and swap models without touching business logic.</div>
+<div class="grid2">
+<div class="tree"><div class="tt">Decision tree — foundation model</div><div id="treeModel"></div></div>
+<div class="card"><div class="cb"><table>
+<thead><tr><th>Option</th><th>Best when</th><th>Trade-offs</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Gemini on Vertex AI<span class="badge">Default</span></td><td>Native GCP integration, multimodal, long context, data stays in your GCP boundary.</td><td>—</td></tr>
+<tr class="rec"><td class="opt">Claude on Vertex (Model Garden)<span class="badge">Task pick</span></td><td>Strong long-form reasoning &amp; document drafting — extraction and SDD generation.</td><td>Route per-task via the abstraction layer.</td></tr>
+<tr><td class="opt">Open models (Gemma / Llama)</td><td>You need self-hosting for cost/control and can accept quality/ops trade-offs.</td><td>You own tuning, serving and evaluation.</td></tr>
+</tbody></table></div></div>
+</div>
+<div class="card"><div class="ch">Retrieval / grounding</div><div class="cb"><table>
+<thead><tr><th>Option</th><th>Best when</th><th>Trade-offs</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Vertex AI Search<span class="badge">Recommended</span></td><td>Fastest managed RAG over the ADR/blueprint/ERI corpus with connectors and ranking.</td><td>Less control over chunking/ranking internals.</td></tr>
+<tr><td class="opt">Vertex AI Vector Search<span class="badge alt">Alt</span></td><td>You need custom embeddings, chunking and ranking pipelines.</td><td>You build and operate the pipeline.</td></tr>
+</tbody></table></div></div>
+<div class="rc"><span class="lab">Recommendation</span>Put a <b>model-agnostic interface</b> in the Python AI service. Default to <b>Gemini</b> for native integration; route to <b>Claude</b> for extraction and SDD drafting. Ground everything with <b>Vertex AI Search</b> so recommendations cite real ADRs/blueprints — never fabricated ones.</div>
+
+<!-- 9 IaC + CICD -->
+<h2><span class="n">9</span>Infrastructure-as-Code &amp; CI/CD</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>How the platform itself is built and shipped — repeatably and safely. The whole environment is defined as code with automated build, test and controlled deployment, so releases are consistent and auditable.</div>
+<div class="grid2">
+<div class="card"><div class="ch">Infrastructure as code</div><div class="cb"><table>
+<thead><tr><th>Option</th><th>Notes</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Terraform<span class="badge">Recommended</span></td><td>De-facto GCP standard, mature provider, multi-cloud, huge module ecosystem.</td></tr>
+<tr><td class="opt">Config Connector / KRM</td><td>Kubernetes-native infra — sensible only if you go all-in on GKE.</td></tr>
+<tr><td class="opt">Deployment Manager</td><td>Deprecated — avoid.</td></tr>
+</tbody></table></div></div>
+<div class="card"><div class="ch">CI / CD</div><div class="cb"><table>
+<thead><tr><th>Option</th><th>Notes</th></tr></thead>
+<tbody>
+<tr class="rec"><td class="opt">Cloud Build + Cloud Deploy<span class="badge">Recommended</span></td><td>GCP-native build &amp; progressive delivery; pairs with Binary Authorization.</td></tr>
+<tr><td class="opt">GitHub Actions / GitLab CI<span class="badge alt">Alt</span></td><td>Use if that's your org's SCM/CI standard; still deploy via Cloud Deploy.</td></tr>
+</tbody></table></div></div>
+</div>
+<div class="rc"><span class="lab">Recommendation</span><b>Terraform</b> for all infrastructure. For CI/CD, use your org's existing SCM/CI (often GitHub/GitLab) for build and test, with <b>Cloud Deploy</b> for progressive delivery and <b>Binary Authorization</b> enforcing signed images. Greenfield? <b>Cloud Build + Cloud Deploy</b> end-to-end.</div>
+
+<!-- 10 SECURITY -->
+<h2><span class="n">10</span>Security, networking &amp; observability</h2>
+<div class="purpose"><span class="lab">Purpose in dbCloudGate</span>The guardrails and the eyes. It keeps the sensitive architecture documents protected, controls exactly who can access what, and lets you see, alert on and troubleshoot everything the platform does.</div>
+<div class="lede">These are largely non-optional for a regulated deployment — listed for completeness rather than as a choice.</div>
+<div class="card"><div class="cb"><table class="stack">
+<tr><td>Access</td><td>Identity-Aware Proxy + Identity Platform</td><td>Zero-trust access, corporate SSO via Workload Identity Federation.</td></tr>
+<tr><td>Authorisation</td><td>IAM (least privilege) + Org Policy</td><td>Fine-grained roles; guardrails at the org level.</td></tr>
+<tr><td>Data protection</td><td>VPC Service Controls · Cloud KMS/CMEK · Cloud DLP</td><td>Exfiltration perimeter, customer-managed keys, PII scanning of uploads.</td></tr>
+<tr><td>Secrets &amp; supply chain</td><td>Secret Manager · Binary Authorization · Artifact Registry</td><td>No secrets in code; only signed, scanned images run.</td></tr>
+<tr><td>Posture</td><td>Security Command Center · Cloud Audit Logs</td><td>Continuous posture management and a complete audit trail.</td></tr>
+<tr><td>Networking</td><td>Shared VPC · Serverless VPC Access · Private Service Connect · Cloud NAT</td><td>Private egress to Confluence/Jira/CMDB; no public data paths.</td></tr>
+<tr><td>Observability</td><td>Cloud Monitoring · Logging · Trace · Error Reporting</td><td>SLOs per service; alerting on failures and cost anomalies.</td></tr>
+</table></div></div>
+
+<h2><span class="n">11</span>Consolidated recommendation</h2>
+<div class="lede">The end-to-end stack, assuming an enterprise/regulated deployment. Substitute the noted alternatives only where your organisation's standards or a concrete requirement dictates.</div>
+<div class="card"><div class="ch">Recommended reference stack</div><div class="cb"><table class="stack">
+<tr><td>UI</td><td>React + TypeScript on Cloud Run, behind IAP</td><td>—</td></tr>
+<tr><td>Core services</td><td>Java 21 + Spring Boot on Cloud Run</td><td>Go if leaner services preferred</td></tr>
+<tr><td>AI service</td><td>Python + FastAPI on Cloud Run</td><td>Document AI + Vertex AI + Vertex AI Search</td></tr>
+<tr><td>Model layer</td><td>Model-agnostic; Gemini default, Claude for extraction/SDD</td><td>via Vertex AI</td></tr>
+<tr><td>Data</td><td>Cloud SQL (Postgres) + Firestore + Cloud Storage + BigQuery</td><td>AlloyDB if outgrown</td></tr>
+<tr><td>Flow</td><td>Cloud Workflows + Pub/Sub + Cloud Tasks</td><td>Temporal for complex long flows</td></tr>
+<tr><td>Edge / API</td><td>HTTPS LB + Cloud Armor + Apigee (or API Gateway)</td><td>—</td></tr>
+<tr><td>Platform</td><td>Terraform · Cloud Build/Deploy · Artifact Registry · Binary Auth</td><td>Org GitHub/GitLab CI acceptable</td></tr>
+<tr><td>Security</td><td>IAM · VPC-SC · KMS/CMEK · DLP · Secret Manager · SCC · Audit Logs</td><td>—</td></tr>
+<tr><td>Ops</td><td>Cloud Monitoring · Logging · Trace · Error Reporting</td><td>—</td></tr>
+</table></div></div>
+
+<div class="foot">Draft decision guide · derived from the dbCloudGate prototype · recommendations assume an enterprise, single-region, regulated deployment · review and adjust to your org standards before merging into the build plan.</div>
+</div>
+
+<script>
+var NS='http://www.w3.org/2000/svg';
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function node(x,y,w,h,fill,stroke,text,tcol){
+  return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="7" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>'+
+  '<foreignObject x="'+(x+8)+'" y="'+y+'" width="'+(w-16)+'" height="'+h+'"><div xmlns="http://www.w3.org/1999/xhtml" style="display:flex;align-items:center;justify-content:center;height:'+h+'px;font-family:IBM Plex Sans,sans-serif;font-size:11.5px;font-weight:500;line-height:1.25;text-align:center;color:'+tcol+'">'+text+'</div></foreignObject>';
+}
+function arrow(x1,y1,x2,y2,mid){var d='<path d="M'+x1+' '+y1+' L'+x2+' '+y2+'" stroke="#94A3B8" stroke-width="1.4" fill="none" marker-end="url(#ah)"/>';
+  if(mid){d+='<foreignObject x="'+(mid.x-16)+'" y="'+(mid.y-9)+'" width="34" height="16"><div xmlns="http://www.w3.org/1999/xhtml" style="font-family:IBM Plex Mono,monospace;font-size:9px;font-weight:600;color:#64748B;text-align:center;background:#fff">'+mid.t+'</div></foreignObject>';}
+  return d;}
+function renderTree(id,data){
+  var W=430,steps=data.steps,rowH=104,H=steps.length*rowH+96;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" xmlns="'+NS+'"><defs><marker id="ah" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 z" fill="#94A3B8"/></marker></defs>';
+  var qx=18,qw=190,qh=56,ax=248,aw=166,ah=56,y=16;
+  steps.forEach(function(st){
+    s+=node(qx,y,qw,qh,'#12305A','#0A1F3D',esc(st.q),'#fff');
+    // Yes -> alt (right)
+    s+=arrow(qx+qw,y+qh/2,ax,y+qh/2,{x:(qx+qw+ax)/2,y:y+qh/2,t:'Yes'});
+    s+=node(ax,y,aw,ah,'#F1F5F9','#CBD5E1',esc(st.alt),'#334155');
+    // No -> down
+    var ny=y+rowH;
+    s+=arrow(qx+qw/2,y+qh,qx+qw/2,ny,{x:qx+qw/2+2,y:(y+qh+ny)/2,t:'No'});
+    y=ny;
+  });
+  s+=node(qx,y,qw+30,64,'#15803D','#166534','<b>'+esc(data.rec.split('|')[0])+'</b>'+(data.rec.split('|')[1]?'<br/><span style=\'font-weight:400;font-size:10px\'>'+esc(data.rec.split('|')[1])+'</span>':''),'#fff');
+  s+='</svg>';
+  document.getElementById(id).innerHTML=s;
+}
+renderTree('treeLang',{steps:[
+  {q:'Org is a Java shop with existing Java governance & hiring?',alt:'Java 21 + Spring Boot'},
+  {q:'Need lean, fast-starting containers & have Go skills?',alt:'Go'}
+],rec:'Node.js + TypeScript|default fallback — see recommendation'});
+renderTree('treeCompute',{steps:[
+  {q:'Need a service mesh, sidecars or >60-min jobs?',alt:'GKE Autopilot'},
+  {q:'Small, purely event-triggered handler?',alt:'Cloud Functions (2nd gen)'}
+],rec:'Cloud Run|containerised UI, APIs & AI service'});
+renderTree('treeData',{steps:[
+  {q:'Global multi-region strong consistency at scale?',alt:'Cloud Spanner'},
+  {q:'Postgres-compatible but need higher perf / bigger scale?',alt:'AlloyDB for PostgreSQL'}
+],rec:'Cloud SQL (PostgreSQL)|+ Firestore state, BigQuery reporting'});
+renderTree('treeOrch',{steps:[
+  {q:'Long (days–months) human flows with complex rollback?',alt:'Temporal on GKE'},
+  {q:'Scheduled data/ETL pipelines as DAGs?',alt:'Cloud Composer (Airflow)'}
+],rec:'Cloud Workflows|+ Pub/Sub & Cloud Tasks for async'});
+renderTree('treeModel',{steps:[
+  {q:'Top priority is strongest reasoning/writing (extraction, SDD)?',alt:'Claude via Vertex Model Garden'},
+  {q:'Need self-hosting for cost/control, accept trade-offs?',alt:'Open models (Gemma / Llama)'}
+],rec:'Gemini on Vertex AI|default; keep a model-agnostic layer'});
+</script>
+</body>
+</html>
